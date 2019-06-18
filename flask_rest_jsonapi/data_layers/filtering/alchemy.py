@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
 """Helper to create sqlalchemy filters according to filter querystring parameter"""
+from typing import Any, List, Tuple
+
 from marshmallow import fields, ValidationError
 from sqlalchemy import and_, or_, not_, sql
 from sqlalchemy.orm import aliased
-from typing import Any, List, Tuple
 
-from flask_rest_jsonapi.exceptions import InvalidFilters
-from flask_rest_jsonapi.ext.postgresql_jsonb.schema import SchemaJSONB
+from flask_rest_jsonapi.exceptions import InvalidFilters, PluginMethodNotImplementedError
 from flask_rest_jsonapi.schema import get_relationships, get_model_field
 
 Filter = sql.elements.BinaryExpression
@@ -52,6 +52,7 @@ def create_filters(model, filter_info, resource):
     filters = []
     joins = []
     for filter_ in filter_info:
+        # filters.append(Node(model, filter_, resource, resource.schema).resolve())
         filter, join = Node(model, filter_, resource, resource.schema).resolve()
         filters.append(filter)
         joins.extend(join)
@@ -70,11 +71,8 @@ class Node(object):
         :param Resource resource: the base resource to apply filters on
         :param Schema schema: the serializer of the resource
         """
-        self.fields = filter_['name'].split('__')
-        filter_['name'] = '__'.join(self.fields[:-1])
         self.model = model
         self.filter_ = filter_
-        self.field_in_jsonb = self.fields[-1]
         self.resource = resource
         self.schema = schema
 
@@ -87,9 +85,6 @@ class Node(object):
         :param value:
         :return:
         """
-        if not isinstance(getattr(marshmallow_field, 'schema', None), SchemaJSONB):
-            raise InvalidFilters(f'Invalid JSONB filter: {"__".join(self.fields)}')
-        marshmallow_field = marshmallow_field.schema._declared_fields[self.field_in_jsonb]
         if hasattr(marshmallow_field, f'_{operator}_sql_filter_'):
             """
             У marshmallow field может быть реализована своя логика создания фильтра для sqlalchemy
@@ -103,22 +98,41 @@ class Node(object):
             """
             return getattr(marshmallow_field, f'_{operator}_sql_filter_')(
                 marshmallow_field=marshmallow_field,
-                model_column=model_column.op('->>')(self.field_in_jsonb),
+                model_column=model_column,
                 value=value,
                 operator=self.operator
             )
         # Нужно проводить валидацию и делать десериализацию значение указанных в фильтре, так как поля Enum
         # например выгружаются как 'name_value(str)', а в БД хранится как просто число
         value = deserialize_field(marshmallow_field, value)
-        return getattr(model_column.op('->>')(self.field_in_jsonb), self.operator)(value)
+        return getattr(model_column, self.operator)(value)
 
     def resolve(self) -> FilterAndJoins:
         """Create filter for a particular node of the filter tree"""
+        for i_plugins in self.resource.plugins:
+            try:
+                res = i_plugins.before_data_layers_filtering_alchemy_nested_resolve(self)
+                if res is not None:
+                    return res
+            except PluginMethodNotImplementedError:
+                pass
         if 'or' not in self.filter_ and 'and' not in self.filter_ and 'not' not in self.filter_:
             value = self.value
 
+            if isinstance(value, dict):
+                alias = aliased(self.related_model)
+                joins = [[alias, self.column]]
+                filters, new_joins = Node(self.related_model, value, self.resource, self.related_schema).resolve()
+
+                joins.extend(new_joins)
+                return filters, joins
+
             if '__' in self.filter_.get('name', ''):
-                value = {'name': '__'.join(self.fields[1:]), 'op': self.filter_['op'], 'val': value}
+                value = {
+                    'name': '__'.join(self.filter_['name'].split('__')[1:]),
+                    'op': self.filter_['op'],
+                    'val': value
+                }
                 alias = aliased(self.related_model)
                 joins = [[alias, self.column]]
                 node = Node(alias, value, self.resource, self.related_schema)
