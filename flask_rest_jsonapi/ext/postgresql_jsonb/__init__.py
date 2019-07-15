@@ -158,7 +158,10 @@ class PostgreSqlJSONB(BasePlugin):
 
         if not isinstance(getattr(marshmallow_field, 'schema', None), SchemaJSONB):
             raise InvalidFilters(f'Invalid JSONB filter: {"__".join(self_nested.fields)}')
-        marshmallow_field = marshmallow_field.schema._declared_fields[field_in_jsonb]
+        try:
+            marshmallow_field = marshmallow_field.schema._declared_fields[field_in_jsonb]
+        except KeyError:
+            raise InvalidFilters(f'There is no "{field_in_jsonb}" attribute in the "{fields[-2]}" field.')
         if hasattr(marshmallow_field, f'_{operator}_sql_filter_'):
             """
             У marshmallow field может быть реализована своя логика создания фильтра для sqlalchemy
