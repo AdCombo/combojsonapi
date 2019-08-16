@@ -412,20 +412,16 @@ class PermissionPlugin(BasePlugin):
                     # Возможно пользовать неимеет доступа, к данному внешнему ключу
                     if cls._is_access_foreign_key(obj, model, permission) is False:
                         continue
-                    try:
-                        # Нужный внешний ключ может отсутствовать
-                        model = cls._get_model(model, field)
-                    except ValueError as e:
-                        raise InvalidInclude(str(e))
+
 
                     if joinload_object is None:
-                        joinload_object = joinedload(field)
+                        joinload_object = joinedload(getattr(model, field))
+                        joinload_object = joinedload(getattr(model, field))
                     else:
-                        joinload_object = joinload_object.joinedload(field)
+                        joinload_object = joinload_object.joinedload(getattr(model, field))
 
                     # ограничиваем список полей (которые доступны & которые запросил пользователь)
-                    current_schema = cls._get_schema(current_schema, obj)
-                    name_columns = cls._get_access_fields_in_schema(obj, current_schema, model=model, qs=qs)
+                    name_columns = cls._get_access_fields_in_schema(obj, current_schema, permission, model=model, qs=qs)
                     user_requested_columns = qs.fields.get(current_schema.Meta.type_)
                     if user_requested_columns:
                         name_columns = set(name_columns) & set(user_requested_columns)
@@ -437,6 +433,14 @@ class PermissionPlugin(BasePlugin):
                     ]
 
                     joinload_object.load_only(*list(name_columns))
+
+                    try:
+                        # Нужный внешний ключ может отсутствовать
+                        model = cls._get_model(model, field)
+                    except ValueError as e:
+                        raise InvalidInclude(str(e))
+
+                    current_schema = cls._get_schema(current_schema, obj)
             else:
                 try:
                     field = get_model_field(self_json_api.resource.schema, include)
