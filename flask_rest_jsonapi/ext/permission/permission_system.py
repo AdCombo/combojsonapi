@@ -327,7 +327,7 @@ class PermissionMixin:
     """Миксин для кейсов с пермишенами"""
     def __init__(self):
         self.permission_for_get: PermissionForGet = PermissionForGet()
-        self.permission_for_path: PermissionForPatch = PermissionForPatch()
+        self.permission_for_patch: PermissionForPatch = PermissionForPatch()
         self.permission_for_post: PermissionForPost = PermissionForPost()
 
     def get(self, *args, many=True, user_permission: PermissionUser = None, **kwargs) -> PermissionForGet:
@@ -382,7 +382,7 @@ class PermissionMixin:
         :param kwargs:
         :return:
         """
-        return self.permission_for_path
+        return self.permission_for_patch
 
     def delete(self, *args, obj=None, user_permission: PermissionUser = None, **kwargs) -> bool:
         """

@@ -43,7 +43,7 @@ API класса PermissionMixin
     * :code:`columns: Set[str]` - атрибуты модели, доступны пользователю, после сложение разрешающий и запрещающих массивов
       по весу
 
-:code:`permission_for_path: PermissionForPatch`
+:code:`permission_for_patch: PermissionForPatch`
 
     Разрешения для пользователя в методе path. Содержит свойства
 
@@ -192,8 +192,8 @@ API класса PermissionMixin
 
         def patch_permission(self, *args, user_permission: PermissionUser = None, **kwargs) -> PermissionForPatch:
             """Разрешаем менять только пароль"""
-            self.permission_for_path.allow_columns = (self.AVAILABLE_FIELDS_FOR_PATCH, 0)
-            return self.permission_for_path
+            self.permission_for_patch.allow_columns = (self.AVAILABLE_FIELDS_FOR_PATCH, 0)
+            return self.permission_for_patch
 
         def patch_data(self, *args, data: Dict = None, obj: User = None, user_permission: PermissionUser = None, **kwargs) -> Dict:
             # password
@@ -209,8 +209,8 @@ API класса PermissionMixin
         def patch_permission(self, *args, user_permission: PermissionUser = None, **kwargs) -> PermissionForPatch:
             """Разрешаем менять только пароль"""
             if current_user.role == Role.admin.value:
-                self.permission_for_path.allow_columns = (self.ALL_FIELDS, 10)  # задаём вес 10, это будет более приоритетно
-            return self.permission_for_path
+                self.permission_for_patch.allow_columns = (self.ALL_FIELDS, 10)  # задаём вес 10, это будет более приоритетно
+            return self.permission_for_patch
 
         def patch_data(self, *args, data: Dict = None, obj: User = None, user_permission: PermissionUser = None, **kwargs) -> Dict:
             if current_user.role == Role.admin.value:
