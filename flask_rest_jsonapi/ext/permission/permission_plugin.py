@@ -403,7 +403,7 @@ class PermissionPlugin(BasePlugin):
             if '.' in include:
                 current_schema = self_json_api.resource.schema
                 model = self_json_api.model
-                for obj in include.split('.'):
+                for i, obj in enumerate(include.split('.')):
                     try:
                         field = get_model_field(current_schema, obj)
                     except Exception as e:
@@ -422,14 +422,16 @@ class PermissionPlugin(BasePlugin):
 
                     # ограничиваем список полей (которые доступны & которые запросил пользователь)
                     name_columns = cls._get_access_fields_in_schema(obj, current_schema, permission, model=model, qs=qs)
+                    current_schema = cls._get_schema(current_schema, obj)
                     user_requested_columns = qs.fields.get(current_schema.Meta.type_)
                     if user_requested_columns:
                         name_columns = set(name_columns) & set(user_requested_columns)
                     # Убираем relationship поля
+                    all_fields_mappers = joinload_object.path[i].prop.mapper.columns.keys()
                     name_columns = [
                         i_name
                         for i_name in name_columns
-                        if i_name in joinload_object.path[0].prop.mapper.columns.keys()
+                        if i_name in all_fields_mappers
                     ]
 
                     joinload_object.load_only(*list(name_columns))
@@ -440,7 +442,6 @@ class PermissionPlugin(BasePlugin):
                     except ValueError as e:
                         raise InvalidInclude(str(e))
 
-                    current_schema = cls._get_schema(current_schema, obj)
             else:
                 try:
                     field = get_model_field(self_json_api.resource.schema, include)
@@ -461,10 +462,11 @@ class PermissionPlugin(BasePlugin):
                 if user_requested_columns:
                     name_columns = set(name_columns) & set(user_requested_columns)
                 # Убираем relationship поля
+                all_fields_mappers = joinload_object.path[0].prop.mapper.columns.keys()
                 name_columns = [
                     i_name
                     for i_name in name_columns
-                    if i_name in joinload_object.path[0].prop.mapper.columns.keys()
+                    if i_name in all_fields_mappers
                 ]
 
                 joinload_object.load_only(*list(name_columns))
