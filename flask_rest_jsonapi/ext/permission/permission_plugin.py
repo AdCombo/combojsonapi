@@ -5,6 +5,8 @@ from typing import Union, Tuple, List, Dict
 from flask_rest_jsonapi.marshmallow_fields import Relationship
 from marshmallow import class_registry, fields
 from marshmallow.base import SchemaABC
+from sqlalchemy import Column
+from sqlalchemy.orm.attributes import InstrumentedAttribute
 from werkzeug.datastructures import ImmutableMultiDict
 
 from flask_rest_jsonapi.exceptions import InvalidInclude, BadRequest
@@ -13,14 +15,29 @@ from flask_rest_jsonapi.querystring import QueryStringManager
 
 from flask_rest_jsonapi.schema import get_model_field, get_related_schema
 from raven.events import Query
-from sqlalchemy.orm import load_only, joinedload, ColumnProperty
+from sqlalchemy.orm import load_only, joinedload
 
 from flask_rest_jsonapi import Api
 from flask_rest_jsonapi.ext.permission.permission_system import PermissionUser, PermissionToMapper, PermissionForGet
-from flask_rest_jsonapi.utils import get_decorators_for_resource
 from flask_rest_jsonapi.resource import ResourceList, ResourceDetail
 
 from flask_rest_jsonapi.plugin import BasePlugin
+
+
+def get_columns_for_query(model) -> List[str]:
+    """
+    Получаем список название атрибутов в моделе, именно как они названы в моделе, т.е., если у нас вот так описано поле
+    _permissions = Column('permissions', JSONB, nullable=False), то в columns будет _permissions.
+    :param model: модель sqlalchemy
+    :return:
+    """
+    columns = []
+    for key, value in model.__dict__.items():
+        # Оставляем только атрибуты Column
+        if not isinstance(value, InstrumentedAttribute) and not isinstance(value, Column):
+            continue
+        columns.append(key)
+    return columns
 
 
 def permission(method, request_type: str, many=False, decorators=None):
@@ -246,7 +263,7 @@ class PermissionPlugin(BasePlugin):
         if user_requested_columns:
             name_columns = list(set(name_columns) & set(user_requested_columns))
         # Убираем relationship поля
-        name_columns = [i_name for i_name in name_columns if i_name in self_json_api.model.__table__.columns.keys()]
+        name_columns = list(set(name_columns) & set(get_columns_for_query(self_json_api.model)))
 
         query = query.options(load_only(*name_columns))
 
@@ -432,12 +449,8 @@ class PermissionPlugin(BasePlugin):
                     if user_requested_columns:
                         name_columns = set(name_columns) & set(user_requested_columns)
                     # Убираем relationship поля
-                    all_fields_mappers = joinload_object.path[i].prop.mapper.columns.keys()
-                    name_columns = [
-                        i_name
-                        for i_name in name_columns
-                        if i_name in all_fields_mappers
-                    ]
+                    name_columns = set(name_columns) & \
+                                   set(get_columns_for_query(joinload_object.path[i].property.mapper.class_))
 
                     joinload_object.load_only(*list(name_columns))
 
@@ -467,12 +480,8 @@ class PermissionPlugin(BasePlugin):
                 if user_requested_columns:
                     name_columns = set(name_columns) & set(user_requested_columns)
                 # Убираем relationship поля
-                all_fields_mappers = joinload_object.path[0].prop.mapper.columns.keys()
-                name_columns = [
-                    i_name
-                    for i_name in name_columns
-                    if i_name in all_fields_mappers
-                ]
+                name_columns = set(name_columns) & \
+                               set(get_columns_for_query(joinload_object.path[0].property.mapper.class_))
 
                 joinload_object.load_only(*list(name_columns))
 
