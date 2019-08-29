@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import json
 from uuid import UUID
 from datetime import datetime
@@ -7,6 +5,7 @@ import marshmallow
 from apispec.ext.marshmallow import resolver
 from apispec.ext.marshmallow.common import MODIFIERS
 from marshmallow import class_registry
+from typing import Tuple
 
 
 class JSONEncoder(json.JSONEncoder):
@@ -39,3 +38,14 @@ def create_schema_name(schema=None, name_schema=None):
         modifiers_str = f'({modifiers_str})'
     name_cls_schema = resolver(cls_schema)
     return f'{name_cls_schema}{modifiers_str}'
+
+
+def get_decorators_for_resource(resource, self_json_api) -> list:
+    decorators = []
+    if hasattr(resource, 'decorators'):
+        decorators += list(resource.decorators)
+
+    if getattr(resource, 'disable_global_decorators', False) is False:
+        decorators += list(self_json_api.decorators)
+
+    return decorators

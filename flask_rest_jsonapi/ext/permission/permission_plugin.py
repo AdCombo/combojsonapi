@@ -17,6 +17,7 @@ from sqlalchemy.orm import load_only, joinedload, ColumnProperty
 
 from flask_rest_jsonapi import Api
 from flask_rest_jsonapi.ext.permission.permission_system import PermissionUser, PermissionToMapper, PermissionForGet
+from flask_rest_jsonapi.utils import get_decorators_for_resource
 from flask_rest_jsonapi.resource import ResourceList, ResourceDetail
 
 from flask_rest_jsonapi.plugin import BasePlugin
@@ -91,9 +92,8 @@ class PermissionPlugin(BasePlugin):
             return
 
         old_method = getattr(resource, l_type)
-        decorators = self_json_api.decorators
-        if getattr(resource, 'disable_global_decorators', False) is True:
-            decorators = tuple()
+
+        decorators = get_decorators_for_resource(resource, self_json_api)
         new_method = permission(old_method, request_type=l_type, many=True, decorators=decorators)
         if u_type in methods:
             setattr(resource, l_type, new_method)

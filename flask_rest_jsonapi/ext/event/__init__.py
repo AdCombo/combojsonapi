@@ -4,6 +4,7 @@ from marshmallow import Schema
 
 from flask_rest_jsonapi.exceptions import PluginMethodNotImplementedError
 from flask_rest_jsonapi.plugin import BasePlugin
+from flask_rest_jsonapi.utils import get_decorators_for_resource
 
 
 class EventSchema(Schema):
@@ -31,7 +32,8 @@ class EventPlugin(BasePlugin):
             url_rule_options = kwargs.get('url_rule_options') or {}
 
             i_urls = [urllib.parse.urljoin(i_url, i_event.__name__) for i_url in urls]
-            i_resource.decorators = self_json_api.decorators
+
+            i_resource.decorators = get_decorators_for_resource(resource, self_json_api)
 
             view_func = i_resource.as_view(i_view)
 
