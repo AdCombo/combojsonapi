@@ -53,11 +53,11 @@ class PermissionPlugin(BasePlugin):
         :return:
         """
         if issubclass(resource, ResourceList):
-            for type_method in ['get', 'post']:
+            for type_method in ('get', 'post'):
                 self._permission_method(resource, type_method, self_json_api)
 
         if issubclass(resource, ResourceDetail):
-            for type_method in ['get', 'patch', 'delete', 'post']:
+            for type_method in ('get', 'patch', 'delete', 'post'):
                 self._permission_method(resource, type_method, self_json_api)
                 # Для Post запроса в ResourceDetail не нужны пермишены, они берутся из ResourceList,
                 # так как новый элемнт создаётся через ResourceList, а POST запросы в ResourceDetail
@@ -67,8 +67,8 @@ class PermissionPlugin(BasePlugin):
                 # api передаётся в kwargs['_permission_user']
 
     @classmethod
-    def _permission_method(cls, resource: Union[ResourceList, ResourceDetail], type_method: str,
-                           self_json_api: Api) -> None:
+    def _permission_method(cls, resource: Union[ResourceList, ResourceDetail],
+                           type_method: str, self_json_api: Api) -> None:
         """
         Обвешиваем ресурс декораторами с пермишенами, либо запрещаем першишен если он явно отключён
         :param Union[ResourceList, ResourceDetail] resource:
@@ -87,16 +87,21 @@ class PermissionPlugin(BasePlugin):
         else:
             return
         model = resource.data_layer['model']
-        if hasattr(resource, l_type):
-            old_method = getattr(resource, l_type)
-            new_method = permission(old_method, request_type=l_type, many=True, decorators=self_json_api.decorators)
-            if u_type in methods:
-                setattr(resource, l_type, new_method)
-            else:
-                setattr(resource, l_type, cls._resource_method_bad_request)
+        if not hasattr(resource, l_type):
+            return
 
-            PermissionToMapper.add_permission(type_=type_, model=model,
-                                              permission_class=resource.data_layer.get(f'permission_{l_type}', []))
+        old_method = getattr(resource, l_type)
+        decorators = self_json_api.decorators
+        if getattr(resource, 'disable_global_decorators', False) is True:
+            decorators = tuple()
+        new_method = permission(old_method, request_type=l_type, many=True, decorators=decorators)
+        if u_type in methods:
+            setattr(resource, l_type, new_method)
+        else:
+            setattr(resource, l_type, cls._resource_method_bad_request)
+
+        PermissionToMapper.add_permission(type_=type_, model=model,
+                                          permission_class=resource.data_layer.get(f'permission_{l_type}', []))
 
     @classmethod
     def _resource_method_bad_request(cls, *args, **kwargs):
