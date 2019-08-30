@@ -188,131 +188,132 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
             # Если выгружаем объект
             if issubclass(resource, ResourceDetail):
                 operations['get']['parameters'].append(deepcopy(parameter_id))
-            models_for_include = ','.join([
-                    i_field_name
-                    for i_field_name, i_field in resource.schema._declared_fields.items()
-                    if isinstance(i_field, Relationship)
-                ])
-            operations['get']['parameters'].append({
-                'default': models_for_include,
-                'name': 'include',
-                'in': 'query',
-                'format': 'string',
-                'required': False,
-                'description': f'Related relationships to include. For example: {models_for_include}'
-            })
+            if resource.schema is not None:
+                models_for_include = ','.join([
+                        i_field_name
+                        for i_field_name, i_field in resource.schema._declared_fields.items()
+                        if isinstance(i_field, Relationship)
+                    ])
+                operations['get']['parameters'].append({
+                    'default': models_for_include,
+                    'name': 'include',
+                    'in': 'query',
+                    'format': 'string',
+                    'required': False,
+                    'description': f'Related relationships to include. For example: {models_for_include}'
+                })
 
-            # Sparse Fieldsets
-            description = 'List that refers to the name(s) of the fields to be returned "%s"'
-            new_parameter = {
-                'name': f'fields[{resource.schema.Meta.type_}]',
-                'in': 'query',
-                'type': 'array',
-                'required': False,
-                'description': description.format(resource.schema.Meta.type_),
-                'items': {
-                    'type': 'string',
-                    'enum': list(resource.schema._declared_fields.keys())
-                }
-            }
-            operations['get']['parameters'].append(new_parameter)
-            type_schemas = {resource.schema.Meta.type_}
-            for i_field_name, i_field in resource.schema._declared_fields.items():
-                if isinstance(i_field, Relationship) and i_field.schema.Meta.type_ not in type_schemas:
-                    new_parameter = {
-                        'name': f'fields[{i_field.schema.Meta.type_}]',
-                        'in': 'query',
-                        'type': 'array',
-                        'required': False,
-                        'description': description.format(i_field.schema.Meta.type_),
-                        'items': {
-                            'type': 'string',
-                            'enum': list(self.spec.components._schemas[create_schema_name(schema=i_field.schema)]['properties'].keys())
-                        }
+                # Sparse Fieldsets
+                description = 'List that refers to the name(s) of the fields to be returned "%s"'
+                new_parameter = {
+                    'name': f'fields[{resource.schema.Meta.type_}]',
+                    'in': 'query',
+                    'type': 'array',
+                    'required': False,
+                    'description': description.format(resource.schema.Meta.type_),
+                    'items': {
+                        'type': 'string',
+                        'enum': list(resource.schema._declared_fields.keys())
                     }
-                    operations['get']['parameters'].append(new_parameter)
-                    type_schemas.add(i_field.schema.Meta.type_)
-
-            # Filter
-            if issubclass(resource, ResourceList):
-                # List data
-                operations['get']['parameters'].append({
-                    'default': 1,
-                    'name': 'page[number]',
-                    'in': 'query',
-                    'format': 'int64',
-                    'required': False,
-                    'description': 'Page offset'
-                })
-                operations['get']['parameters'].append({
-                    'default': 10,
-                    'name': 'page[size]',
-                    'in': 'query',
-                    'format': 'int64',
-                    'required': False,
-                    'description': 'Max number of items'
-                })
-                operations['get']['parameters'].append({
-                    'name': 'sort',
-                    'in': 'query',
-                    'format': 'string',
-                    'required': False,
-                    'description': 'Sort'
-                })
-                operations['get']['parameters'].append({
-                    'name': 'filter',
-                    'in': 'query',
-                    'format': 'string',
-                    'required': False,
-                    'description': 'Filter (https://flask-rest-jsonapi.readthedocs.io/en/latest/filtering.html)'
-                })
-                # Add filters for fields
+                }
+                operations['get']['parameters'].append(new_parameter)
+                type_schemas = {resource.schema.Meta.type_}
                 for i_field_name, i_field in resource.schema._declared_fields.items():
-                    i_field_spec = self.spec.components._schemas[create_schema_name(schema=resource.schema)]['properties'][i_field_name]
-                    if not isinstance(i_field, fields.Nested):
-                        if i_field_spec.get('type') == 'object':
-                            # Пропускаем создание фильтров для dict. Просто не понятно как фильтровать по таким
-                            # полям
-                            continue
+                    if isinstance(i_field, Relationship) and i_field.schema.Meta.type_ not in type_schemas:
                         new_parameter = {
-                            'name': f'filter[{i_field_name}]',
+                            'name': f'fields[{i_field.schema.Meta.type_}]',
                             'in': 'query',
-                            'type': i_field_spec.get('type'),
+                            'type': 'array',
                             'required': False,
-                            'description': f'{i_field_name} attribute filter'
-                        }
-                        if 'items' in i_field_spec:
-                            new_items = {
-                                'type': i_field_spec['items'].get('type'),
+                            'description': description.format(i_field.schema.Meta.type_),
+                            'items': {
+                                'type': 'string',
+                                'enum': list(self.spec.components._schemas[create_schema_name(schema=i_field.schema)]['properties'].keys())
                             }
-                            if 'enum' in i_field_spec['items']:
-                                new_items['enum'] = i_field_spec['items']['enum']
-                            new_parameter.update({'items': new_items})
+                        }
                         operations['get']['parameters'].append(new_parameter)
-                    elif isinstance(i_field, fields.Nested) and \
-                            getattr(getattr(i_field.schema, 'Meta', object), 'filtering', False):
-                        # Делаем возможность фильтровать JSONB
-                        for i_field_jsonb_name, i_field_jsonb in i_field.schema._declared_fields.items():
-                            i_field_jsonb_spec = self.spec.components._schemas[create_schema_name(schema=i_field.schema)]['properties'][i_field_jsonb_name]
-                            if i_field_jsonb_spec.get('type') == 'object':
+                        type_schemas.add(i_field.schema.Meta.type_)
+
+                # Filter
+                if issubclass(resource, ResourceList):
+                    # List data
+                    operations['get']['parameters'].append({
+                        'default': 1,
+                        'name': 'page[number]',
+                        'in': 'query',
+                        'format': 'int64',
+                        'required': False,
+                        'description': 'Page offset'
+                    })
+                    operations['get']['parameters'].append({
+                        'default': 10,
+                        'name': 'page[size]',
+                        'in': 'query',
+                        'format': 'int64',
+                        'required': False,
+                        'description': 'Max number of items'
+                    })
+                    operations['get']['parameters'].append({
+                        'name': 'sort',
+                        'in': 'query',
+                        'format': 'string',
+                        'required': False,
+                        'description': 'Sort'
+                    })
+                    operations['get']['parameters'].append({
+                        'name': 'filter',
+                        'in': 'query',
+                        'format': 'string',
+                        'required': False,
+                        'description': 'Filter (https://flask-rest-jsonapi.readthedocs.io/en/latest/filtering.html)'
+                    })
+                    # Add filters for fields
+                    for i_field_name, i_field in resource.schema._declared_fields.items():
+                        i_field_spec = self.spec.components._schemas[create_schema_name(schema=resource.schema)]['properties'][i_field_name]
+                        if not isinstance(i_field, fields.Nested):
+                            if i_field_spec.get('type') == 'object':
                                 # Пропускаем создание фильтров для dict. Просто не понятно как фильтровать по таким
                                 # полям
                                 continue
                             new_parameter = {
-                                'name': f'filter[{i_field_name}__{i_field_jsonb_name}]',
+                                'name': f'filter[{i_field_name}]',
                                 'in': 'query',
-                                'type': i_field_jsonb_spec.get('type'),
+                                'type': i_field_spec.get('type'),
                                 'required': False,
-                                'description': f'{i_field_name}__{i_field_jsonb_name} attribute filter'
+                                'description': f'{i_field_name} attribute filter'
                             }
-                            if 'items' in i_field_jsonb_spec:
+                            if 'items' in i_field_spec:
                                 new_items = {
-                                    'type': i_field_jsonb_spec['items'].get('type'),
+                                    'type': i_field_spec['items'].get('type'),
                                 }
-                                if 'enum' in i_field_jsonb_spec['items']:
-                                    new_items['enum'] = i_field_jsonb_spec['items']['enum']
+                                if 'enum' in i_field_spec['items']:
+                                    new_items['enum'] = i_field_spec['items']['enum']
                                 new_parameter.update({'items': new_items})
                             operations['get']['parameters'].append(new_parameter)
+                        elif isinstance(i_field, fields.Nested) and \
+                                getattr(getattr(i_field.schema, 'Meta', object), 'filtering', False):
+                            # Делаем возможность фильтровать JSONB
+                            for i_field_jsonb_name, i_field_jsonb in i_field.schema._declared_fields.items():
+                                i_field_jsonb_spec = self.spec.components._schemas[create_schema_name(schema=i_field.schema)]['properties'][i_field_jsonb_name]
+                                if i_field_jsonb_spec.get('type') == 'object':
+                                    # Пропускаем создание фильтров для dict. Просто не понятно как фильтровать по таким
+                                    # полям
+                                    continue
+                                new_parameter = {
+                                    'name': f'filter[{i_field_name}__{i_field_jsonb_name}]',
+                                    'in': 'query',
+                                    'type': i_field_jsonb_spec.get('type'),
+                                    'required': False,
+                                    'description': f'{i_field_name}__{i_field_jsonb_name} attribute filter'
+                                }
+                                if 'items' in i_field_jsonb_spec:
+                                    new_items = {
+                                        'type': i_field_jsonb_spec['items'].get('type'),
+                                    }
+                                    if 'enum' in i_field_jsonb_spec['items']:
+                                        new_items['enum'] = i_field_jsonb_spec['items']['enum']
+                                    new_parameter.update({'items': new_items})
+                                operations['get']['parameters'].append(new_parameter)
 
         if 'post' in methods:
             operations['post'] = deepcopy(operations_all)
