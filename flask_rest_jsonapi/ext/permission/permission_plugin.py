@@ -18,6 +18,7 @@ from raven.events import Query
 from sqlalchemy.orm import load_only, joinedload
 
 from flask_rest_jsonapi import Api
+from flask_rest_jsonapi.utils import get_decorators_for_resource
 from flask_rest_jsonapi.ext.permission.permission_system import PermissionUser, PermissionToMapper, PermissionForGet
 from flask_rest_jsonapi.resource import ResourceList, ResourceDetail
 
@@ -97,10 +98,10 @@ class PermissionPlugin(BasePlugin):
         l_type = type_method.lower()
         u_type = type_method.upper()
         if issubclass(resource, ResourceList):
-            methods = getattr(resource, 'methods', ['GET', 'POST'])
+            methods = getattr(resource, 'methods', ('GET', 'POST'))
             type_ = 'get_list' if l_type == 'get' else l_type
         elif issubclass(resource, ResourceDetail):
-            methods = getattr(resource, 'methods', ['GET', 'PATCH', 'DELETE'])
+            methods = getattr(resource, 'methods', ('GET', 'PATCH', 'DELETE'))
             type_ = l_type
         else:
             return
@@ -117,8 +118,8 @@ class PermissionPlugin(BasePlugin):
         else:
             setattr(resource, l_type, cls._resource_method_bad_request)
 
-        PermissionToMapper.add_permission(type_=type_, model=model,
-                                          permission_class=resource.data_layer.get(f'permission_{l_type}', []))
+        permissions = resource.data_layer.get(f'permission_{l_type}', [])
+        PermissionToMapper.add_permission(type_=type_, model=model, permission_class=permissions)
 
     @classmethod
     def _resource_method_bad_request(cls, *args, **kwargs):

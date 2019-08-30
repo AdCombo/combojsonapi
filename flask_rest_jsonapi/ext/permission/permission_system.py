@@ -15,7 +15,10 @@ PERMISSION_TO_MAPPER = Dict[
 
 
 class PermissionToMapper:
-    """Содержит все классы пермишеннов в системе сгруппированных по типам get/post/patch/delete"""
+    """
+    Contains all system permissions
+    Gouped by get/post/patch/delete
+    """
     get: PERMISSION_TO_MAPPER = {}
     get_list: PERMISSION_TO_MAPPER = {}
     post: PERMISSION_TO_MAPPER = {}
@@ -23,18 +26,18 @@ class PermissionToMapper:
     delete: PERMISSION_TO_MAPPER = {}
 
     @classmethod
-    def add_permission(cls, type_: str, model, permission_class: List) -> None:
+    def add_permission(cls, type_: str, model, permission_class: list) -> None:
         """
-        Добавляет новый класс с пермишенными
+        Ads new permission class
         :param type_: get | post | patch | delete
-        :param model: маппер sqlalchemy для чьих полей описаны пермишены
-        :param permission_class: класс с пермишенными
+        :param model: sqlalchemy mapper which permissions are for
+        :param permission_class:
         :return:
         """
         data = getattr(cls, type_)
         data[model.__name__] = {
             'model': model,
-            'permission': permission_class
+            'permission': permission_class,
         }
 
 
