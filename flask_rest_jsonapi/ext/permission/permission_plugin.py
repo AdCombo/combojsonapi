@@ -150,6 +150,8 @@ class PermissionPlugin(BasePlugin):
         only &= set(name_fields)
         only = tuple(only)
         schema.fields = OrderedDict(**{name: val for name, val in schema.fields.items() if name in only})
+        schema.fields = OrderedDict(**{name: val for name, val in schema.fields.items() if name in only})
+        schema.dump_fields = OrderedDict(**{name: val for name, val in schema.fields.items() if name in only})
 
         schema.only = only
 
