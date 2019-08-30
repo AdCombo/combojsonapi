@@ -1,11 +1,11 @@
-Плагинам EventPlugin
------------------------
+EventPlugin
+-----------
 
-Плагин **EventPlugin** позволяет:
+**EventPlugin** позволяет:
 
 1. Создать событийное API (RPC).
 2. Интегрируется с плагином **ApiSpecPlugin** позволяя создавать документацию для RPC и отображать
-   вместе с общей документацией. Описание view производится на **yaml**.
+   вместе с общей документацией. Описание view производится при помощи **yaml**.
 3. Интегрируется с плагином **PermissionPlugin**, можно из view получить доступ к ограничения по
    любой модели. Также доступ к view ограничивается общими декораторами, которые задаются при
    инициализации API.
@@ -23,27 +23,29 @@
 Описание работы плагина
 """""""""""""""""""""""
 
-После того как создали класс унаследованный от :code:`flask_rest_jsonapi.ext.event.resource.EventsResource`
-любой метод в этом классе начинающиеся с :code:`event_` будет считаться самостоятельной view (вьюшкой).
-Адрес новой view будет формироваться в формате :code:`.../<url ресурс менеджера, к которому привязан
+После того как создали класс, унаследованный от :code:`flask_rest_jsonapi.ext.event.resource.EventsResource`,
+любой метод в этом классе, который начинается с :code:`event_` будет считаться самостоятельным view.
+Адрес нового view будет формироваться в формате :code:`.../<url ресурс менеджера, к которому привязан
 данный класс с методами RPC API>/event_<название нашего метода, после event_>`.
+По умолчанию создаются POST ресурсы. Но можно создать GET ресурс, назвав метод :code:`event_get_something`.
+Также поддерживается :code:`event_post_something` - создастся POST ресурс.
 
-**Если описать в созданном классе любой другой метод или атрибут, то они будут не видны внутри
-view.**
+**Другие методы и атрибуты Event класса не будут видны внутри view.**
 
 Описания view
 """""""""""""
 
-1. Метод :code:`event_<название метода>` должен принимать следующие параметры:
-    * :code:`*args`
-    * :code:`id: int` - id сущности модели. Если класс с данным view указан в ресурс менеджере
+1. Метод :code:`event[_опционально тип запроса]_<название метода>` должен принимать следующие параметры:
+    * :code:`id: int` [опционально] - id сущности модели. Если класс с данным view указан в ресурс менеджере
       :code:`ResourceDetail`.
     * :code:`_permission_user: PermissionUser = None` - пермишены для данного авторизованного
-      пользователя, при условие что включён плагин **PermissionPlugin**
+      пользователя (при условии, что подключен плагин **PermissionPlugin**)
+    * :code:`*args`
     * :code:`**kwargs`
-2. При описание ответов view используйте формат JSONAPI
+2. При описании ответов view используйте формат JSONAPI
 3. В начале метода нужно описать документацию к view на yaml, чтобы хорошо прошла интеграция с
    плагином автодокументации **ApiSpecPlugin**
+
 
 Пример подключения плагина
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -106,7 +108,7 @@ view.**
 
     """Описание ресурс менеджеров для API"""
 
-    class UserEventsForResourceDetail(EventsResource):
+    class UserResourceDetailEvents(EventsResource):
         def event_update_avatar(self, *args, id: int = None, **kwargs):
             # language=YAML
             """
@@ -144,9 +146,17 @@ view.**
                 db.session.commit()
             return 'success', 201
 
+        def event_get_info(self, *args, **kwargs):
+            return {'message': 'GET INFO'}
+
+        def event_post_info(self, *args, **kwargs):
+            data = request.json
+            data.update(message='POST INFO')
+            return data
+
     class UserResourceDetail(ResourceDetail):
         schema = UserSchema
-        events = UserEventsForResourceDetail
+        events = UserResourceDetailEvents
         methods = ['GET']
         data_layer = {
             'session': db.session,
@@ -167,7 +177,7 @@ view.**
     app.config['OPENAPI_SWAGGER_UI_PATH'] = '/'
     app.config['OPENAPI_SWAGGER_UI_VERSION'] = '3.22.0'
 
-    api_spec_plagin = ApiSpecPlugin(
+    api_spec_plugin = ApiSpecPlugin(
         app=app,
         # Объявляем список тегов и описаний для группировки api в группы (api можно не группировать в группы,
         # в этом случае они будут группирваться автоматически по названию типов схем (type_))
@@ -179,7 +189,7 @@ view.**
     api_json = Api(
         app,
         plugins=[
-            api_spec_plagin,
+            api_spec_plugin,
             EventPlugin()
         ]
     )
