@@ -20,7 +20,7 @@ SortAndJoins = Tuple[
 
 # Список полей, которые немогут быть массивом
 STANDARD_MARSHMALLOW_FIELDS = {fields.Dict, fields.Tuple, fields.String, fields.UUID, fields.Number, fields.Integer,
-                               fields.Decimal, fields.Boolean, fields.Float, fields.DateTime, fields.LocalDateTime,
+                               fields.Decimal, fields.Boolean, fields.Float, fields.DateTime,
                                fields.Date, fields.TimeDelta, fields.Url, fields.Str, fields.Bool, fields.Int,
                                fields.Constant}
 
