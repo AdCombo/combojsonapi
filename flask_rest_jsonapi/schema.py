@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """Helpers to deal with marshmallow schemas"""
 
 from marshmallow import class_registry

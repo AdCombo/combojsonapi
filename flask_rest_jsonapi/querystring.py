@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """Helper to deal with querystring parameters according to jsonapi specification"""
 
 import json
