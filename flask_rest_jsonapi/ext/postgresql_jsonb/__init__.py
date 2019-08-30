@@ -121,7 +121,7 @@ class PostgreSqlJSONB(BasePlugin):
         mapping_ma_field_to_type[ma_fields.List] = list
         mapping_ma_field_to_type[ma_fields.Decimal] = Decimal
         mapping_ma_field_to_type[ma_fields.Url] = str
-        mapping_ma_field_to_type[ma_fields.LocalDateTime] = datetime.datetime
+        mapping_ma_field_to_type[ma_fields.DateTime] = datetime.datetime
         mapping_type_to_sql_type = {
             str: String,
             bytes: String,
@@ -185,7 +185,7 @@ class PostgreSqlJSONB(BasePlugin):
         mapping[ma_fields.List] = list
         mapping[ma_fields.Decimal] = Decimal
         mapping[ma_fields.Url] = str
-        mapping[ma_fields.LocalDateTime] = datetime.datetime
+        mapping[ma_fields.DateTime] = datetime.datetime
 
         # Нужно проводить валидацию и делать десериализацию значение указанных в фильтре, так как поля Enum
         # например выгружаются как 'name_value(str)', а в БД хранится как просто число
