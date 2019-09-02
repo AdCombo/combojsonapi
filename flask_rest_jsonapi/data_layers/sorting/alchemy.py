@@ -7,7 +7,7 @@ from marshmallow import fields, ValidationError
 from sqlalchemy import sql
 from sqlalchemy.orm import aliased
 
-from flask_rest_jsonapi.exceptions import InvalidFilters, PluginMethodNotImplementedError
+from flask_rest_jsonapi.exceptions import InvalidFilters, PluginMethodNotImplementedError, InvalidSort
 from flask_rest_jsonapi.schema import get_relationships, get_model_field
 
 Sort = sql.elements.BinaryExpression
@@ -52,6 +52,9 @@ def create_sorts(model, sort_info, resource):
     sorts = []
     joins = []
     for sort_ in sort_info:
+        field = sort_['field']
+        if not hasattr(model, field):
+            raise InvalidSort("{} has no attribute {}".format(model.__name__, field))
         sort, join = Node(model, sort_, resource, resource.schema).resolve()
         sorts.append(sort)
         joins.extend(join)

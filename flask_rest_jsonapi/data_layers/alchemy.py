@@ -109,13 +109,14 @@ class SqlalchemyDataLayer(BaseDataLayer):
 
         query = self.retrieve_object_query(view_kwargs, filter_field, filter_value)
 
-        for i_plugins in self.resource.plugins:
-            try:
-                query = i_plugins.data_layer_get_object_update_query(query=query, qs=qs,
-                                                                     view_kwargs=view_kwargs,
-                                                                     self_json_api=self)
-            except PluginMethodNotImplementedError:
-                pass
+        if hasattr(self, 'resource'):
+            for i_plugins in self.resource.plugins:
+                try:
+                    query = i_plugins.data_layer_get_object_update_query(query=query, qs=qs,
+                                                                         view_kwargs=view_kwargs,
+                                                                         self_json_api=self)
+                except PluginMethodNotImplementedError:
+                    pass
 
         if qs is not None:
             query = self.eagerload_includes(query, qs)
@@ -569,7 +570,7 @@ class SqlalchemyDataLayer(BaseDataLayer):
         :return Query: the sorted query
         """
         if sort_info:
-            sorts, joins = create_sorts(self.model, sort_info, self.resource)
+            sorts, joins = create_sorts(self.model, sort_info, self.resource if hasattr(self, 'resource') else None)
             for i_join in joins:
                 query = query.join(*i_join)
             for i_sort in sorts:

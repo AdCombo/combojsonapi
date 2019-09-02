@@ -44,6 +44,8 @@ class ResourceMeta(MethodViewType):
         if 'decorators' in d:
             rv.decorators += d['decorators']
 
+        rv.plugins = d.get('plugins', [])
+
         return rv
 
 

@@ -109,13 +109,15 @@ class Node(object):
 
     def resolve(self) -> FilterAndJoins:
         """Create filter for a particular node of the filter tree"""
-        for i_plugins in self.resource.plugins:
-            try:
-                res = i_plugins.before_data_layers_filtering_alchemy_nested_resolve(self)
-                if res is not None:
-                    return res
-            except PluginMethodNotImplementedError:
-                pass
+        if self.resource and hasattr(self.resource, 'plugins'):
+            for i_plugins in self.resource.plugins:
+                try:
+                    res = i_plugins.before_data_layers_filtering_alchemy_nested_resolve(self)
+                    if res is not None:
+                        return res
+                except PluginMethodNotImplementedError:
+                    pass
+
         if 'or' not in self.filter_ and 'and' not in self.filter_ and 'not' not in self.filter_:
             value = self.value
 
