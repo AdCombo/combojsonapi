@@ -71,19 +71,26 @@ class PermissionPlugin(BasePlugin):
         :param kwargs:
         :return:
         """
-        if issubclass(resource, ResourceList):
-            for type_method in ('get', 'post'):
-                self._permission_method(resource, type_method, self_json_api)
+        if getattr(resource, '_permission_plugin_inited', False):
+            return
 
-        if issubclass(resource, ResourceDetail):
-            for type_method in ('get', 'patch', 'delete', 'post'):
-                self._permission_method(resource, type_method, self_json_api)
-                # Для Post запроса в ResourceDetail не нужны пермишены, они берутся из ResourceList,
-                # так как новый элемнт создаётся через ResourceList, а POST запросы в ResourceDetail
-                # могут быть связанны с собыйтиным api EventsResource. В собыйтином api безопасность ложится
-                # полностью на того кто разрабатывает его, также в любой момент можно обратиться к любому пермишену
-                # из любого собыйтиного api, так как ссылка на истанц PermissionUser (активный в контектсе данного
-                # api передаётся в kwargs['_permission_user']
+        if issubclass(resource, ResourceList):
+            methods = ('get', 'post')
+        elif issubclass(resource, ResourceDetail):
+            methods = ('get', 'patch', 'delete', 'post')
+        else:
+            return
+
+        for method in methods:
+            self._permission_method(resource, method, self_json_api)
+            # Для Post запроса в ResourceDetail не нужны пермишены, они берутся из ResourceList,
+            # так как новый элемнт создаётся через ResourceList, а POST запросы в ResourceDetail
+            # могут быть связанны с собыйтиным api EventsResource. В собыйтином api безопасность ложится
+            # полностью на того кто разрабатывает его, также в любой момент можно обратиться к любому пермишену
+            # из любого собыйтиного api, так как ссылка на истанц PermissionUser (активный в контектсе данного
+            # api передаётся в kwargs['_permission_user']
+
+        resource._permission_plugin_inited = True
 
     @classmethod
     def _permission_method(cls, resource: Union[ResourceList, ResourceDetail],
