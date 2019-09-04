@@ -15,7 +15,7 @@ from flask_rest_jsonapi.querystring import QueryStringManager
 
 from flask_rest_jsonapi.schema import get_model_field, get_related_schema
 from raven.events import Query
-from sqlalchemy.orm import load_only, joinedload
+from sqlalchemy.orm import load_only, joinedload, ColumnProperty
 
 from flask_rest_jsonapi import Api
 from flask_rest_jsonapi.utils import get_decorators_for_resource
@@ -35,9 +35,9 @@ def get_columns_for_query(model) -> List[str]:
     columns = []
     for key, value in model.__dict__.items():
         # Оставляем только атрибуты Column
-        if not isinstance(value, InstrumentedAttribute) and not isinstance(value, Column):
-            continue
-        columns.append(key)
+        if (isinstance(value, InstrumentedAttribute) or isinstance(value, Column)) \
+                and isinstance(getattr(value, 'prop'), ColumnProperty):
+            columns.append(key)
     return columns
 
 
@@ -447,7 +447,6 @@ class PermissionPlugin(BasePlugin):
 
 
                     if joinload_object is None:
-                        joinload_object = joinedload(getattr(model, field))
                         joinload_object = joinedload(getattr(model, field))
                     else:
                         joinload_object = joinload_object.joinedload(getattr(model, field))
