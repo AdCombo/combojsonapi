@@ -51,11 +51,9 @@ def create_sorts(model, sort_info, resource):
     """
     sorts = []
     joins = []
+    schema = getattr(resource, 'schema') if resource else None
     for sort_ in sort_info:
-        field = sort_['field']
-        if not hasattr(model, field):
-            raise InvalidSort("{} has no attribute {}".format(model.__name__, field))
-        sort, join = Node(model, sort_, resource, resource.schema).resolve()
+        sort, join = Node(model, sort_, resource, schema).resolve()
         sorts.append(sort)
         joins.extend(join)
 
@@ -104,13 +102,18 @@ class Node(object):
 
     def resolve(self) -> SortAndJoins:
         """Create sort for a particular node of the sort tree"""
-        for i_plugins in self.resource.plugins:
-            try:
-                res = i_plugins.before_data_layers_sorting_alchemy_nested_resolve(self)
-                if res is not None:
-                    return res
-            except PluginMethodNotImplementedError:
-                pass
+        if hasattr(self.resource, 'plugins'):
+            for i_plugins in self.resource.plugins:
+                try:
+                    res = i_plugins.before_data_layers_sorting_alchemy_nested_resolve(self)
+                    if res is not None:
+                        return res
+                except PluginMethodNotImplementedError:
+                    pass
+
+        field = self.sort_['field']
+        if not hasattr(self.model, field):
+            raise InvalidSort("{} has no attribute {}".format(self.model.__name__, field))
 
         if '__' in self.sort_.get('field', ''):
             value = {
