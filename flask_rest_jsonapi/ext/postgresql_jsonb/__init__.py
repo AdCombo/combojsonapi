@@ -14,6 +14,7 @@ from flask_rest_jsonapi.exceptions import InvalidFilters
 from flask_rest_jsonapi.ext.postgresql_jsonb.schema import SchemaJSONB
 from flask_rest_jsonapi.marshmallow_fields import Relationship
 from flask_rest_jsonapi.plugin import BasePlugin
+from flask_rest_jsonapi.utils import SPLIT_REL
 
 
 def is_seq_collection(obj):
@@ -35,7 +36,7 @@ class PostgreSqlJSONB(BasePlugin):
         :param Nested self_nested: instance Nested
         :return:
         """
-        if '__' in self_nested.sort_.get('field', ''):
+        if SPLIT_REL in self_nested.sort_.get('field', ''):
             if self._isinstance_jsonb(self_nested.schema, self_nested.sort_['field']):
                 sort = self._create_sort(
                     self_nested,
@@ -54,7 +55,7 @@ class PostgreSqlJSONB(BasePlugin):
         """
         if not ({'or', 'and', 'not'} & set(self_nested.filter_)):
 
-            if '__' in self_nested.filter_.get('name', ''):
+            if SPLIT_REL in self_nested.filter_.get('name', ''):
                 if self._isinstance_jsonb(self_nested.schema, self_nested.filter_['name']):
                     filter = self._create_filter(
                         self_nested,
@@ -73,7 +74,7 @@ class PostgreSqlJSONB(BasePlugin):
         :param fields:
         :return:
         """
-        fields = filter_name.split('__')
+        fields = filter_name.split(SPLIT_REL)
         for i, i_field in enumerate(fields):
             if isinstance(getattr(schema._declared_fields[i_field], 'schema', None), SchemaJSONB):
                 if i != (len(fields) - 2):
@@ -95,12 +96,12 @@ class PostgreSqlJSONB(BasePlugin):
         :param str order: asc | desc
         :return:
         """
-        fields = self_nested.sort_['field'].split('__')
-        self_nested.sort_['field'] = '__'.join(fields[:-1])
+        fields = self_nested.sort_['field'].split(SPLIT_REL)
+        self_nested.sort_['field'] = SPLIT_REL.join(fields[:-1])
         field_in_jsonb = fields[-1]
 
         if not isinstance(getattr(marshmallow_field, 'schema', None), SchemaJSONB):
-            raise InvalidFilters(f'Invalid JSONB sort: {"__".join(self_nested.fields)}')
+            raise InvalidFilters(f'Invalid JSONB sort: {SPLIT_REL.join(self_nested.fields)}')
         marshmallow_field = marshmallow_field.schema._declared_fields[field_in_jsonb]
         if hasattr(marshmallow_field, f'_{order}_sql_filter_'):
             """
@@ -152,12 +153,12 @@ class PostgreSqlJSONB(BasePlugin):
         :param value:
         :return:
         """
-        fields = self_nested.filter_['name'].split('__')
-        self_nested.filter_['name'] = '__'.join(fields[:-1])
+        fields = self_nested.filter_['name'].split(SPLIT_REL)
+        self_nested.filter_['name'] = SPLIT_REL.join(fields[:-1])
         field_in_jsonb = fields[-1]
 
         if not isinstance(getattr(marshmallow_field, 'schema', None), SchemaJSONB):
-            raise InvalidFilters(f'Invalid JSONB filter: {"__".join(self_nested.fields)}')
+            raise InvalidFilters(f'Invalid JSONB filter: {SPLIT_REL.join(self_nested.fields)}')
         try:
             marshmallow_field = marshmallow_field.schema._declared_fields[field_in_jsonb]
         except KeyError:

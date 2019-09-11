@@ -12,7 +12,7 @@ from flask_rest_jsonapi.ext.spec.plugins_for_apispec import RestfulPlugin
 from flask_rest_jsonapi.marshmallow_fields import Relationship
 from flask_rest_jsonapi.plugin import BasePlugin
 from flask_rest_jsonapi.resource import ResourceList, ResourceDetail
-from flask_rest_jsonapi.utils import create_schema_name, status
+from flask_rest_jsonapi.utils import create_schema_name, status, SPLIT_REL
 from marshmallow import fields, Schema
 
 
@@ -259,11 +259,11 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
 
     def __get_parameter_for_nested_with_filtering(self, field_name, field_jsonb_name, field_jsonb_spec):
         new_parameter = {
-            'name': f'filter[{field_name}__{field_jsonb_name}]',
+            'name': f'filter[{field_name}{SPLIT_REL}{field_jsonb_name}]',
             'in': 'query',
             'type': field_jsonb_spec.get('type'),
             'required': False,
-            'description': f'{field_name}__{field_jsonb_name} attribute filter'
+            'description': f'{field_name}{SPLIT_REL}{field_jsonb_name} attribute filter'
         }
         if 'items' in field_jsonb_spec:
             new_items = {

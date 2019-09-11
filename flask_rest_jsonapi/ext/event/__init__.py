@@ -5,7 +5,7 @@ from marshmallow import Schema
 
 from flask_rest_jsonapi.plugin import BasePlugin
 from flask_rest_jsonapi.resource import Resource
-from flask_rest_jsonapi.utils import get_decorators_for_resource
+from flask_rest_jsonapi.utils import get_decorators_for_resource, SPLIT_REL
 from flask_rest_jsonapi.exceptions import PluginMethodNotImplementedError
 
 
@@ -49,7 +49,7 @@ class EventPlugin(BasePlugin):
         url_rule_options = kwargs.get('url_rule_options') or {}
         event_urls = tuple(urllib.parse.urljoin(i_url, event.__name__) for i_url in urls)
         if self_json_api.blueprint is not None:
-            new_resource.view = '.'.join([self_json_api.blueprint.name, new_resource.view])
+            new_resource.view = SPLIT_REL.join([self_json_api.blueprint.name, new_resource.view])
             for url in event_urls:
                 self_json_api.blueprint.add_url_rule(url, view_func=view_func, **url_rule_options)
         elif self_json_api.app is not None:

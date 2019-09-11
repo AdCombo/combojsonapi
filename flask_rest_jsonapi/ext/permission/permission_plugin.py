@@ -18,7 +18,7 @@ from raven.events import Query
 from sqlalchemy.orm import load_only, joinedload, ColumnProperty
 
 from flask_rest_jsonapi import Api
-from flask_rest_jsonapi.utils import get_decorators_for_resource
+from flask_rest_jsonapi.utils import get_decorators_for_resource, SPLIT_REL
 from flask_rest_jsonapi.ext.permission.permission_system import PermissionUser, PermissionToMapper, PermissionForGet
 from flask_rest_jsonapi.resource import ResourceList, ResourceDetail
 
@@ -329,7 +329,7 @@ class PermissionPlugin(BasePlugin):
         :return:
         """
         mapper = model
-        for i_name_foreign_key in name_foreign_key.split('.'):
+        for i_name_foreign_key in name_foreign_key.split(SPLIT_REL):
             mapper_old = mapper
             mapper = getattr(mapper_old, i_name_foreign_key, None)
             if mapper is None:
@@ -347,7 +347,7 @@ class PermissionPlugin(BasePlugin):
         :return:
         """
         permission_for_get: PermissionForGet = permission.permission_for_get(model)
-        name_foreign_key = name_foreign_key.split('.')[-1]
+        name_foreign_key = name_foreign_key.split(SPLIT_REL)[-1]
         if name_foreign_key not in permission_for_get.columns:
             return False
         return True
@@ -432,10 +432,10 @@ class PermissionPlugin(BasePlugin):
         for include in qs.include:
             joinload_object = None
 
-            if '.' in include:
+            if SPLIT_REL in include:
                 current_schema = self_json_api.resource.schema
                 model = self_json_api.model
-                for i, obj in enumerate(include.split('.')):
+                for i, obj in enumerate(include.split(SPLIT_REL)):
                     try:
                         field = get_model_field(current_schema, obj)
                     except Exception as e:

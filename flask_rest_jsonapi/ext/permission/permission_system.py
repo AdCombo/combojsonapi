@@ -5,6 +5,7 @@ from typing import Set, List, Dict, Any, Tuple
 from sqlalchemy.orm import class_mapper, ColumnProperty, RelationshipProperty
 
 from flask_rest_jsonapi.exceptions import JsonApiException
+from flask_rest_jsonapi.utils import SPLIT_REL
 
 
 PERMISSION_TO_MAPPER = Dict[
@@ -93,13 +94,13 @@ class PermissionFields:
                 del columns[i_name]
         jsonb_columns = {}
         for i_name, i_weight in columns.items():
-            if '.' in i_name:
+            if SPLIT_REL in i_name:
                 jsonb_columns[i_name] = i_weight
 
         # группируем jsonb поля
         jsonb_columns_list_allow = {}
         for i_col in jsonb_columns.keys():
-            col_jsonb = i_col.split('.')
+            col_jsonb = i_col.split(SPLIT_REL)
             if col_jsonb[0] not in jsonb_columns_list_allow:
                 jsonb_columns_list_allow[col_jsonb[0]] = []
             jsonb_columns_list_allow[col_jsonb[0]].append(col_jsonb[1])
@@ -115,7 +116,7 @@ class PermissionFields:
                 del columns[i_name]
         not_jsonb_columns = {}
         for i_name, i_weight in columns.items():
-            if '.' not in i_name:
+            if SPLIT_REL not in i_name:
                 not_jsonb_columns[i_name] = i_weight
         return set(not_jsonb_columns.keys())
 
