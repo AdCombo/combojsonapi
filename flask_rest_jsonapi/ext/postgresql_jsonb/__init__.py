@@ -3,6 +3,7 @@ from decimal import Decimal
 from typing import Any
 
 import sqlalchemy
+from flask_rest_jsonapi.schema import get_model_field
 from sqlalchemy import cast, String, Integer, Boolean, DECIMAL
 from sqlalchemy.sql.elements import or_
 from sqlalchemy.sql.operators import desc_op, asc_op
@@ -96,12 +97,23 @@ class PostgreSqlJSONB(BasePlugin):
         :param str order: asc | desc
         :return:
         """
+
+        if isinstance(marshmallow_field, Relationship):
+            # If sorting by JSONB field of another model is in progress
+            fields = self_nested.sort_['field'].split(SPLIT_REL)
+            schema = getattr(marshmallow_field, 'schema', None)
+            mapper = model_column.mapper.class_
+            sqlalchemy_relationship_name = get_model_field(schema, fields[1])
+            self_nested.sort_['field'] = SPLIT_REL.join(fields[1:])
+            marshmallow_field = marshmallow_field.schema._declared_fields[fields[1]]
+            model_column = getattr(mapper, sqlalchemy_relationship_name)
+            return cls._create_sort(self_nested, marshmallow_field, model_column, order)
+        elif not isinstance(getattr(marshmallow_field, 'schema', None), SchemaJSONB):
+            raise InvalidFilters(f'Invalid JSONB sort: {SPLIT_REL.join(self_nested.fields)}')
         fields = self_nested.sort_['field'].split(SPLIT_REL)
         self_nested.sort_['field'] = SPLIT_REL.join(fields[:-1])
         field_in_jsonb = fields[-1]
 
-        if not isinstance(getattr(marshmallow_field, 'schema', None), SchemaJSONB):
-            raise InvalidFilters(f'Invalid JSONB sort: {SPLIT_REL.join(self_nested.fields)}')
         marshmallow_field = marshmallow_field.schema._declared_fields[field_in_jsonb]
         if hasattr(marshmallow_field, f'_{order}_sql_filter_'):
             """
@@ -153,12 +165,21 @@ class PostgreSqlJSONB(BasePlugin):
         :param value:
         :return:
         """
+        if isinstance(marshmallow_field, Relationship):
+            # If filtering by JSONB field of another model is in progress
+            fields = self_nested.filter_['name'].split(SPLIT_REL)
+            schema = getattr(marshmallow_field, 'schema', None)
+            mapper = model_column.mapper.class_
+            sqlalchemy_relationship_name = get_model_field(schema, fields[1])
+            self_nested.filter_['name'] = SPLIT_REL.join(fields[1:])
+            marshmallow_field = marshmallow_field.schema._declared_fields[fields[1]]
+            model_column = getattr(mapper, sqlalchemy_relationship_name)
+            return cls._create_filter(self_nested, marshmallow_field, model_column, operator, value)
+        elif not isinstance(getattr(marshmallow_field, 'schema', None), SchemaJSONB):
+            raise InvalidFilters(f'Invalid JSONB filter: {SPLIT_REL.join(field_in_jsonb)}')
         fields = self_nested.filter_['name'].split(SPLIT_REL)
         self_nested.filter_['name'] = SPLIT_REL.join(fields[:-1])
         field_in_jsonb = fields[-1]
-
-        if not isinstance(getattr(marshmallow_field, 'schema', None), SchemaJSONB):
-            raise InvalidFilters(f'Invalid JSONB filter: {SPLIT_REL.join(self_nested.fields)}')
         try:
             marshmallow_field = marshmallow_field.schema._declared_fields[field_in_jsonb]
         except KeyError:
