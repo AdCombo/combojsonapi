@@ -4,7 +4,7 @@ from typing import Any
 
 import sqlalchemy
 from flask_rest_jsonapi.schema import get_model_field
-from sqlalchemy import cast, String, Integer, Boolean, DECIMAL
+from sqlalchemy import cast, String, Integer, Boolean, DECIMAL, not_
 from sqlalchemy.sql.elements import or_
 from sqlalchemy.sql.operators import desc_op, asc_op
 
@@ -58,14 +58,14 @@ class PostgreSqlJSONB(BasePlugin):
 
             if SPLIT_REL in self_nested.filter_.get('name', ''):
                 if self._isinstance_jsonb(self_nested.schema, self_nested.filter_['name']):
-                    filter = self._create_filter(
+                    filter, joins = self._create_filter(
                         self_nested,
                         marshmallow_field=self_nested.schema._declared_fields[self_nested.name],
                         model_column=self_nested.column,
                         operator=self_nested.filter_['op'],
                         value=self_nested.value
                     )
-                    return filter, []
+                    return filter, joins
 
     @classmethod
     def _isinstance_jsonb(cls, schema: Schema, filter_name):
@@ -173,8 +173,11 @@ class PostgreSqlJSONB(BasePlugin):
             sqlalchemy_relationship_name = get_model_field(schema, fields[1])
             self_nested.filter_['name'] = SPLIT_REL.join(fields[1:])
             marshmallow_field = marshmallow_field.schema._declared_fields[fields[1]]
+            join_list = [[model_column]]
             model_column = getattr(mapper, sqlalchemy_relationship_name)
-            return cls._create_filter(self_nested, marshmallow_field, model_column, operator, value)
+            filter, joins = cls._create_filter(self_nested, marshmallow_field, model_column, operator, value)
+            join_list += joins
+            return filter, join_list
         elif not isinstance(getattr(marshmallow_field, 'schema', None), SchemaJSONB):
             raise InvalidFilters(f'Invalid JSONB filter: {SPLIT_REL.join(field_in_jsonb)}')
         fields = self_nested.filter_['name'].split(SPLIT_REL)
@@ -200,7 +203,7 @@ class PostgreSqlJSONB(BasePlugin):
                 model_column=model_column.op('->>')(field_in_jsonb),
                 value=value,
                 operator=self_nested.operator
-            )
+            ), []
         mapping = {v: k for k, v in self_nested.schema.TYPE_MAPPING.items()}
         mapping[ma_fields.Email] = str
         mapping[ma_fields.Dict] = dict
@@ -233,6 +236,11 @@ class PostgreSqlJSONB(BasePlugin):
             filter = (cast(extra_field, Boolean) == value)
 
         if property_type == list:
-            filter = model_column.op('->')(field_in_jsonb).op('?')(value[0] if is_seq_collection(value) else value)
+            not_fun = lambda x: x
+            if operator in ['notin', 'notin_']:
+                not_fun = lambda x: not_(x)
+            filter = not_fun(
+                model_column.op('->')(field_in_jsonb).op('?')(value[0] if is_seq_collection(value) else value)
+            )
 
-        return filter
+        return filter, []
