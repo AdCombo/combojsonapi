@@ -1,0 +1,4 @@
+Flask>=1.0.2
+Flask-REST-JSONAPI==ssh://git@git.serv-ac.com:adcombo/flask-rest-jsonapi.git@adc_master
+apispec>=2.0.2
+sqlalchemy

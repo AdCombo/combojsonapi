@@ -5,7 +5,7 @@ from apispec import BasePlugin
 from apispec.yaml_utils import load_yaml_from_docstring
 from marshmallow import class_registry
 
-from flask_rest_jsonapi.utils import create_schema_name
+from combojsonapi.utils import create_schema_name
 
 RE_URL = re.compile(r'<(?:[^:<>]+:)?([^<>]+)>')
 

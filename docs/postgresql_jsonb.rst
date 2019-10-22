@@ -27,7 +27,7 @@
 1. В схеме описываем поле JSONB (из модели) как Nested, на схему со структурой того, что
    планируется хранить в JSONB
 2. Схема созданная в первом пункте для хранения структуры из поля модели JSONB должно наследоваться
-   от класса :code:`flask_rest_jsonapi.ext.postgresql_jsonb.schema.SchemaJSONB`
+   от класса :code:`combojsonapi.postgresql_jsonb.schema.SchemaJSONB`
 
 И всё :)
 
@@ -48,9 +48,9 @@
     from flask_rest_jsonapi.marshmallow_fields import Relationship
     from flask_rest_jsonapi import Api, ResourceList, ResourceDetail
     from flask_rest_jsonapi.querystring import QueryStringManager
-    from flask_rest_jsonapi.ext.postgresql_jsonb.schema import SchemaJSONB
-    from flask_rest_jsonapi.ext.postgresql_jsonb import PostgreSqlJSONB
-    from flask_rest_jsonapi.ext.spec import ApiSpecPlugin
+    from combojsonapi.postgresql_jsonb.schema import SchemaJSONB
+    from combojsonapi.postgresql_jsonb import PostgreSqlJSONB
+    from combojsonapi.spec import ApiSpecPlugin
     from marshmallow_jsonapi.flask import Schema
     from marshmallow_jsonapi import fields
 

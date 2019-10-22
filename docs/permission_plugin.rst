@@ -18,7 +18,7 @@ Permission
 ~~~~~~~~~~~~~~~~~
 Чтобы создать систему пермишенов для какой-либо модели, нужно:
 
-1. Создать класс от :code:`flask_rest_jsonapi.ext.permission.permission_system.PermissionMixin`, ниже будет более
+1. Создать класс от :code:`combojsonapi.permission.permission_system.PermissionMixin`, ниже будет более
    подробно сказано об этом
 2. В ресурс менеджере в :code:`data_layer` указать, какие методы должны использовать данный класс с пермишенами
 3. Если нам нужно, чтобы на конкретный ресурс не накручивались пермишн декораторы, необходимо в ресурсе указать атрибут
@@ -176,7 +176,7 @@ API класса PermissionMixin
 
 .. code:: python
 
-    from flask_rest_jsonapi.ext.permission.permission_system import PermissionMixin, PermissionForGet, \
+    from combojsonapi.permission.permission_system import PermissionMixin, PermissionForGet, \
         PermissionUser, PermissionForPatch
 
 

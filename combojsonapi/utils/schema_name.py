@@ -1,5 +1,4 @@
-import marshmallow
-from marshmallow import class_registry
+from marshmallow import class_registry, Schema
 from apispec.ext.marshmallow import resolver
 from apispec.ext.marshmallow.common import MODIFIERS
 
@@ -11,9 +10,9 @@ def create_schema_name(schema=None, name_schema=None):
         cls_schema = class_registry.get_class(name_schema)
         schema = cls_schema()
     elif schema:
-        schema = schema if isinstance(schema, marshmallow.Schema) else schema()
+        schema = schema if isinstance(schema, Schema) else schema()
         cls_schema = type(schema)
-    if not isinstance(schema, marshmallow.Schema):
+    if not isinstance(schema, Schema):
         raise TypeError("can only make a schema key based on a Schema instance.")
     modifiers = []
     for modifier in MODIFIERS:

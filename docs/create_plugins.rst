@@ -10,7 +10,7 @@
 
     from flask import Flask
     from flask_rest_jsonapi import Api
-    from flask_rest_jsonapi.ext.event import EventPlugin
+    from combojsonapi.event import EventPlugin
 
     app = Flask(__name__)
     api_json = Api(
@@ -175,7 +175,7 @@ API для плагинов
     from flask_sqlalchemy import SQLAlchemy
     from sqlalchemy import Column, Integer, String
     from sqlalchemy.orm import Query, load_only, scoped_session
-    from flask_rest_jsonapi.marshmallow_fields import Relationship
+    from combojsonapi.utils import Relationship
     from flask_rest_jsonapi import Api, ResourceList, ResourceDetail
     from flask_rest_jsonapi.plugin import BasePlugin
     from flask_rest_jsonapi.querystring import QueryStringManager

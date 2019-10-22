@@ -4,10 +4,10 @@
 Плагин **ApiSpecPlugin** добавляет:
 
 1. Автоматически генерирующуюся документацию для JSONAPI, для ресурс менеджеров **ResourceList** и **ResourceDetail**
-2. Поддержка генерации документации для RPC API созданного с помощью плагина `EventPlugin <docs/plugins/event_plugin.rst>`_
+2. Поддержка генерации документации для RPC API созданного с помощью плагина `EventPlugin <docs/event_plugin.rst>`_
 3. Группировка созданного API по тегам (в **swagger**).
 
-Плагин построен поверх **apispec** с подключением плагина `RestfulPlugin <docs/plugins/restful_plugin.rst>`_.
+Плагин построен поверх **apispec** с подключением плагина `RestfulPlugin <docs/restful_plugin.rst>`_.
 
 Краткий алгоритм работы плагина: **apispec** -> **swagger**
 
@@ -25,7 +25,7 @@
 
 3. При объявление роутеров, добавляется параметр :code:`tag: str` если здесь укать тег, который не описан
    при инициализации плагина, то выскочит ошибка.
-4. Если добавляем view RPC API использую плагин `EventPlugin <docs/plugins/event_plugin.rst>`_, то в начале view
+4. Если добавляем view RPC API использую плагин `EventPlugin <docs/event_plugin.rst>`_, то в начале view
    описываем API используя yaml `структура описания API <https://swagger.io/docs/specification/data-models/>`_.
 
-Пример работы с плагином можно посмотреть в примере у плагина EventPlugin `тут <docs/plugins/event_plugin.rst>`_.
+Пример работы с плагином можно посмотреть в примере у плагина EventPlugin `тут <docs/event_plugin.rst>`_.

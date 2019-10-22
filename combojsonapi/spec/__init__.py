@@ -5,15 +5,16 @@ from apispec import APISpec
 from apispec.exceptions import APISpecError
 from apispec.ext.marshmallow import MarshmallowPlugin, OpenAPIConverter, make_schema_key, \
     resolve_schema_instance
+from marshmallow import fields, Schema
 from flask_rest_jsonapi import Api
-from flask_rest_jsonapi.ext.spec.apispec import DocBlueprintMixin
-from flask_rest_jsonapi.ext.spec.compat import APISPEC_VERSION_MAJOR
-from flask_rest_jsonapi.ext.spec.plugins_for_apispec import RestfulPlugin
-from flask_rest_jsonapi.marshmallow_fields import Relationship
 from flask_rest_jsonapi.plugin import BasePlugin
 from flask_rest_jsonapi.resource import ResourceList, ResourceDetail
-from flask_rest_jsonapi.utils import create_schema_name, status, SPLIT_REL
-from marshmallow import fields, Schema
+from flask_rest_jsonapi.utils import status, SPLIT_REL
+
+from combojsonapi.spec.apispec import DocBlueprintMixin
+from combojsonapi.spec.compat import APISPEC_VERSION_MAJOR
+from combojsonapi.spec.plugins_for_apispec import RestfulPlugin
+from combojsonapi.utils import Relationship, create_schema_name
 
 
 class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):

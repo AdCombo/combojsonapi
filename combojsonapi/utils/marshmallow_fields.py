@@ -2,9 +2,9 @@ from copy import deepcopy
 
 from marshmallow import fields, class_registry, ValidationError
 from marshmallow.base import SchemaABC
+from marshmallow.utils import is_collection, missing as missing_
 from marshmallow_jsonapi.compat import basestring
 from marshmallow_jsonapi.fields import Relationship as OldRelationship
-from marshmallow.utils import is_collection, missing as missing_
 
 _RECURSIVE_NESTED = 'self'
 

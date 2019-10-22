@@ -5,8 +5,10 @@ from marshmallow import Schema
 
 from flask_rest_jsonapi.plugin import BasePlugin
 from flask_rest_jsonapi.resource import Resource
-from flask_rest_jsonapi.utils import get_decorators_for_resource, SPLIT_REL
+from flask_rest_jsonapi.utils import SPLIT_REL
 from flask_rest_jsonapi.exceptions import PluginMethodNotImplementedError
+
+from combojsonapi.utils import get_decorators_for_resource
 
 
 class EventSchema(Schema):

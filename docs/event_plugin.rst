@@ -14,7 +14,7 @@ EventPlugin
 ~~~~~~~~~~~~~~~~~
 Чтобы создать RPC API связанного с какой-либо моделью, нужно:
 
-1. Создать класс от :code:`flask_rest_jsonapi.ext.event.resource.EventsResource` ниже будет более
+1. Создать класс от :code:`combojsonapi.event.resource.EventsResource` ниже будет более
    подробно сказано об этом.
 2. В ресурс менеджере появляется атриббут :code:`events` в нём нужно указать класс созданный в
    первом пункте. Если укажите в ресурс менеджере :code:`ResourceDetail`, то в каждую view RPC API
@@ -23,7 +23,7 @@ EventPlugin
 Описание работы плагина
 """""""""""""""""""""""
 
-После того как создали класс, унаследованный от :code:`flask_rest_jsonapi.ext.event.resource.EventsResource`,
+После того как создали класс, унаследованный от :code:`combojsonapi.event.resource.EventsResource`,
 любой метод в этом классе, который начинается с :code:`event_` будет считаться самостоятельным view.
 Адрес нового view будет формироваться в формате :code:`.../<url ресурс менеджера, к которому привязан
 данный класс с методами RPC API>/event_<название нашего метода, после event_>`.
@@ -64,9 +64,9 @@ EventPlugin
     from flask_rest_jsonapi import Api, ResourceList, ResourceDetail
     from flask_rest_jsonapi.plugin import BasePlugin
     from flask_rest_jsonapi.querystring import QueryStringManager
-    from flask_rest_jsonapi.ext.event.resource import EventsResource
-    from flask_rest_jsonapi.ext.event import EventPlugin
-    from flask_rest_jsonapi.ext.spec import ApiSpecPlugin
+    from combojsonapi.event.resource import EventsResource
+    from combojsonapi.event import EventPlugin
+    from combojsonapi.spec import ApiSpecPlugin
     from marshmallow_jsonapi.flask import Schema
     from marshmallow_jsonapi import fields
 

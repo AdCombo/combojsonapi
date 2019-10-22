@@ -1,0 +1,36 @@
+# ## Intelij Idea
+/**/.idea/*
+
+# ## tmp
+/**/.tmp
+/**/tmp/*
+
+# ## venvs
+/**/.venv/
+/**/venv/
+/**/venv3/
+
+# ## Other files
+/**/*.egg-info
+/**/*.swp
+/**/*.swo
+/**/*.pyc
+/**/*.pyo
+/**/*.ipr
+/**/*.iws
+
+/*/.github
+/*/reports/
+/*/.coverage/*
+/*/.cache/
+/*/test_results/
+
+/**/node_modules/*
+/**/*egg-info*
+reports/
+.coverage/*
+.cache/
+test_results/
+
+# ## gitkeep
+!**/.gitkeep
