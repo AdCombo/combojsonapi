@@ -34,3 +34,6 @@ test_results/
 
 # ## gitkeep
 !**/.gitkeep
+/build/
+/.eggs/
+/dist/
