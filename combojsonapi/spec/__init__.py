@@ -9,12 +9,12 @@ from marshmallow import fields, Schema
 from flask_rest_jsonapi import Api
 from flask_rest_jsonapi.plugin import BasePlugin
 from flask_rest_jsonapi.resource import ResourceList, ResourceDetail
-from flask_rest_jsonapi.utils import status, SPLIT_REL
+from flask_rest_jsonapi.utils import SPLIT_REL
 
 from combojsonapi.spec.apispec import DocBlueprintMixin
 from combojsonapi.spec.compat import APISPEC_VERSION_MAJOR
 from combojsonapi.spec.plugins_for_apispec import RestfulPlugin
-from combojsonapi.utils import Relationship, create_schema_name
+from combojsonapi.utils import Relationship, create_schema_name, status
 
 
 class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
