@@ -3,7 +3,6 @@ from copy import deepcopy
 from marshmallow import fields, class_registry, ValidationError
 from marshmallow.base import SchemaABC
 from marshmallow.utils import is_collection, missing as missing_
-from marshmallow_jsonapi.compat import basestring
 from marshmallow_jsonapi.fields import Relationship as OldRelationship
 
 _RECURSIVE_NESTED = 'self'
@@ -30,7 +29,7 @@ class Relationship(OldRelationship, fields.Nested):
         if isinstance(self.__schema, type) and issubclass(self.__schema, SchemaABC):
             self.__schema = self.__schema(only=only, exclude=exclude, context=context)
             return self.__schema
-        if isinstance(self.__schema, basestring):
+        if isinstance(self.__schema, str):
             if self.__schema == _RECURSIVE_NESTED:
                 parent_class = self.parent.__class__
                 self.__schema = parent_class(
