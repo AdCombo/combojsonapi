@@ -7,12 +7,13 @@ Changelog
 Bug Fixes
 =========
 
+* English docs #- `@Yakov Shapovalov`_
 * update Relationship #- `@Znbiz`_
 * Update marshmallow -> 3.0.1 #- `@Znbiz`_
 * Constant splitter for filters, sorts and includes in plugin `PostgreSqlJSONB`_ #- `@Znbiz`_
 * Fix resource.schema == None in plugin `ApiSpecPlugin`_ #- `@Znbiz`_
 * Fix sorting in plugin `PostgreSqlJSONB`_ #- `@Znbiz`_
-* Поправил проверку полей из модели для options(load_only) в `Permission`_ #- `@Znbiz`_
+* Improved model fields check for options(load_only) in `Permission`_ #- `@Znbiz`_
 * Implement disable_global_decorators, minor refactor and upgrade events, update docs in plugin
   `EventPlugin`_  #- `@Suren Khorenyan`_
 * typo permission_for_path -> permission_for_patch and create get_decorators_for_resource
@@ -29,11 +30,11 @@ Bug Fixes
 Enhancements
 ============
 
-* Создан плагин `Permission`_ для flask-rest-jsonapi #- `@Znbiz`_
-* Создан плагин `ApiSpecPlugin`_ для flask-rest-jsonapi #- `@Znbiz`_
-* Создан плагин `EventPlugin`_ для flask-rest-jsonapi #- `@Znbiz`_
-* Создан плагин `PostgreSqlJSONB`_ для flask-rest-jsonapi #- `@Znbiz`_
-* Создан плагин `RestfulPlugin`_ для ApiSpec #- `@Znbiz`_
+* Created plugin `Permission`_ for flask-rest-jsonapi #- `@Znbiz`_
+* Created plugin `ApiSpecPlugin`_ for flask-rest-jsonapi #- `@Znbiz`_
+* Created plugin `EventPlugin`_ for flask-rest-jsonapi #- `@Znbiz`_
+* Created plugin `PostgreSqlJSONB`_ for flask-rest-jsonapi #- `@Znbiz`_
+* Created plugin `RestfulPlugin`_ for ApiSpec #- `@Znbiz`_
 
 
 .. _`RestfulPlugin`: https://github.com/AdCombo/ComboJSONAPI/docs/restful_plugin.rst
@@ -44,3 +45,4 @@ Enhancements
 
 .. _`@Suren Khorenyan`: https://github.com/mahenzon
 .. _`@Znbiz`: https://github.com/znbiz
+.. _`@Yakov Shapovalov`: https://github.com/photovirus
