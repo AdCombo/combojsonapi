@@ -1,0 +1,16 @@
+dist: trusty
+language: python
+python:
+  - '3.6'
+  - '3.7'
+  - 'pypy'
+install:
+  - pip install -r requirements.txt
+  - pip install coveralls coverage
+  - pip install -U setuptools
+  - pip install pytest --upgrade
+script:
+  - python setup.py install
+  - coverage run --source combojsonapi -m pytest -v
+after_success:
+  - coveralls

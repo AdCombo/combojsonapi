@@ -44,7 +44,7 @@ setup(
         'Programming Language :: Python :: 3.6',
         'License :: OSI Approved :: MIT License',
     ],
-    keywords='web api rest rpc swagger jsonapi flask sqlalchemy marshmallow',
+    keywords='web api rest rpc swagger jsonapi flask sqlalchemy marshmallow plugin',
     packages=find_packages(exclude=['tests']),
     zip_safe=False,
     platforms='any',
