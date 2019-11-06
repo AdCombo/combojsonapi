@@ -25,7 +25,7 @@ class RestfulPlugin(BasePlugin):
 
     def _ref_to_spec(self, data):
         """
-        Вытаскиваем из описания 
+        Вытаскиваем из описания
         :param data:
         :return:
         """

@@ -441,7 +441,6 @@ class PermissionPlugin(BasePlugin):
                     if cls._is_access_foreign_key(obj, model, permission) is False:
                         continue
 
-
                     if joinload_object is None:
                         joinload_object = joinedload(getattr(model, field))
                     else:
@@ -454,8 +453,9 @@ class PermissionPlugin(BasePlugin):
                     if user_requested_columns:
                         name_columns = set(name_columns) & set(user_requested_columns)
                     # Убираем relationship поля
-                    name_columns = set(name_columns) & \
-                                   set(get_columns_for_query(joinload_object.path[i].property.mapper.class_))
+                    name_columns = (
+                        set(name_columns) & set(get_columns_for_query(joinload_object.path[i].property.mapper.class_))
+                    )
 
                     joinload_object.load_only(*list(name_columns))
 
@@ -485,8 +485,9 @@ class PermissionPlugin(BasePlugin):
                 if user_requested_columns:
                     name_columns = set(name_columns) & set(user_requested_columns)
                 # Убираем relationship поля
-                name_columns = set(name_columns) & \
-                               set(get_columns_for_query(joinload_object.path[0].property.mapper.class_))
+                name_columns = (
+                    set(name_columns) & set(get_columns_for_query(joinload_object.path[0].property.mapper.class_))
+                )
 
                 joinload_object.load_only(*list(name_columns))
 

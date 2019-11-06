@@ -118,9 +118,9 @@ class PostgreSqlJSONB(BasePlugin):
         if hasattr(marshmallow_field, f'_{order}_sql_filter_'):
             """
             У marshmallow field может быть реализована своя логика создания сортировки для sqlalchemy
-            для определённого типа ('asc', 'desc'). Чтобы реализовать свою логику создания сортировка для 
-            определённого оператора необходимо реализовать в классе поля методы (название метода строится по 
-            следующему принципу `_<тип сортировки>_sql_filter_`). Также такой метод должен принимать ряд параметров 
+            для определённого типа ('asc', 'desc'). Чтобы реализовать свою логику создания сортировка для
+            определённого оператора необходимо реализовать в классе поля методы (название метода строится по
+            следующему принципу `_<тип сортировки>_sql_filter_`). Также такой метод должен принимать ряд параметров
             * marshmallow_field - объект класса поля marshmallow
             * model_column - объект класса поля sqlalchemy
             """
@@ -191,7 +191,7 @@ class PostgreSqlJSONB(BasePlugin):
             У marshmallow field может быть реализована своя логика создания фильтра для sqlalchemy
             для определённого оператора. Чтобы реализовать свою логику создания фильтра для определённого оператора
             необходимо реализовать в классе поля методы (название метода строится по следующему принципу
-            `_<тип оператора>_sql_filter_`). Также такой метод должен принимать ряд параметров 
+            `_<тип оператора>_sql_filter_`). Также такой метод должен принимать ряд параметров
             * marshmallow_field - объект класса поля marshmallow
             * model_column - объект класса поля sqlalchemy
             * value - значения для фильтра
@@ -235,11 +235,8 @@ class PostgreSqlJSONB(BasePlugin):
             filter = (cast(extra_field, Boolean) == value)
 
         if property_type == list:
-            not_fun = lambda x: x
+            filter = model_column.op('->')(field_in_jsonb).op('?')(value[0] if is_seq_collection(value) else value)
             if operator in ['notin', 'notin_']:
-                not_fun = lambda x: not_(x)
-            filter = not_fun(
-                model_column.op('->')(field_in_jsonb).op('?')(value[0] if is_seq_collection(value) else value)
-            )
+                filter = not_(filter)
 
         return filter, []
