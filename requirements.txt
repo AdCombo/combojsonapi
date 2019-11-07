@@ -2,4 +2,4 @@ sqlalchemy
 marshmallow_jsonapi
 Flask>=1.0.2
 apispec>=2.0.2
--e git+ssh://git@git.serv-ac.com/adcombo/flask-rest-jsonapi.git@500bd129f4d7d8e39b6ee1fe3ecbb7bc06557927#egg=flask-rest-jsonapi
+-e git+ssh://git@git.serv-ac.com/adcombo/flask-rest-jsonapi.git@7d5678e9ed880dd10ff1e0d95adbc66a76d1a2dd#egg=flask-rest-jsonapi
