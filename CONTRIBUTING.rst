@@ -106,13 +106,14 @@ To learn more about rebasing in Git, there are a lot of `good`_
 Merging a PR (maintainers only)
 ===============================
 
-A PR can only be merged into master by a maintainer if:
+A PR can only be merged into master by a maintainer if it:
 
-* It is passing CI.
-* It has been approved by at least two maintainers. If it was a maintainer who
-  opened the PR, only one extra approval is needed.
-* It has no requested changes.
-* It is up to date with current master.
+* passes CI;
+* has been approved by at least two maintainers. If author is a maintainer who
+  opened the PR, only one extra approval is needed;
+* has no requested changes;
+* is up to date with current master;
+* has comments and commit messages written in English only.
 
 Any maintainer is allowed to merge a PR if all of these conditions are
 met.
