@@ -1,57 +1,46 @@
 EventPlugin
 -----------
 
-**EventPlugin** позволяет:
+**EventPlugin** makes possible to create an event API (RPC).
 
-1. Создать событийное API (RPC).
-2. Интегрируется с плагином **ApiSpecPlugin** позволяя создавать документацию для RPC и отображать
-   вместе с общей документацией. Описание view производится при помощи **yaml**.
-3. Интегрируется с плагином **PermissionPlugin**, можно из view получить доступ к ограничения по
-   любой модели. Также доступ к view ограничивается общими декораторами, которые задаются при
-   инициализации API.
+It integrates with **ApiSpecPlugin** to make RPC documentation which is displayed along with non-RPC documentation. Views are described in **yaml**.
 
-Работа с плагином
-~~~~~~~~~~~~~~~~~
-Чтобы создать RPC API связанного с какой-либо моделью, нужно:
+Also it integrates with **PermissionPlugin**, and view can access restrictions for every model. View is restricted with general decorators, which are set up when API gets initialized.
 
-1. Создать класс от :code:`combojsonapi.event.resource.EventsResource` ниже будет более
-   подробно сказано об этом.
-2. В ресурс менеджере появляется атриббут :code:`events` в нём нужно указать класс созданный в
-   первом пункте. Если укажите в ресурс менеджере :code:`ResourceDetail`, то в каждую view RPC API
-   будет приходить также id модели (которая указана в ресурс менеджере).
+How to use
+~~~~~~~~~~
+To create an RPC API for a model, do the following:
 
-Описание работы плагина
-"""""""""""""""""""""""
+1. Create a class from :code:`combojsonapi.event.resource.EventsResource`. We'll detail this later.
+2. Resource manager gets an :code:`events` attribute. There, specify a class you've just created. If you use a :code:`ResourceDetail` manager, every RPC API will receive model id specified in the resource manager.
 
-После того как создали класс, унаследованный от :code:`combojsonapi.event.resource.EventsResource`,
-любой метод в этом классе, который начинается с :code:`event_` будет считаться самостоятельным view.
-Адрес нового view будет формироваться в формате :code:`.../<url ресурс менеджера, к которому привязан
-данный класс с методами RPC API>/event_<название нашего метода, после event_>`.
-По умолчанию создаются POST ресурсы. Но можно создать GET ресурс, назвав метод :code:`event_get_something`.
-Также поддерживается :code:`event_post_something` - создастся POST ресурс.
+How plugin works
+""""""""""""""""
 
-**Другие методы и атрибуты Event класса не будут видны внутри view.**
+After you create a class inherited from :code:`combojsonapi.event.resource.EventsResource`,
+any method with name starting with :code:`event_` will be considered as a separate view.
+Its URL view will be: :code:`.../<url of the resource manager, which RPC API method class is attached to>/<method name: event_...`.
 
-Описания view
-"""""""""""""
+POST resources are created by default. You can make a GET resource, if you start the method's name with :code:`event_get_`. :code:`event_post_` is supported too, which would make a POST resource, again.
 
-1. Метод :code:`event[_опционально тип запроса]_<название метода>` должен принимать следующие параметры:
-    * :code:`id: int` [опционально] - id сущности модели. Если класс с данным view указан в ресурс менеджере
-      :code:`ResourceDetail`.
-    * :code:`_permission_user: PermissionUser = None` - пермишены для данного авторизованного
-      пользователя (при условии, что подключен плагин **PermissionPlugin**)
+**Other methods and attributes of the Event class won't be visible in a view.**
+
+How to describe a view
+""""""""""""""""""""""
+
+1. Method :code:`event[_post|get]_<method name>` accepts the following params:
+    * :code:`id: int` [optional] - model instance id, if this view's class is specified in :code:`ResourceDetail` resource manager.
+    * :code:`_permission_user: PermissionUser = None` - permissions for logged in user (if **PermissionPlugin** is used)
     * :code:`*args`
     * :code:`**kwargs`
-2. При описании ответов view используйте формат JSONAPI
-3. В начале метода нужно описать документацию к view на yaml, чтобы хорошо прошла интеграция с
-   плагином автодокументации **ApiSpecPlugin**
+2. Describe answers in JSON API format.
+3. Document the view in yaml in the method beginning, so **ApiSpecPlugin** could automatically populate the swagger page with event method description.
 
 
-Пример подключения плагина
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Plugin usage sample
+~~~~~~~~~~~~~~~~~~~
 
-Рассмотрим пример, когда нам нужно загрузить аватарку для пользователя. В примере также подключим
-плагин **ApiSpecPlugin**, чтобы посмотреть его в действие
+We want to upload a user avatar. We'll also load **ApiSpecPlugin**, so we watch it in action.
 
 .. code:: python
 
@@ -76,7 +65,7 @@ EventPlugin
     app.config['SQLALCHEMY_ECHO'] = True
     db = SQLAlchemy(app)
 
-    """Описание моделей"""
+    """Models description"""
 
     class User(db.Model):
         __tablename__ = 'users'
@@ -90,7 +79,7 @@ EventPlugin
 
     db.create_all()
 
-    """Описание схем моделей"""
+    """Models' schemas"""
 
     class UserSchema(Schema):
         class Meta:
@@ -106,7 +95,7 @@ EventPlugin
         url_avatar = fields.String()
         password = fields.String()
 
-    """Описание ресурс менеджеров для API"""
+    """Resource managers description for API"""
 
     class UserResourceDetailEvents(EventsResource):
         def event_update_avatar(self, *args, id: int = None, **kwargs):
@@ -171,7 +160,7 @@ EventPlugin
             'model': User,
         }
 
-    """Инициализация API"""
+    """Initializing the API"""
 
     app.config['OPENAPI_URL_PREFIX'] = '/api/swagger'
     app.config['OPENAPI_SWAGGER_UI_PATH'] = '/'
@@ -179,10 +168,10 @@ EventPlugin
 
     api_spec_plugin = ApiSpecPlugin(
         app=app,
-        # Объявляем список тегов и описаний для группировки api в группы (api можно не группировать в группы,
-        # в этом случае они будут группирваться автоматически по названию типов схем (type_))
+        # Declaring tags list with their descriptions, so API gets organized into groups. This is optional: when there's no tags,
+        # api will be grouped automatically by type schemas names (type_)
         tags={
-            'User': 'API для user'
+            'User': 'User API'
         }
     )
 

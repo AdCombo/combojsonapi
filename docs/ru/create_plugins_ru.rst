@@ -28,125 +28,125 @@ API для плагинов
 
     срабатывает перед инициализацией json_api
 
-    - :code:`app` - ссылка на объект приложения Flask
+    - :code:`app` - ссылка на объект приложения Flask.
 
 :code:`after_init_plugin(self, *args, app=None, **kwargs) -> None`
 
-    срабатывает после инициализацией json_api
+    срабатывает после инициализации json_api
 
-    - :code:`app` - ссылка на объект приложения Flask
+    - :code:`app` - ссылка на объект приложения Flask.
 
 :code:`before_route(self, resource: Union[ResourceList, ResourceDetail] = None, view=None, urls: Tuple[str] = None, self_json_api: Api = None, **kwargs) -> None:`
 
     Предобработка ресурс менеджеров до создания роутера
 
-    - :code:`resource` - ресурс менеджер
-    - :code:`view` - название ресурс менеджера
-    - :code:`urls` - список url, по которым будет доступен данный ресурс
-    - :code:`self_json_api` - ссылка на объект Api
+    - :code:`resource` - ресурс менеджер;
+    - :code:`view` - название ресурс менеджера;
+    - :code:`urls` - список url, по которым будет доступен данный ресурс;
+    - :code:`self_json_api` - ссылка на объект Api.
 
 :code:`after_route(self, resource: Union[ResourceList, ResourceDetail] = None, view=None, urls: Tuple[str] = None, self_json_api: Api = None, **kwargs) -> None:`
 
     Постобработка ресурс менеджеров после создания роутера
 
-    - :code:`resource` - ресурс менеджер
-    - :code:`view` - название ресурс менеджера
-    - :code:`urls` - список url, по которым будет доступен данный ресурс
-    - :code:`self_json_api` - ссылка на объект Api
+    - :code:`resource` - ресурс менеджер;
+    - :code:`view` - название ресурс менеджера;
+    - :code:`urls` - список url, по которым будет доступен данный ресурс;
+    - :code:`self_json_api` - ссылка на объект Api.
 
 :code:`after_init_schema_in_resource_list_post(self, *args, schema=None, model=None, **kwargs) -> None`
 
     Выполняется после инициализация marshmallow схемы в ResourceList.post
 
-    - :code:`schema` - схема, которая привязана к ресурсу для сериализации/десериализации
-    - :code:`model` - модель, которая привязана к ресурсу
+    - :code:`schema` - схема, которая привязана к ресурсу для сериализации/десериализации;
+    - :code:`model` - модель, которая привязана к ресурсу.
 
 :code:`after_init_schema_in_resource_list_get(self, *args, schema=None, model=None, **kwargs) -> None`
 
     Выполняется после инициализация marshmallow схемы в ResourceList.get
 
-    - :code:`schema` - схема, которая привязана к ресурсу для сериализации/десериализации
-    - :code:`model` - модель, которая привязана к ресурсу
+    - :code:`schema` - схема, которая привязана к ресурсу для сериализации/десериализации;
+    - :code:`model` - модель, которая привязана к ресурсу.
 
 :code:`after_init_schema_in_resource_detail_get(self, *args, schema=None, model=None, **kwargs) -> None`
 
     Выполняется после инициализация marshmallow схемы в ResourceDetail.get
 
-    - :code:`schema` - схема, которая привязана к ресурсу для сериализации/десериализации
-    - :code:`model` - модель, которая привязана к ресурсу
+    - :code:`schema` - схема, которая привязана к ресурсу для сериализации/десериализации;
+    - :code:`model` - модель, которая привязана к ресурсу.
 
 :code:`after_init_schema_in_resource_detail_patch(self, *args, schema=None, model=None, **kwargs) -> None`
 
     Выполняется после инициализация marshmallow схемы в ResourceDetail.patch
 
-    - :code:`schema` - схема, которая привязана к ресурсу для сериализации/десериализации
-    - :code:`model` - модель, которая привязана к ресурсу
+    - :code:`schema` - схема, которая привязана к ресурсу для сериализации/десериализации;
+    - :code:`model` - модель, которая привязана к ресурсу.
 
 :code:`data_layer_before_create_object(self, *args, data=None, view_kwargs=None, self_json_api=None, **kwargs) -> None`
 
     Выполняется после десериализации данных и до создания запроса к бд на создание нового объекта
 
-    - :code:`data` - десериализованнаые данные для создания объекта
-    - :code:`view_kwargs` - kwargs из ресурс менеджера
-    - :code:`self_json_api` - ссылка на объект Api
+    - :code:`data` - десериализованнаые данные для создания объекта;
+    - :code:`view_kwargs` - kwargs из ресурс менеджера;
+    - :code:`self_json_api` - ссылка на объект Api.
 
 :code:`data_layer_create_object_clean_data(self, *args, data: Dict = None, view_kwargs=None, join_fields: List[str] = None, self_json_api=None, **kwargs) -> Dict`
 
     Обрабатывает данные, которые пойдут непосредственно на создание нового объекта. Возвращает обновлённый набор
     данных для нового объекта
 
-    - :code:`Dict data` - данные, на основе которых будет создан новый объект
-    - :code:`view_kwargs` - kwargs из ресурс менеджера
-    - :code:`List[str] join_fields` - список полей, которые являются ссылками на другие модели
-    - :code:`self_json_api` - ссылка на объект Api
+    - :code:`Dict data` - данные, на основе которых будет создан новый объект;
+    - :code:`view_kwargs` - kwargs из ресурс менеджера;
+    - :code:`List[str] join_fields` - список полей, которые являются ссылками на другие модели;
+    - :code:`self_json_api` - ссылка на объект Api.
 
 :code:`data_layer_after_create_object(self, *args, data=None, view_kwargs=None, self_json_api=None, obj=None, **kwargs) -> None`
 
     Выполняется после создание нового объекта, но до сохранения в БД
 
-    - :code:`Dict data` - данные, на основе которого был создан новый объект
-    - :code:`view_kwargs` - kwargs из ресурс менеджера
-    - :code:`obj` - новый объект, созданный на основе данных data
-    - :code:`self_json_api` - ссылка на объект Api
+    - :code:`Dict data` - данные, на основе которого был создан новый объект;
+    - :code:`view_kwargs` - kwargs из ресурс менеджера;
+    - :code:`obj` - новый объект, созданный на основе данных data;
+    - :code:`self_json_api` - ссылка на объект Api.
 
 :code:`data_layer_get_object_update_query(self, *args, query: Query = None, qs: QueryStringManager = None, view_kwargs=None, self_json_api=None, **kwargs) -> Query`
 
     Во время создания запроса к БД на выгрузку объекта. Тут можно пропатчить запрос к БД. Возвращает пропатченный
     запрос к бд
 
-    - :code:`Query query` - сформированный запрос к БД
-    - :code:`QueryStringManager qs` - список параметров для запроса
-    - :code:`view_kwargs` - kwargs из ресурс менеджера
-    - :code:`self_json_api` - ссылка на объект Api
+    - :code:`Query query` - сформированный запрос к БД;
+    - :code:`QueryStringManager qs` - список параметров для запроса;
+    - :code:`view_kwargs` - kwargs из ресурс менеджера;
+    - :code:`self_json_api` - ссылка на объект Api.
 
 :code:`data_layer_get_collection_update_query(self, *args, query: Query = None, qs: QueryStringManager = None, view_kwargs=None, self_json_api=None, **kwargs) -> Query`
 
     Во время создания запроса к БД на выгрузку объектов. Тут можно пропатчить запрос к БД. Возвращает пропатченный
     запрос к бд
 
-    - :code:`Query query` - сформированный запрос к БД
-    - :code:`QueryStringManager qs` - список параметров для запроса
-    - :code:`view_kwargs` - kwargs из ресурс менеджера
-    - :code:`self_json_api` - ссылка на объект Api
+    - :code:`Query query` - сформированный запрос к БД;
+    - :code:`QueryStringManager qs` - список параметров для запроса;
+    - :code:`view_kwargs` - kwargs из ресурс менеджера;
+    - :code:`self_json_api` - ссылка на объект Api.
 
 :code:`data_layer_update_object_clean_data(self, *args, data: Dict = None, obj=None, view_kwargs=None, join_fields: List[str] = None, self_json_api=None, **kwargs) -> Dict`
 
     Обрабатывает данные, которые пойдут непосредственно на обновления объекта. Возвращает обновлённый набор данных
     для обновления объекта
 
-    - :code:`Dict data` - данные, на основе которых будет создан новый объект
-    - :code:`obj` - объект, который будет обновлён
-    - :code:`view_kwargs` - kwargs из ресурс менеджера
-    - :code:`self_json_api` - ссылка на объект Api
-    - :code:`List[str] join_fields` - список полей, которые являются ссылками на другие модели
+    - :code:`Dict data` - данные, которыми будет обновлён объект;
+    - :code:`obj` - редактируемый объект;
+    - :code:`view_kwargs` - kwargs из ресурс менеджера;
+    - :code:`self_json_api` - ссылка на объект Api;
+    - :code:`List[str] join_fields` - список полей, которые являются ссылками на другие модели.
 
 :code:`data_layer_delete_object_clean_data(self, *args, obj=None, view_kwargs=None, self_json_api=None, **kwargs) -> None`
 
     Выполняется до удаления объекта в БД
 
-    - :code:`obj` - удаляемый объект
-    - :code:`view_kwargs` - kwargs из ресурс менеджера
-    - :code:`self_json_api` - ссылка на объект Api
+    - :code:`obj` - удаляемый объект;
+    - :code:`view_kwargs` - kwargs из ресурс менеджера;
+    - :code:`self_json_api` - ссылка на объект Api.
 
 :code:`before_data_layers_filtering_alchemy_nested_resolve(self, self_nested: Any) -> None`
 
@@ -154,7 +154,7 @@ API для плагинов
     продолжиться работа функции resolve, если вернёт какое либо значения отличное от None, то функция resolve
     завершается, а результат hook функции передаётся дальше в стеке вызова
 
-    - :code:`self_nested` - instance Nested
+    - :code:`self_nested` - instance Nested.
 
 :code:`before_data_layers_sorting_alchemy_nested_resolve(self, self_nested: Any) -> None`
 
@@ -162,7 +162,7 @@ API для плагинов
     дальше продолжиться работа функции resolve, если вернёт какое либо значения отличное от None, То
     функция resolve завершается, а результат hook функции передаётся дальше в стеке вызова
 
-    - :code:`self_nested` - instance Nested
+    - :code:`self_nested` - instance Nested.
 
 Пример создания плагинов
 ~~~~~~~~~~~~~~~~~~~~~~~~
