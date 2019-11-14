@@ -23,14 +23,14 @@ from combojsonapi.permission.permission_system import PermissionUser, Permission
 
 def get_columns_for_query(model) -> List[str]:
     """
-    Получаем список название атрибутов в моделе, именно как они названы в моделе, т.е., если у нас вот так описано поле
-    _permissions = Column('permissions', JSONB, nullable=False), то в columns будет _permissions.
-    :param model: модель sqlalchemy
+    Getting list of attributes' names exactly like they're named in the model.
+    E. g. field _permissions = Column('permissions', JSONB, nullable=False), will get to columns as _permissions.
+    :param model: sqlalchemy model
     :return:
     """
     columns = []
     for key, value in model.__dict__.items():
-        # Оставляем только атрибуты Column
+        # Only Column attributes are retained
         if (isinstance(value, InstrumentedAttribute) or isinstance(value, Column)) \
                 and isinstance(getattr(value, 'prop'), ColumnProperty):
             columns.append(key)
@@ -59,7 +59,7 @@ class PermissionPlugin(BasePlugin):
                     self_json_api: Api = None,
                     **kwargs) -> None:
         """
-        Навешиваем декараторы (с инициализацией пермишенов) на роутеры
+        Putting up decorators (which initialize permissions) on routers
         :param resource:
         :param view:
         :param urls:
@@ -79,12 +79,13 @@ class PermissionPlugin(BasePlugin):
 
         for method in methods:
             self._permission_method(resource, method, self_json_api)
-            # Для Post запроса в ResourceDetail не нужны пермишены, они берутся из ResourceList,
-            # так как новый элемнт создаётся через ResourceList, а POST запросы в ResourceDetail
-            # могут быть связанны с собыйтиным api EventsResource. В собыйтином api безопасность ложится
-            # полностью на того кто разрабатывает его, также в любой момент можно обратиться к любому пермишену
-            # из любого собыйтиного api, так как ссылка на истанц PermissionUser (активный в контектсе данного
-            # api передаётся в kwargs['_permission_user']
+            # ResourceDetail doesn't require permissions for POST request, since they're provided by ResourceList,
+            # That's because new objects are created with ResourceList, and POST requests to to ResourceDetail
+            # might be linked to event-based API EventsResource.
+            #
+            # In event-based API no security features are provided, and they must be implemented solely by its developer.
+            # However, event-based API has access to any permission, since it a link to PermissionUser object (active, 
+            # in API context) is passed in kwargs['_permission_user']
 
         resource._permission_plugin_inited = True
 
@@ -92,7 +93,7 @@ class PermissionPlugin(BasePlugin):
     def _permission_method(cls, resource: Union[ResourceList, ResourceDetail],
                            type_method: str, self_json_api: Api) -> None:
         """
-        Обвешиваем ресурс декораторами с пермишенами, либо запрещаем першишен если он явно отключён
+        Decorating the resource with permissions methods, or forbidding access to a method if it's disabled
         :param Union[ResourceList, ResourceDetail] resource:
         :param str type_method:
         :param Api self_json_api:
@@ -131,7 +132,7 @@ class PermissionPlugin(BasePlugin):
     @classmethod
     def _permission_for_schema(cls, *args, schema=None, model=None, **kwargs):
         """
-        Навешиваем ограничения на схему
+        Adding permissions to a schema
         :param args:
         :param schema:
         :param model:
@@ -149,7 +150,7 @@ class PermissionPlugin(BasePlugin):
                 name_fields.append(i_name_field)
         only = getattr(schema, 'only')
         only = set(only) if only else set(name_fields)
-        # Оставляем поля только те, которые пользователь запросил через параметр fields[...]
+        # Leaving only fields requested by user in fields[...] parameter
         only &= set(name_fields)
         only = tuple(only)
         schema.fields = OrderedDict(**{name: val for name, val in schema.fields.items() if name in only})
@@ -158,8 +159,8 @@ class PermissionPlugin(BasePlugin):
 
         schema.only = only
 
-        # навешиваем ограничения на поля схемы, на которую указывает поле JSONB. Если
-        # ограничений нет, то выгружаем все поля
+        # Adding restrictions to fields of a schema, to which JSONB field points. If there's
+        # no restrictions, will return all fields
         for i_field_name, i_field in schema.fields.items():
             jsonb_only = permission_user.permission_for_get(model=model).columns_for_jsonb(i_field_name)
             if isinstance(i_field, fields.Nested) and \
@@ -170,7 +171,7 @@ class PermissionPlugin(BasePlugin):
 
         include_data = tuple(i_include for i_include in getattr(schema, 'include_data', []) if i_include in name_fields)
         setattr(schema, 'include_data', include_data)
-        # Выдераем из схем поля, которые пользователь не должен увидеть
+        # Removing fields user shouldn't access
         for i_include in getattr(schema, 'include_data', []):
             if i_include in schema.fields:
                 field = get_model_field(schema, i_include)
@@ -193,11 +194,11 @@ class PermissionPlugin(BasePlugin):
     def data_layer_create_object_clean_data(self, *args, data: Dict = None, view_kwargs=None,
                                             join_fields: List[str] = None, self_json_api=None, **kwargs):
         """
-        Обрабатывает данные, которые пойдут непосредственно на создание нового объекта
+        Parses input data and returns parsed data set, from which a new object will be created.
         :param args:
-        :param Dict data: Данные, на основе которых будет создан новый объект
+        :param Dict data: deserialized input data set
         :param view_kwargs:
-        :param List[str] join_fields: список полей, которые являются ссылками на другие модели
+        :param List[str] join_fields: fields which are linked to other models
         :param self_json_api:
         :param kwargs:
         :return:
@@ -208,72 +209,70 @@ class PermissionPlugin(BasePlugin):
     def data_layer_get_object_update_query(self, *args, query: Query = None, qs: QueryStringManager = None,
                                            view_kwargs=None, self_json_api=None, **kwargs) -> Query:
         """
-        Во время создания запроса к БД на выгрузку объекта. Тут можно пропатчить запрос к БД.
-        Навешиваем ограничения на запрос, чтобы не тянулись поля из БД, которые данному
-        пользователю не доступны. Также навешиваем фильтры, чтобы пользователь не смог увидеть
-        записи, которые ему не доступны
+        Called during database query creation for updating a single object. Query can be patched here, if needed.
+        Setting up restrictions so user won't access attributes and rows he is forbidden to view.
         :param args:
-        :param Query query: Сформированный запрос к БД
-        :param QueryStringManager qs: список параметров для запроса
-        :param view_kwargs: список фильтров для запроса
+        :param Query query: generated database query
+        :param QueryStringManager qs: query parameters list
+        :param view_kwargs: filters list for the query
         :param self_json_api:
         :param kwargs:
-        :return: возвращает пропатченный запрос к бд
+        :return: patched DB query
         """
         permission: PermissionUser = self._get_permission_user(view_kwargs)
         permission_for_get: PermissionForGet = permission.permission_for_get(self_json_api.model)
 
-        # Навешиваем фильтры (например пользователь не должен видеть некоторые поля)
+        # Setting up filters (e. g. user is restricted to view some rows)
         for i_join in permission_for_get.joins:
             query = query.join(*i_join)
         query = query.filter(*permission_for_get.filters)
 
-        # Навешиваем ограничения по атрибутам (которые доступны & которые запросил пользователь)
+        # Setting up restrictions for attributes: accessible & requested by user)
         name_columns = permission_for_get.columns
         user_requested_columns = qs.fields.get(self_json_api.resource.schema.Meta.type_)
         if user_requested_columns:
             name_columns = list(set(name_columns) & set(user_requested_columns))
-        # Убираем relationship поля
+        # Removing relationship fields
         name_columns = [i_name for i_name in name_columns if i_name in self_json_api.model.__table__.columns.keys()]
 
         query = query.options(load_only(*name_columns))
         query = self._eagerload_includes(query, qs, permission, self_json_api=self_json_api)
 
-        # Запретим использовать стандартную функцию eagerload_includes для присоединения сторонних молелей
+        # Disable default eagerload_includes method for attaching additional models
         self_json_api.eagerload_includes = lambda x, y: x
         return query
 
     def data_layer_get_collection_update_query(self, *args, query: Query = None, qs: QueryStringManager = None,
                                                view_kwargs=None, self_json_api=None, **kwargs) -> Query:
         """
-        Во время создания запроса к БД на выгрузку объектов. Тут можно пропатчить запрос к БД
+        Called during database query creation for updating multiple objects. Query can be patched here, if needed.
         :param args:
-        :param Query query: Сформированный запрос к БД
-        :param QueryStringManager qs: список параметров для запроса
-        :param view_kwargs: список фильтров для запроса
+        :param Query query: database query
+        :param QueryStringManager qs: query parameters list
+        :param view_kwargs: filters list for the query
         :param self_json_api:
         :param kwargs:
-        :return: возвращает пропатченный запрос к бд
+        :return: patched DB query
         """
         permission: PermissionUser = self._get_permission_user(view_kwargs)
         permission_for_get: PermissionForGet = permission.permission_for_get(self_json_api.model)
 
-        # Навешиваем фильтры (например пользователь не должен видеть некоторые поля)
+        # Setting up filters (e. g. user is restricted to view some rows)
         for i_join in permission_for_get.joins:
             query = query.join(*i_join)
         query = query.filter(*permission_for_get.filters)
 
-        # Навешиваем ограничения по атрибутам (которые доступны & которые запросил пользователь)
+        # Setting up restrictions for attributes: accessible & requested by user)
         name_columns = permission_for_get.columns
         user_requested_columns = qs.fields.get(self_json_api.resource.schema.Meta.type_)
         if user_requested_columns:
             name_columns = list(set(name_columns) & set(user_requested_columns))
-        # Убираем relationship поля
+        # Removing relationship fields
         name_columns = list(set(name_columns) & set(get_columns_for_query(self_json_api.model)))
 
         query = query.options(load_only(*name_columns))
 
-        # Запретим использовать стандартную функцию eagerload_includes для присоединения сторонних молелей
+        # Disable default eagerload_includes method for attaching additional models
         setattr(self_json_api, 'eagerload_includes', False)
         query = self._eagerload_includes(query, qs, permission, self_json_api=self_json_api)
         return query
@@ -281,15 +280,15 @@ class PermissionPlugin(BasePlugin):
     def data_layer_update_object_clean_data(self, *args, data: Dict = None, obj=None, view_kwargs=None,
                                             join_fields: List[str] = None, self_json_api=None, **kwargs) -> Dict:
         """
-        Обрабатывает данные, которые пойдут непосредственно на обновления объекта
+        Parses data for the object to be updated.
         :param args:
-        :param Dict data: Данные, на основе которых будет создан новый объект
-        :param obj: Объект, который будет обновлён
+        :param Dict data: generated database query;
+        :param obj: query parameters list;
         :param view_kwargs:
-        :param List[str] join_fields: список полей, которые являются ссылками на другие модели
+        :param List[str] join_fields: link to Api instance.
         :param self_json_api:
         :param kwargs:
-        :return: возвращает обновлённый набор данных для нового объекта
+        :return: parsed data set
         """
         permission: PermissionUser = self._get_permission_user(view_kwargs)
         clean_data = permission.permission_for_patch_data(model=self_json_api.model, data=data, obj=obj,
@@ -298,11 +297,11 @@ class PermissionPlugin(BasePlugin):
 
     def data_layer_delete_object_clean_data(self, *args, obj=None, view_kwargs=None, self_json_api=None, **kwargs) -> None:
         """
-        Выполняется до удаления объекта в БД
+        Called before deleting object from the database.
         :param args:
-        :param obj: удаляемый объект
+        :param obj: object to delete;
         :param view_kwargs:
-        :param self_json_api:
+        :param self_json_api: link to Api instance.
         :param kwargs:
         :return:
         """
@@ -319,9 +318,9 @@ class PermissionPlugin(BasePlugin):
     @classmethod
     def _get_model(cls, model, name_foreign_key: str) -> str:
         """
-        Возвращает модель, на которую указывает "внешний ключ"
-        :param model: модель, из которой взят "внешний ключ" name_foreign_key
-        :param str name_foreign_key: "внешний ключ", например "manager_id" или "manager_id.group_id"
+        Returns a model to which "foreign key" point
+        :param model: model, from which "foreign key" name_foreign_key is taken
+        :param str name_foreign_key: "foreign key" itself, e. g. "manager_id" or "manager_id.group_id"
         :return:
         """
         mapper = model
@@ -329,17 +328,17 @@ class PermissionPlugin(BasePlugin):
             mapper_old = mapper
             mapper = getattr(mapper_old, i_name_foreign_key, None)
             if mapper is None:
-                # Внешний ключ должен присутствовать в маппере
-                raise ValueError('Not foreign ket %s in mapper %s' % (i_name_foreign_key, mapper_old.__name__))
+                # Foreign key must be in the mapper
+                raise ValueError('Not foreign key %s in mapper %s' % (i_name_foreign_key, mapper_old.__name__))
             mapper = mapper.mapper.class_
         return mapper
 
     @classmethod
     def _is_access_foreign_key(cls, name_foreign_key: str, model, permission: PermissionUser = None) -> bool:
         """
-        Проверяет есть ли доступ к данному внешнему ключу
-        :param name_foreign_key: название внешнего ключа, например "manager_id" или "manager_id.group_id"
-        :param model: маппер, с которого начинается проверка внешнего ключа name_foreign_key
+        Checks if foreign key is accessible
+        :param name_foreign_key: foreign key name, e. g. "manager_id" or "manager_id.group_id"
+        :param model: model from which name_foreign_key check begins
         :return:
         """
         permission_for_get: PermissionForGet = permission.permission_for_get(model)
@@ -352,11 +351,11 @@ class PermissionPlugin(BasePlugin):
     def _update_qs_fields(cls, type_schema: str, fields: List[str], qs: QueryStringManager = None,
                           name_foreign_key: str = None) -> None:
         """
-        Обновляем fields в qs для работы схемы (чтобы она не обращалась к полям, которые не доступны пользователю)
-        :param str type_schema: название типа схемы Meta.type_
-        :param List[str] fields: список доступных полей
-        :param QueryStringManager qs: параметры из get запроса
-        :param str name_foreign_key: название поля в схеме, которое ссылается на схему type_schema
+        Updates qs fields for the schema to work, so it doesn't access restricted fields
+        :param str type_schema: Schema type Meta.type_ name
+        :param List[str] fields: allowed fields list
+        :param QueryStringManager qs: GET request params
+        :param str name_foreign_key: schema field name linking to schema type_schema
         :return:
         """
         old_fields = qs._get_key_values('fields')
@@ -376,20 +375,19 @@ class PermissionPlugin(BasePlugin):
     def _get_access_fields_in_schema(cls, name_foreign_key: str, cls_schema, permission: PermissionUser = None,
                                      model=None, qs: QueryStringManager = None) -> List[str]:
         """
-        Получаем список названий полей, которые доступны пользователю и есть в схеме
-        :param name_foreign_key: название "внешнего ключа"
-        :param cls_schema: класс со схемой
-        :param PermissionUser permission: пермишены для пользователя
+        Get list of schema field names accessible to the user
+        :param name_foreign_key: "foreign key" name
+        :param cls_schema: schema class
+        :param PermissionUser permission: user permissions
         :param model:
         :return:
         """
-        # Вытаскиваем модель на которую ссылается "внешний ключ", чтобы получить ограничения на неё
-        # для данного пользователя
+        # Exctracting model to which "foreign key" links, to get restrictions for the current user
         field_foreign_key = get_model_field(cls_schema, name_foreign_key)
         mapper = cls._get_model(model, field_foreign_key)
         current_schema = cls._get_schema(cls_schema, name_foreign_key)
         permission_for_get: PermissionForGet = permission.permission_for_get(mapper)
-        # ограничиваем выгрузку полей в соответствие с пермишенами
+        # Restricting fields according to permissions
         name_columns = []
         if permission_for_get.columns is not None:
             name_columns = list(set(current_schema._declared_fields.keys()) & permission_for_get.columns)
@@ -399,9 +397,9 @@ class PermissionPlugin(BasePlugin):
     @classmethod
     def _get_schema(cls, current_schema: SchemaABC, obj: str):
         """
-        Получаем схему на которую ссылается Nested
-        :param current_schema: схема изначальная
-        :param obj: поле в current_schema
+        Get the schema Nested links to
+        :param current_schema: initial schema
+        :param obj: field in the current_schema
         :return:
         """
         related_schema_cls = get_related_schema(current_schema, obj)
@@ -415,13 +413,13 @@ class PermissionPlugin(BasePlugin):
 
     @classmethod
     def _eagerload_includes(cls, query, qs, permission: PermissionUser = None, self_json_api=None):
-        """Переопределил и доработал функцию eagerload_includes в SqlalchemyDataLayer, с целью навешать ограничение (для данного
-        пермишена) на выдачу полей из БД для модели, на которую ссылается relationship
+        """Redefined and improved eagerload_includes method of SqlalchemyDataLayer class, so it restricts (per passed permission)
+        which fields of a model, to which foreign key links, are returned from database
         Use eagerload feature of sqlalchemy to optimize data retrieval for include querystring parameter
 
         :param Query query: sqlalchemy queryset
         :param QueryStringManager qs: a querystring manager to retrieve information from url
-        :param PermissionUser permission: пермишены для пользователя
+        :param PermissionUser permission: user permissions
         :param self_json_api:
         :return Query: the query with includes eagerloaded
         """
@@ -437,7 +435,7 @@ class PermissionPlugin(BasePlugin):
                     except Exception as e:
                         raise InvalidInclude(str(e))
 
-                    # Возможно пользовать неимеет доступа, к данному внешнему ключу
+                    # User might not have access to this external key
                     if cls._is_access_foreign_key(obj, model, permission) is False:
                         continue
 
@@ -446,13 +444,13 @@ class PermissionPlugin(BasePlugin):
                     else:
                         joinload_object = joinload_object.joinedload(getattr(model, field))
 
-                    # ограничиваем список полей (которые доступны & которые запросил пользователь)
+                    # Restricting fields liks (accessible to & requested by a user)
                     name_columns = cls._get_access_fields_in_schema(obj, current_schema, permission, model=model, qs=qs)
                     current_schema = cls._get_schema(current_schema, obj)
                     user_requested_columns = qs.fields.get(current_schema.Meta.type_)
                     if user_requested_columns:
                         name_columns = set(name_columns) & set(user_requested_columns)
-                    # Убираем relationship поля
+                    # Removing relationship fields
                     name_columns = (
                         set(name_columns) & set(get_columns_for_query(joinload_object.path[i].property.mapper.class_))
                     )
@@ -460,7 +458,7 @@ class PermissionPlugin(BasePlugin):
                     joinload_object.load_only(*list(name_columns))
 
                     try:
-                        # Нужный внешний ключ может отсутствовать
+                        # Requested external key might not exist
                         model = cls._get_model(model, field)
                     except ValueError as e:
                         raise InvalidInclude(str(e))
@@ -471,20 +469,20 @@ class PermissionPlugin(BasePlugin):
                 except Exception as e:
                     raise InvalidInclude(str(e))
 
-                # Возможно пользовать неимеет доступа, к данному внешнему ключу
+                # User might not have access to this external key
                 if cls._is_access_foreign_key(include, self_json_api.model, permission) is False:
                     continue
 
                 joinload_object = joinedload(getattr(self_json_api.model, field))
 
-                # ограничиваем список полей (которые доступны & которые запросил пользователь)
+                # Restricting fields liks (accessible to & requested by a user)
                 name_columns = cls._get_access_fields_in_schema(include, self_json_api.resource.schema, permission,
                                                                 model=self_json_api.model, qs=qs)
                 related_schema_cls = get_related_schema(self_json_api.resource.schema, include)
                 user_requested_columns = qs.fields.get(related_schema_cls.Meta.type_)
                 if user_requested_columns:
                     name_columns = set(name_columns) & set(user_requested_columns)
-                # Убираем relationship поля
+                # Removing relationship fields
                 name_columns = (
                     set(name_columns) & set(get_columns_for_query(joinload_object.path[0].property.mapper.class_))
                 )
