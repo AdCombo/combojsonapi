@@ -158,18 +158,20 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
         }
 
     def __get_parameters_for_include_models(self, resource) -> dict:
-        models_for_include = ','.join([
-                i_field_name
-                for i_field_name, i_field in resource.schema._declared_fields.items()
-                if isinstance(i_field, Relationship)
-            ])
+        fields_names = [
+            i_field_name
+            for i_field_name, i_field in resource.schema._declared_fields.items()
+            if isinstance(i_field, Relationship)
+        ]
+        models_for_include = ','.join(fields_names)
+        example_models_for_include = '\n'.join([f'`{f}`' for f in fields_names])
         return {
             'default': models_for_include,
             'name': 'include',
             'in': 'query',
             'format': 'string',
             'required': False,
-            'description': f'Related relationships to include. For example: {models_for_include}',
+            'description': f'Related relationships to include.\nAvailable:\n{example_models_for_include}',
         }
 
     def __get_parameters_for_sparse_fieldsets(self, resource, description) -> dict:
