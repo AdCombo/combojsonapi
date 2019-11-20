@@ -1,6 +1,9 @@
 """API specification using Open API"""
 
-import json
+try:
+    import simplejson as json
+except ImportError:
+    import json
 
 import flask
 from flask import current_app
