@@ -230,14 +230,16 @@ class PermissionPlugin(BasePlugin):
 
         # Навешиваем ограничения по атрибутам (которые доступны & которые запросил пользователь)
         name_columns = permission_for_get.columns
-        user_requested_columns = qs.fields.get(self_json_api.resource.schema.Meta.type_)
-        if user_requested_columns:
-            name_columns = list(set(name_columns) & set(user_requested_columns))
+        if qs:
+            user_requested_columns = qs.fields.get(self_json_api.resource.schema.Meta.type_)
+            if user_requested_columns:
+                name_columns = list(set(name_columns) & set(user_requested_columns))
         # Убираем relationship поля
         name_columns = [i_name for i_name in name_columns if i_name in self_json_api.model.__table__.columns.keys()]
 
         query = query.options(load_only(*name_columns))
-        query = self._eagerload_includes(query, qs, permission, self_json_api=self_json_api)
+        if qs:
+            query = self._eagerload_includes(query, qs, permission, self_json_api=self_json_api)
 
         # Запретим использовать стандартную функцию eagerload_includes для присоединения сторонних молелей
         self_json_api.eagerload_includes = lambda x, y: x
