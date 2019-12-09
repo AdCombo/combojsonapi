@@ -1,5 +1,5 @@
-EventPlugin
------------
+EventPlugin (`EN`_ | `RU`_)
+---------------------------
 
 **EventPlugin** makes possible to create an event API (RPC).
 
@@ -192,3 +192,6 @@ We want to upload a user avatar. We'll also load **ApiSpecPlugin**, so we watch 
             db.session.add(u)
         db.session.commit()
         app.run(port='9999')
+
+.. _`EN`: https://github.com/AdCombo/ComboJSONAPI/docs/en/event_plugin.rst
+.. _`RU`: https://github.com/AdCombo/ComboJSONAPI/docs/ru/event_plugin.rst

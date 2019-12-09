@@ -1,5 +1,5 @@
-Плагинам PostgreSqlJSONB
-------------------------
+Плагинам PostgreSqlJSONB (`EN`_ | `RU`_)
+----------------------------------------
 
 **PostgreSqlJSONB** plugins features:
 
@@ -151,3 +151,6 @@ Request all users aged 18 and up with a complex filter, ordered by age desc, the
 
 .. code::
     /api/user/?filter=[{"name":"settings.age","op": "gt","val": "18"}]&sort=-settings.age,name
+
+.. _`EN`: https://github.com/AdCombo/ComboJSONAPI/docs/en/postgresql_jsonb.rst
+.. _`RU`: https://github.com/AdCombo/ComboJSONAPI/docs/ru/postgresql_jsonb.rst

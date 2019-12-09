@@ -1,5 +1,5 @@
-Permission
-----------
+Permission (`EN`_ | `RU`_)
+--------------------------
 
 **Permission** plugin enables features:
 
@@ -243,3 +243,6 @@ Usage Sample
             PermissionPlugin(),
         ]
     )
+
+.. _`EN`: https://github.com/AdCombo/ComboJSONAPI/docs/en/permission_plugin.rst
+.. _`RU`: https://github.com/AdCombo/ComboJSONAPI/docs/ru/permission_plugin.rst

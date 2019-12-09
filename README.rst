@@ -1,5 +1,7 @@
+ComboJSONAPI
+============
 ComboJSONAPI - это набор плагинов для библиотеки `Flask-REST-JSONAPI <https://flask-rest-jsonapi.readthedocs.io/en/latest/quickstart.html>`_
-============================================================================================================================================
+
 1. Плагин **Permission** позволяющий создавать различные системы доступа к моделям и полям на выгрузку/создание/изменение/удаление (`Документация для Permission <docs/permission_plugin.rst>`_)
 2. Плагин **ApiSpecPlugin** позволяющий генерировать упрощённую автодокументацию для JSONAPI (`Документация для ApiSpecPlugin <docs/api_spec_plugin.rst>`_)
 3. Плагин **RestfulPlugin** для библиотеки apispec внутри плагина **ApiSpecPlugin** способствующий описанию параметров в get запросах при помощью схем marshmallow (`Документация для RestfulPlugin <docs/restful_plugin.rst>`_)

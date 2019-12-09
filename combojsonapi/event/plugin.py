@@ -17,8 +17,8 @@ class EventSchema(Schema):
 
 class EventPlugin(BasePlugin):
     """Plugin for events routes in json_api"""
-
-    def _events_with_methods(self, cls_events) -> Generator[Tuple[Any, str], None, None]:
+    @classmethod
+    def _events_with_methods(cls, cls_events) -> Generator[Tuple[Any, str], None, None]:
         """
         Separates events by methods and returns them in pairs
         Like (event_get_enum, 'GET"), (event_post_data, 'POST'), ... etc
@@ -35,7 +35,8 @@ class EventPlugin(BasePlugin):
             if method is not None:
                 yield getattr(cls_events, attr_name), method
 
-    def _create_event_resource(self, base_resource, event, method, view, urls, self_json_api, **kwargs):
+    @classmethod
+    def _create_event_resource(cls, base_resource, event, method, view, urls, self_json_api, **kwargs):
         # noinspection PyTypeChecker
         new_resource: Resource = type(event.__name__, (base_resource,), {
             'methods': [method],

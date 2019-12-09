@@ -1,5 +1,5 @@
-Работа с плагинами
-------------------
+Работа с плагинами (`EN`_ | `RU`_)
+----------------------------------
 
 Подключение плагинов
 ~~~~~~~~~~~~~~~~~~~~
@@ -277,3 +277,7 @@ API для плагинов
             db.session.add(u)
         db.session.commit()
         app.run(use_reloader=True)
+
+
+.. _`EN`: https://github.com/AdCombo/ComboJSONAPI/docs/en/create_plugins.rst
+.. _`RU`: https://github.com/AdCombo/ComboJSONAPI/docs/ru/create_plugins.rst
