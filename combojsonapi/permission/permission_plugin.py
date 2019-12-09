@@ -129,7 +129,7 @@ class PermissionPlugin(BasePlugin):
         raise BadRequest('No method')
 
     @classmethod
-    def _permission_for_schema(cls, *args, schema=None, model=None, **kwargs):
+    def _permission_for_schema(cls, *args, schema=None, model=None, _relationship_field_name=None, **kwargs):
         """
         Навешиваем ограничения на схему
         :param args:
@@ -138,14 +138,21 @@ class PermissionPlugin(BasePlugin):
         :param kwargs:
         :return:
         """
-        pass
         permission_user: PermissionUser = kwargs.get('_permission_user')
         if permission_user is None:
             raise Exception("No permission for user")
         name_fields = []
+
+        permission_column = permission_user.permission_for_get(model=model).columns
+        # Для присоединённых моделей может быть свои ограничения, например у User мы выгружаем (id, name, parent),
+        # где parent ссылается на модель User, но у неё мы хотим отдавать только id, поэтому в пермишенах мы указываем
+        # id, name, parent, parent.id. Если не указать parent.id, то parent выгрузится с теми же полями что user
+        if _relationship_field_name is not None:
+            _column = permission_user.permission_for_get(model=model).columns_for_jsonb(_relationship_field_name)
+            permission_column = _column if _column else permission_column
+
         for i_name_field, i_field in schema.declared_fields.items():
-            if isinstance(i_field, Relationship) \
-                    or i_name_field in permission_user.permission_for_get(model=model).columns:
+            if isinstance(i_field, Relationship) or i_name_field in permission_column:
                 name_fields.append(i_name_field)
         only = getattr(schema, 'only')
         only = set(only) if only else set(name_fields)
@@ -176,7 +183,7 @@ class PermissionPlugin(BasePlugin):
                 field = get_model_field(schema, i_include)
                 i_model = cls._get_model(model, field)
                 cls._permission_for_schema(schema=schema.declared_fields[i_include].__dict__['_Relationship__schema'],
-                                           model=i_model, **kwargs)
+                                           model=i_model, _relationship_field_name=i_include, **kwargs)
 
     def after_init_schema_in_resource_list_post(self, *args, schema=None, model=None, **kwargs):
         self._permission_for_schema(self, *args, schema=schema, model=model, **kwargs)
