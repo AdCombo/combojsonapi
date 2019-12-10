@@ -174,6 +174,7 @@ class PermissionPlugin(BasePlugin):
                     jsonb_only is not None:
                 i_field.schema.only = tuple(jsonb_only)
                 i_field.schema.fields = OrderedDict(**{name: val for name, val in i_field.schema.fields.items() if name in jsonb_only})
+                i_field.schema.dump_fields = OrderedDict(**{name: val for name, val in i_field.schema.fields.items() if name in jsonb_only})
 
         include_data = tuple(i_include for i_include in getattr(schema, 'include_data', []) if i_include in name_fields)
         setattr(schema, 'include_data', include_data)
