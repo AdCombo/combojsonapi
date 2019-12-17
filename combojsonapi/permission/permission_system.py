@@ -88,7 +88,8 @@ class PermissionFields:
         :param name_col_jsonb: название поля, которое является JSONB в БД
         :return:
         """
-        columns = deepcopy(self._allow_columns)
+        columns: Dict[str, int] = self._allow_columns
+
         for i_name, i_weight in self._forbidden_columns.items():
             if i_name in columns and columns[i_name] < i_weight:
                 del columns[i_name]
@@ -103,7 +104,7 @@ class PermissionFields:
             col_jsonb = i_col.split(SPLIT_REL)
             if col_jsonb[0] not in jsonb_columns_list_allow:
                 jsonb_columns_list_allow[col_jsonb[0]] = []
-            jsonb_columns_list_allow[col_jsonb[0]].append(col_jsonb[1])
+            jsonb_columns_list_allow[col_jsonb[0]].append('.'.join(col_jsonb[1:]))
 
         return jsonb_columns_list_allow.get(name_col_jsonb)
 
@@ -119,6 +120,15 @@ class PermissionFields:
             if SPLIT_REL not in i_name:
                 not_jsonb_columns[i_name] = i_weight
         return set(not_jsonb_columns.keys())
+
+    @property
+    def columns_and_jsonb_columns(self) -> Set[str]:
+        """Список столбцов указанных в пермишен кейсах, с которыми пользователь может что-либо делать"""
+        columns = deepcopy(self._allow_columns)
+        for i_name, i_weight in self._forbidden_columns.items():
+            if i_name in columns and columns[i_name] < i_weight:
+                del columns[i_name]
+        return set(columns.keys())
 
     def __add__(self, other):
         for i_name, i_weight in other._allow_columns.items():

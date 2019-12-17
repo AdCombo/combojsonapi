@@ -1,6 +1,6 @@
 from collections import OrderedDict
 from functools import wraps
-from typing import Union, Tuple, List, Dict
+from typing import Union, Tuple, List, Dict, Optional, Set
 
 from werkzeug.datastructures import ImmutableMultiDict
 from marshmallow import class_registry, fields
@@ -129,7 +129,98 @@ class PermissionPlugin(BasePlugin):
         raise BadRequest('No method')
 
     @classmethod
-    def _permission_for_schema(cls, *args, schema=None, model=None, _relationship_field_name=None, **kwargs):
+    def _permission_for_link_schema(cls, *args, schema=None, model=None, prefix_name_column: str = '',
+                                    columns: Optional[Union[List[str], Set[str]]] = None,
+                                    is_nested: bool = False, **kwargs):
+        """
+        Навешиваем ограничения на схему, на которую ссылается поле
+        :param args:
+        :param schema:
+        :param model:
+        :param prefix_name_column: обрабатывать колонки, с которыми можно работать
+        :param columns:
+        :param is_nested: тип связи nested или relationship?
+        :param kwargs:
+        :return:
+        """
+        if not columns:
+            return
+        # уровень вложенности
+        nesting_size_prefix_column: int = len(prefix_name_column.split('.')) if prefix_name_column else 0
+
+        permission_column: List[str] = []
+        _prefix = f'{prefix_name_column}.' if prefix_name_column else ''
+        for i_column in columns:
+            if i_column.startswith(_prefix) and i_column != prefix_name_column:
+                i_name = i_column.split('.')[nesting_size_prefix_column:]
+                permission_column.append(i_name[0])
+        permission_column = list(set(permission_column))
+
+        # если не нашли ни одного разрешённого атрибута, значит все атрибуты доступны (иначе не нужно разрешать
+        # выгружать в принципе схему)
+        if not permission_column:
+            return
+
+        name_fields = []
+        for i_name_field, i_field in schema.declared_fields.items():
+            if i_name_field in permission_column:
+                name_fields.append(i_name_field)
+
+        only = getattr(schema, 'only')
+        only = set(only) if only else set(name_fields)
+        # Оставляем поля только те, которые пользователь запросил через параметр fields[...]
+        only &= set(name_fields)
+        only = tuple(only)
+        schema.fields = OrderedDict(**{name: val for name, val in schema.fields.items() if name in only})
+        schema.dump_fields = OrderedDict(**{name: val for name, val in schema.fields.items() if name in only})
+
+        schema.only = only
+
+        include_data = tuple(i_include for i_include in getattr(schema, 'include_data', []) if i_include in name_fields)
+        setattr(schema, 'include_data', include_data)
+
+        # навешиваем ограничения на поля схемы, на которую указывает поле JSONB. Если
+        # ограничений нет, то выгружаем все поля
+        for i_field_name, i_field in schema.fields.items():
+            if i_field_name in permission_column and isinstance(i_field, fields.Nested) and not isinstance(i_field, Relationship):
+                i_schema = i_field.schema
+                if isinstance(i_schema, SchemaABC):
+                    cls_schema = type(i_schema)
+                else:
+                    cls_schema = i_schema
+                context = getattr(i_field.parent, "context", {})
+                i_schema = cls_schema(
+                    many=i_field.many,
+                    only=i_field.only,
+                    exclude=i_field.exclude,
+                    context=context,
+                    load_only=i_field._nested_normalized_option("load_only"),
+                    dump_only=i_field._nested_normalized_option("dump_only"),
+                )
+                i_field._schema = i_schema
+                cls._permission_for_link_schema(
+                    schema=i_schema,
+                    prefix_name_column=f'{prefix_name_column}.{i_field_name}' if prefix_name_column else i_field_name,
+                    columns=columns,
+                    is_nested=True,
+                    **kwargs
+                )
+        if not is_nested:
+            # Выдераем из схем поля, которые пользователь не должен увидеть
+            for i_include in getattr(schema, 'include_data', []):
+                if i_include in schema.fields:
+                    field = get_model_field(schema, i_include)
+                    i_model = cls._get_model(model, field)
+                    cls._permission_for_link_schema(
+                        schema=schema.declared_fields[i_include].__dict__['_Relationship__schema'],
+                        model=i_model,
+                        prefix_name_column=f'{prefix_name_column}.{i_include}' if prefix_name_column else i_include,
+                        columns=columns,
+                        **kwargs
+                    )
+
+    @classmethod
+    def _permission_for_schema(cls, *args, schema=None, model=None, **kwargs):
         """
         Навешиваем ограничения на схему
         :param args:
@@ -141,50 +232,15 @@ class PermissionPlugin(BasePlugin):
         permission_user: PermissionUser = kwargs.get('_permission_user')
         if permission_user is None:
             raise Exception("No permission for user")
-        name_fields = []
 
-        permission_column = permission_user.permission_for_get(model=model).columns
-        # Для присоединённых моделей может быть свои ограничения, например у User мы выгружаем (id, name, parent),
-        # где parent ссылается на модель User, но у неё мы хотим отдавать только id, поэтому в пермишенах мы указываем
-        # id, name, parent, parent.id. Если не указать parent.id, то parent выгрузится с теми же полями что user
-        if _relationship_field_name is not None:
-            _column = permission_user.permission_for_get(model=model).columns_for_jsonb(_relationship_field_name)
-            permission_column = _column if _column else permission_column
-
-        for i_name_field, i_field in schema.declared_fields.items():
-            if isinstance(i_field, Relationship) or i_name_field in permission_column:
-                name_fields.append(i_name_field)
-        only = getattr(schema, 'only')
-        only = set(only) if only else set(name_fields)
-        # Оставляем поля только те, которые пользователь запросил через параметр fields[...]
-        only &= set(name_fields)
-        only = tuple(only)
-        schema.fields = OrderedDict(**{name: val for name, val in schema.fields.items() if name in only})
-        schema.fields = OrderedDict(**{name: val for name, val in schema.fields.items() if name in only})
-        schema.dump_fields = OrderedDict(**{name: val for name, val in schema.fields.items() if name in only})
-
-        schema.only = only
-
-        # навешиваем ограничения на поля схемы, на которую указывает поле JSONB. Если
-        # ограничений нет, то выгружаем все поля
-        for i_field_name, i_field in schema.fields.items():
-            jsonb_only = permission_user.permission_for_get(model=model).columns_for_jsonb(i_field_name)
-            if isinstance(i_field, fields.Nested) and \
-                    getattr(getattr(i_field.schema, 'Meta', object), 'filtering', False) and \
-                    jsonb_only is not None:
-                i_field.schema.only = tuple(jsonb_only)
-                i_field.schema.fields = OrderedDict(**{name: val for name, val in i_field.schema.fields.items() if name in jsonb_only})
-                i_field.schema.dump_fields = OrderedDict(**{name: val for name, val in i_field.schema.fields.items() if name in jsonb_only})
-
-        include_data = tuple(i_include for i_include in getattr(schema, 'include_data', []) if i_include in name_fields)
-        setattr(schema, 'include_data', include_data)
-        # Выдераем из схем поля, которые пользователь не должен увидеть
-        for i_include in getattr(schema, 'include_data', []):
-            if i_include in schema.fields:
-                field = get_model_field(schema, i_include)
-                i_model = cls._get_model(model, field)
-                cls._permission_for_schema(schema=schema.declared_fields[i_include].__dict__['_Relationship__schema'],
-                                           model=i_model, _relationship_field_name=i_include, **kwargs)
+        permission_column: Set[str] = permission_user.permission_for_get(model=model).columns_and_jsonb_columns
+        cls._permission_for_link_schema(
+            schema=schema,
+            model=model,
+            prefix_name_column='',
+            columns=permission_column,
+            **kwargs
+        )
 
     def after_init_schema_in_resource_list_post(self, *args, schema=None, model=None, **kwargs):
         self._permission_for_schema(self, *args, schema=schema, model=model, **kwargs)
