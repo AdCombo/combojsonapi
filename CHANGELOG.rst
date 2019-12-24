@@ -23,7 +23,6 @@ Bug Fixes
 * Fix permission plugin initialization #- `@Suren Khorenyan`_
 * Constant splitter for filters, sorts and includes #- `@Suren Khorenyan`_
 * Configure setup, update .gitignore #- `@Suren Khorenyan`_
-* Added outerjoins support for permission plugin #- `@Shamil Baganov`_
 
 **0.1.0**
 =========
@@ -47,4 +46,3 @@ Enhancements
 .. _`@Suren Khorenyan`: https://github.com/mahenzon
 .. _`@Znbiz`: https://github.com/znbiz
 .. _`@Yakov Shapovalov`: https://github.com/photovirus
-.. _`@Shamil Baganov`: https://github.com/fiends-grip

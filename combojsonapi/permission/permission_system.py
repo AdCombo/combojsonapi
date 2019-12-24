@@ -167,17 +167,15 @@ class PermissionForGet(PermissionFields):
     joins: List = []
 
     def __init__(self, allow_columns: List = None, forbidden_columns: List = None,
-                 filters: List = None, joins: List = None, outerjoins: List = None, weight=0):
+                 filters: List = None, joins: List = None, weight=0):
         super().__init__(allow_columns=allow_columns, forbidden_columns=forbidden_columns, weight=weight)
         self.filters: List = [] if filters is None else filters
         self.joins: List = [] if joins is None else joins
-        self.outerjoins: List = [] if outerjoins is None else outerjoins
 
     def __add__(self, other):
         super().__add__(other)
         self.filters += other.filters
         self.joins += other.joins
-        self.outerjoins += other.outerjoins
         return self
 
 
