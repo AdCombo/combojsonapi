@@ -291,7 +291,7 @@ class PermissionPlugin(BasePlugin):
         for i_join in permission_for_get.joins:
             query = query.join(*i_join)
         for i_outerjoin in permission_for_get.outerjoins:
-            query = query.join(*i_outerjoin)
+            query = query.outerjoin(*i_outerjoin)
         query = query.filter(*permission_for_get.filters)
 
         # Навешиваем ограничения по атрибутам (которые доступны & которые запросил пользователь)
@@ -330,7 +330,7 @@ class PermissionPlugin(BasePlugin):
         for i_join in permission_for_get.joins:
             query = query.join(*i_join)
         for i_outerjoin in permission_for_get.outerjoins:
-            query = query.join(*i_outerjoin)
+            query = query.outerjoin(*i_outerjoin)
         query = query.filter(*permission_for_get.filters)
 
         # Навешиваем ограничения по атрибутам (которые доступны & которые запросил пользователь)
