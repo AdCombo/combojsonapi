@@ -16,6 +16,10 @@ class EventSchema(Schema):
 
 
 class EventPlugin(BasePlugin):
+
+    def __init__(self, trailing_slash: bool = True):
+        self.trailing_slash = trailing_slash
+
     """Plugin for events routes in json_api"""
     @classmethod
     def _events_with_methods(cls, cls_events) -> Generator[Tuple[Any, str], None, None]:
@@ -35,8 +39,7 @@ class EventPlugin(BasePlugin):
             if method is not None:
                 yield getattr(cls_events, attr_name), method
 
-    @classmethod
-    def _create_event_resource(cls, base_resource, event, method, view, urls, self_json_api, **kwargs):
+    def _create_event_resource(self, base_resource, event, method, view, urls, self_json_api, **kwargs):
         # noinspection PyTypeChecker
         new_resource: Resource = type(event.__name__, (base_resource,), {
             'methods': [method],
@@ -50,7 +53,15 @@ class EventPlugin(BasePlugin):
         view_func = new_resource.as_view(i_view)
 
         url_rule_options = kwargs.get('url_rule_options') or {}
-        event_urls = tuple(urllib.parse.urljoin(i_url, event.__name__) for i_url in urls)
+
+        event_urls = []
+        for i_url in urls:
+            i_new_url = urllib.parse.urljoin(i_url, event.__name__)
+            i_new_url = i_new_url[:-1] if i_new_url[-1] == '/' else i_new_url
+            i_new_url = i_new_url + '/' if self.trailing_slash else i_new_url
+            event_urls.append(i_new_url)
+        event_urls = tuple(event_urls)
+
         if self_json_api.blueprint is not None:
             new_resource.view = SPLIT_REL.join([self_json_api.blueprint.name, new_resource.view])
             for url in event_urls:
