@@ -18,6 +18,10 @@ class EventSchema(Schema):
 class EventPlugin(BasePlugin):
 
     def __init__(self, trailing_slash: bool = True):
+        """
+
+        :param trailing_slash: ставить ли закрывающий слеш у событийного API
+        """
         self.trailing_slash = trailing_slash
 
     """Plugin for events routes in json_api"""
@@ -45,6 +49,7 @@ class EventPlugin(BasePlugin):
             'methods': [method],
             'schema': None,
             method.lower(): event,
+            'event': True,
         })
 
         new_resource.decorators = get_decorators_for_resource(base_resource, self_json_api)

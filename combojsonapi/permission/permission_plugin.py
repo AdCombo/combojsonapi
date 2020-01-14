@@ -17,6 +17,7 @@ from flask_rest_jsonapi.utils import SPLIT_REL
 from flask_rest_jsonapi.resource import ResourceList, ResourceDetail
 from flask_rest_jsonapi.plugin import BasePlugin
 
+from combojsonapi.permission.exceptions import PermissionException
 from combojsonapi.utils import Relationship, get_decorators_for_resource
 from combojsonapi.permission.permission_system import PermissionUser, PermissionToMapper, PermissionForGet
 
@@ -52,6 +53,14 @@ def permission(method, request_type: str, many=False, decorators=None):
 
 class PermissionPlugin(BasePlugin):
 
+    def __init__(self, strict: bool = False):
+        """
+
+        :param strict: отключать HTTP методы, если не указан ни один пермишен кейс (класс) для них.
+                       Событийное API это не касается
+        """
+        self.strict = strict
+
     def after_route(self,
                     resource: Union[ResourceList, ResourceDetail] = None,
                     view=None,
@@ -86,10 +95,10 @@ class PermissionPlugin(BasePlugin):
             # из любого собыйтиного api, так как ссылка на истанц PermissionUser (активный в контектсе данного
             # api передаётся в kwargs['_permission_user']
 
+        # Для избежание повторной инициализации плагина и навешивание декораторов с пермишеннами на API
         resource._permission_plugin_inited = True
 
-    @classmethod
-    def _permission_method(cls, resource: Union[ResourceList, ResourceDetail],
+    def _permission_method(self, resource: Union[ResourceList, ResourceDetail],
                            type_method: str, self_json_api: Api) -> None:
         """
         Обвешиваем ресурс декораторами с пермишенами, либо запрещаем першишен если он явно отключён
@@ -112,6 +121,13 @@ class PermissionPlugin(BasePlugin):
         if not hasattr(resource, l_type):
             return
 
+        permissions = resource.data_layer.get(f'permission_{l_type}', [])
+        PermissionToMapper.add_permission(type_=type_, model=model, permission_class=permissions)
+
+        if self.strict and getattr(resource, 'event', False) is False and u_type in methods:
+            if not permissions:
+                raise PermissionException(f'No permission case for {model.__name__} {type_}')
+
         old_method = getattr(resource, l_type)
 
         decorators = get_decorators_for_resource(resource, self_json_api)
@@ -119,10 +135,7 @@ class PermissionPlugin(BasePlugin):
         if u_type in methods:
             setattr(resource, l_type, new_method)
         else:
-            setattr(resource, l_type, cls._resource_method_bad_request)
-
-        permissions = resource.data_layer.get(f'permission_{l_type}', [])
-        PermissionToMapper.add_permission(type_=type_, model=model, permission_class=permissions)
+            setattr(resource, l_type, self._resource_method_bad_request)
 
     @classmethod
     def _resource_method_bad_request(cls, *args, **kwargs):
