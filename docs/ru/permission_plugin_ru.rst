@@ -34,6 +34,26 @@ Permission (`EN`_ | `RU`_)
         disable_global_decorators = True
         ...
 
+5. По умолчанию из БД выгружаются только поля указанные в запросе и разрешенные в пермишенах. Если
+в вашей модели, есть property, который требует загрузки незапрошенного поля модели (но при этом это поле не нужно
+возвращать в запросе), то такие зависимости необходимо указать у модели в классе :code:`Meta`
+в атрибуте :code:`required_fields`. Пример:
+
+.. code:: python
+
+    class User:
+        class Meta:
+            required_fields = {
+                'full_name': ['first_name', 'second_name'],
+            }
+
+        first_name = Column()
+        second_name = Column()
+
+        @property
+        def full_name(self):
+            return ' '.join([self.first_name, self.second_name])
+        ...
 
 API класса PermissionMixin
 """"""""""""""""""""""""""

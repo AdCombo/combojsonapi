@@ -34,8 +34,25 @@ def get_columns_for_query(model) -> List[str]:
         # Оставляем только атрибуты Column
         if (isinstance(value, InstrumentedAttribute) or isinstance(value, Column)) \
                 and isinstance(getattr(value, 'prop'), ColumnProperty):
-            columns.append(key)
+            columns.append(value.expression.description)
     return columns
+
+
+def get_required_fields(field_name: str, model) -> List[str]:
+    """
+    Вытаскиваем обязательные поля для загрузки из БД (нужно, например, когда в каком-либо проперти
+    идет неявное обращение к другому отрибуту модели, который не был указан в запросе)
+    :param field_name:
+    :param model:
+    :return:
+    """
+    required_fields = getattr(getattr(model, 'Meta', {}), 'required_fields', {})
+    found_fields = []
+    if field_name in required_fields:
+        found_fields.extend(required_fields[field_name])
+        for i_field in required_fields[field_name]:
+            found_fields.extend(get_required_fields(i_field, model))
+    return found_fields
 
 
 def permission(method, request_type: str, many=False, decorators=None):
@@ -313,6 +330,10 @@ class PermissionPlugin(BasePlugin):
                 name_columns = list(set(name_columns) & set(user_requested_columns))
         # Убираем relationship поля
         name_columns = [i_name for i_name in name_columns if i_name in self_json_api.model.__table__.columns.keys()]
+        required_columns_names = []
+        for i_name in name_columns:
+            required_columns_names.extend(get_required_fields(i_name, self_json_api.model))
+        name_columns = list(set(name_columns) | set(required_columns_names))
 
         query = query.options(load_only(*name_columns))
         if qs:
@@ -349,6 +370,10 @@ class PermissionPlugin(BasePlugin):
             name_columns = list(set(name_columns) & set(user_requested_columns))
         # Убираем relationship поля
         name_columns = list(set(name_columns) & set(get_columns_for_query(self_json_api.model)))
+        required_columns_names = []
+        for i_name in name_columns:
+            required_columns_names.extend(get_required_fields(i_name, self_json_api.model))
+        name_columns = list(set(name_columns) | set(required_columns_names))
 
         query = query.options(load_only(*name_columns))
 
