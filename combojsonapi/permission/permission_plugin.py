@@ -560,6 +560,12 @@ class PermissionPlugin(BasePlugin):
                     name_columns = (
                         set(name_columns) & set(get_columns_for_query(joinload_object.path[i].property.mapper.class_))
                     )
+                    required_columns_names = []
+                    for i_name in name_columns:
+                        required_columns_names.extend(
+                            get_required_fields(i_name, joinload_object.path[i].property.mapper.class_)
+                        )
+                    name_columns = list(set(name_columns) | set(required_columns_names))
 
                     joinload_object.load_only(*list(name_columns))
 
@@ -592,6 +598,12 @@ class PermissionPlugin(BasePlugin):
                 name_columns = (
                     set(name_columns) & set(get_columns_for_query(joinload_object.path[0].property.mapper.class_))
                 )
+                required_columns_names = []
+                for i_name in name_columns:
+                    required_columns_names.extend(
+                        get_required_fields(i_name, joinload_object.path[0].property.mapper.class_)
+                    )
+                name_columns = list(set(name_columns) | set(required_columns_names))
 
                 joinload_object.load_only(*list(name_columns))
 
