@@ -4,12 +4,18 @@ Changelog
 **0.1.1**
 =========
 
+Enhancements
+============
+
+* Added parameter **strict** in PermissionPlugin #- `@Znbiz`_
+* Added parameter **trailing_slash** in EventPlugin #- `@Znbiz`_
+* English docs #- `@Yakov Shapovalov`_
+* Update marshmallow -> 3.0.1 #- `@Znbiz`_
+
 Bug Fixes
 =========
 
-* English docs #- `@Yakov Shapovalov`_
 * update Relationship #- `@Znbiz`_
-* Update marshmallow -> 3.0.1 #- `@Znbiz`_
 * Constant splitter for filters, sorts and includes in plugin `PostgreSqlJSONB`_ #- `@Znbiz`_
 * Fix resource.schema == None in plugin `ApiSpecPlugin`_ #- `@Znbiz`_
 * Fix sorting in plugin `PostgreSqlJSONB`_ #- `@Znbiz`_
