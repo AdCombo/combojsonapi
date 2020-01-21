@@ -1,18 +1,13 @@
 ComboJSONAPI
 ============
-ComboJSONAPI - это набор плагинов для библиотеки `Flask-REST-JSONAPI <https://flask-rest-jsonapi.readthedocs.io/en/latest/quickstart.html>`_
+ComboJSONAPI is a set of plugins made for `Flask-REST-JSONAPI <https://flask-rest-jsonapi.readthedocs.io/en/latest/quickstart.html>`_ module.
 
-1. Плагин **Permission** позволяющий создавать различные системы доступа к моделям и полям на
-   выгрузку/создание/изменение/удаление (`Документация для Permission <docs/permission_plugin.rst>`_)
-2. Плагин **ApiSpecPlugin** позволяющий генерировать упрощённую автодокументацию для
-   JSONAPI (`Документация для ApiSpecPlugin <docs/api_spec_plugin.rst>`_)
-3. Плагин **RestfulPlugin** для библиотеки apispec внутри плагина **ApiSpecPlugin** способствующий
-   описанию параметров в get запросах при помощью схем marshmallow
-   (`Документация для RestfulPlugin <docs/restful_plugin.rst>`_)
-4. Плагин **EventPlugin** для создания RPC, для тех случаев когда очень тяжело обойтись только
-   JSON:API (`Документация для EventPlugin <docs/event_plugin.rst>`_).
-5. Плагин **PostgreSqlJSONB** для возможности фильтровать и сортировать по верхним ключам в полях
-   `JSONB`:code:\ в PostgreSQL (`Документация для PostgreSqlJSONB <docs/postgresql_jsonb.rst>`_).
+1. **Permission** plugin enables access control to models and their fields in GET, POST, PATCH and DELETE methods. (`Permission plugin docs <docs/permission_plugin.rst>`_)
+2. **ApiSpecPlugin** simplifies automated JSONAPI documentation.
+   JSONAPI (`ApiSpecPlugin docs <docs/api_spec_plugin.rst>`_)
+3. **RestfulPlugin** for apispec library in the **ApiSpecPlugin** enables documenting GET parameters with Marshmallow schemes. (`RestfulPlugin docs <docs/restful_plugin.rst>`_)
+4. **EventPlugin** enables RPC creation for those cases when you can't make it with pure JSON:API (`EventPlugin docs <docs/event_plugin.rst>`_).
+5. **PostgreSqlJSONB** features filtering and sorting data by first-level key values of JSONB values in PostgreSQL (`PostgreSqlJSONB docs <docs/postgresql_jsonb.rst>`_).
 
 Installation
 ============
@@ -22,7 +17,7 @@ Installation
 
 Contributing
 ============
-If you want to contribute through code or documentation, the `Contributing guide is the best place to start`_.
+If you want to contribute to the code or documentation, the `Contributing guide is the best place to start`_.
 If you have questions, feel free to ask
 
 
