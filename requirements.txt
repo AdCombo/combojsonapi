@@ -2,4 +2,4 @@ sqlalchemy
 marshmallow_jsonapi
 Flask>=1.0.2
 apispec>=2.0.2
-https://github.com/AdCombo/flask-jsonapi.git@a4bac73c2a18a658bfd9bab4b40f9880dafa737d#egg=flask-rest-jsonapi
+https://github.com/AdCombo/flask-rest-jsonapi.git@a4bac73c2a18a658bfd9bab4b40f9880dafa737d#egg=flask-rest-jsonapi
