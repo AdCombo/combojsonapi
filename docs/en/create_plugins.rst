@@ -273,5 +273,5 @@ in a short or detailed view based on pre-set parameter :code:`format=short|full`
         app.run(use_reloader=True)
 
 
-.. _`EN`: https://github.com/AdCombo/ComboJSONAPI/docs/en/create_plugins.rst
-.. _`RU`: https://github.com/AdCombo/ComboJSONAPI/docs/ru/create_plugins.rst
+.. _`EN`: https://github.com/AdCombo/combojsonapi/blob/master/docs/en/create_plugins.rst
+.. _`RU`: https://github.com/AdCombo/combojsonapi/blob/master/docs/ru/create_plugins.rst

@@ -164,5 +164,5 @@
 .. code::
     /api/user/?filter=[{"name":"settings.active","op": "eq","val": "True"}]&sort=name,-settings.age
 
-.. _`EN`: https://github.com/AdCombo/ComboJSONAPI/docs/en/postgresql_jsonb.rst
-.. _`RU`: https://github.com/AdCombo/ComboJSONAPI/docs/ru/postgresql_jsonb.rst
+.. _`EN`: https://github.com/AdCombo/combojsonapi/blob/master/docs/en/postgresql_jsonb.rst
+.. _`RU`: https://github.com/AdCombo/combojsonapi/blob/master/docs/ru/postgresql_jsonb.rst

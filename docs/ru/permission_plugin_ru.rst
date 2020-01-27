@@ -286,5 +286,5 @@ API класса PermissionMixin
         ]
     )
 
-.. _`EN`: https://github.com/AdCombo/ComboJSONAPI/docs/en/permission_plugin.rst
-.. _`RU`: https://github.com/AdCombo/ComboJSONAPI/docs/ru/permission_plugin.rst
+.. _`EN`: https://github.com/AdCombo/combojsonapi/blob/master/docs/en/permission_plugin.rst
+.. _`RU`: https://github.com/AdCombo/combojsonapi/blob/master/docs/ru/permission_plugin.rst

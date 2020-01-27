@@ -147,6 +147,6 @@ Maintainers need to do the following to push out a release:
 .. _`shortcut reference links`: https://github.github.com/gfm/#shortcut-reference-link
 .. _`fork ComboJSONAPI`: https://help.github.com/articles/fork-a-repo
 .. _`searching all issues`: https://github.com/AdCombo/issues?q=
-.. _`open a new one`: https://github.com/AdCombo/ComboJSONAPI/issues/new
-.. _`search the issue tracker`: https://github.com/AdCombo/ComboJSONAPI/issues?q=something
-.. _`make one`: https://github.com/AdCombo/ComboJSONAPI/issues/new
+.. _`open a new one`: https://github.com/AdCombo/combojsonapi/issues/new
+.. _`search the issue tracker`: https://github.com/AdCombo/combojsonapi/issues?q=something
+.. _`make one`: https://github.com/AdCombo/combojsonapi/issues/new
