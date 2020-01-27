@@ -12,7 +12,7 @@ from flask_rest_jsonapi.schema import get_model_field
 from flask_rest_jsonapi.utils import SPLIT_REL
 from flask_rest_jsonapi.exceptions import InvalidFilters
 from flask_rest_jsonapi.plugin import BasePlugin
-from flask_rest_jsonapi.data_layers.filtering.alchemy import deserialize_field
+from flask_rest_jsonapi.data_layers.shared import deserialize_field
 
 from combojsonapi.utils import Relationship
 from combojsonapi.postgresql_jsonb.schema import SchemaJSONB
