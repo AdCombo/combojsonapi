@@ -66,7 +66,7 @@ class Relationship(OldRelationship, fields.Nested):
                 raise ValidationError('Must include a `data` key')
         return super(OldRelationship, self).deserialize(value['data'], attr, data)
 
-    def _deserialize(self, value, attr, obj):
+    def _deserialize(self, value, attr, obj, **kwargs):
         if self.many:
             if not is_collection(value):
                 raise ValidationError('Relationship is list-like')

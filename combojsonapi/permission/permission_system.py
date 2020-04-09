@@ -189,11 +189,11 @@ class PermissionUser:
         self.request_type: str = request_type
         self.many: bool = many
         # Уже расчитанные пермишены для GET запроса в данном запросе для current_user
-        self._cache_get: Dict[str, PermissionForGet] = dict()
+        self._cache_get: Dict[str, PermissionForGet] = {}
         # Уже расчитанные пермишены для POST запроса в данном запросе для current_user
-        self._cache_post: Dict[str, PermissionForPost] = dict()
+        self._cache_post: Dict[str, PermissionForPost] = {}
         # Уже расчитанные пермишены для POST запроса в данном запросе для current_user
-        self._cache_patch: Dict[str, PermissionForPatch] = dict()
+        self._cache_patch: Dict[str, PermissionForPatch] = {}
 
     def _join_permission_get(self, *args, many: bool = True, permission_classes: List = None, **kwargs) -> PermissionForGet:
         # Объеденим все пермишенны, которые доступны данному пользователю
@@ -290,7 +290,7 @@ class PermissionUser:
             )
         return self._cache_patch[model_name]
 
-    def permission_for_post_data(self, *args, model, data: Dict, **kwargs) -> Dict:
+    def permission_for_post_data(self, *args, model, data: dict, **kwargs) -> dict:
         """
 
         :param model: модель
@@ -305,7 +305,7 @@ class PermissionUser:
                 data = obj_custom_perm.post_data(*args, data=data, user_permission=self, **kwargs)
         return data
 
-    def permission_for_patch_data(self, *args, model, data: Dict, obj=None, **kwargs) -> Dict:
+    def permission_for_patch_data(self, *args, model, data: dict, obj=None, **kwargs) -> dict:
         """
 
         :param model: моделиь
@@ -355,7 +355,7 @@ class PermissionMixin:
         """
         return self.permission_for_get
 
-    def post_data(self, *args, data=None, user_permission: PermissionUser = None, **kwargs) -> Dict:
+    def post_data(self, *args, data=None, user_permission: PermissionUser = None, **kwargs) -> dict:
         """
         Предобрат данных в соответствие с ограничениями перед создание объекта
         :param args:
@@ -376,7 +376,7 @@ class PermissionMixin:
         """
         return self.permission_for_post
 
-    def patch_data(self, *args, data=None, obj=None, user_permission: PermissionUser = None, **kwargs) -> Dict:
+    def patch_data(self, *args, data=None, obj=None, user_permission: PermissionUser = None, **kwargs) -> dict:
         """
         Предобрат данных в соответствие с ограничениями перед обновлением объекта
         :param args:
