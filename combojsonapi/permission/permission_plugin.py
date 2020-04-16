@@ -129,9 +129,11 @@ class PermissionPlugin(BasePlugin):
         if issubclass(resource, ResourceList):
             methods = getattr(resource, 'methods', ('GET', 'POST'))
             type_ = 'get_list' if l_type == 'get' else l_type
+            many = True
         elif issubclass(resource, ResourceDetail):
             methods = getattr(resource, 'methods', ('GET', 'PATCH', 'DELETE'))
             type_ = l_type
+            many = False
         else:
             return
         model = resource.data_layer['model']
@@ -148,7 +150,7 @@ class PermissionPlugin(BasePlugin):
         old_method = getattr(resource, l_type)
 
         decorators = get_decorators_for_resource(resource, self_json_api)
-        new_method = permission(old_method, request_type=l_type, many=True, decorators=decorators)
+        new_method = permission(old_method, request_type=l_type, many=many, decorators=decorators)
         if u_type in methods:
             setattr(resource, l_type, new_method)
         else:
