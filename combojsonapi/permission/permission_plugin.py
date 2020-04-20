@@ -32,9 +32,10 @@ def get_columns_for_query(model) -> List[str]:
     columns = []
     for key, value in model.__dict__.items():
         # Оставляем только атрибуты Column
-        if (isinstance(value, InstrumentedAttribute) or isinstance(value, Column)) \
-                and isinstance(getattr(value, 'prop'), ColumnProperty):
-            columns.append(value.expression.description)
+        if (isinstance(value, InstrumentedAttribute) or isinstance(value, Column)) and (
+            hasattr(value, "prop") and isinstance(value.prop, ColumnProperty)
+        ):
+            columns.append(key)
     return columns
 
 
