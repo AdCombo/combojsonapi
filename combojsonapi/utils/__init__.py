@@ -5,8 +5,8 @@ from .marshmallow_fields import Relationship
 
 
 __all__ = [
-    'status',
-    'create_schema_name',
-    'get_decorators_for_resource',
-    'Relationship',
+    "status",
+    "create_schema_name",
+    "get_decorators_for_resource",
+    "Relationship",
 ]

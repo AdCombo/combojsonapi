@@ -9,13 +9,13 @@ from sqlalchemy import Column
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm import load_only, joinedload, ColumnProperty, Query
 
-from flask_rest_jsonapi.exceptions import InvalidInclude, BadRequest
-from flask_rest_jsonapi.querystring import QueryStringManager
-from flask_rest_jsonapi.schema import get_model_field, get_related_schema
-from flask_rest_jsonapi import Api
-from flask_rest_jsonapi.utils import SPLIT_REL
-from flask_rest_jsonapi.resource import ResourceList, ResourceDetail
-from flask_rest_jsonapi.plugin import BasePlugin
+from flask_combo_jsonapi.exceptions import InvalidInclude, BadRequest
+from flask_combo_jsonapi.querystring import QueryStringManager
+from flask_combo_jsonapi.schema import get_model_field, get_related_schema
+from flask_combo_jsonapi import Api
+from flask_combo_jsonapi.utils import SPLIT_REL
+from flask_combo_jsonapi.resource import ResourceList, ResourceDetail
+from flask_combo_jsonapi.plugin import BasePlugin
 
 from combojsonapi.permission.exceptions import PermissionException
 from combojsonapi.utils import Relationship, get_decorators_for_resource
@@ -47,7 +47,7 @@ def get_required_fields(field_name: str, model) -> List[str]:
     :param model:
     :return:
     """
-    required_fields = getattr(getattr(model, 'Meta', {}), 'required_fields', {})
+    required_fields = getattr(getattr(model, "Meta", {}), "required_fields", {})
     found_fields = []
     if field_name in required_fields:
         found_fields.extend(required_fields[field_name])
@@ -57,7 +57,6 @@ def get_required_fields(field_name: str, model) -> List[str]:
 
 
 def permission(method, request_type: str, many=False, decorators=None):
-
     @wraps(method)
     def wrapper(*args, **kwargs):
         permission_user = PermissionUser(request_type=request_type, many=many)
@@ -70,7 +69,6 @@ def permission(method, request_type: str, many=False, decorators=None):
 
 
 class PermissionPlugin(BasePlugin):
-
     def __init__(self, strict: bool = False):
         """
 
@@ -79,12 +77,14 @@ class PermissionPlugin(BasePlugin):
         """
         self.strict = strict
 
-    def after_route(self,
-                    resource: Union[ResourceList, ResourceDetail] = None,
-                    view=None,
-                    urls: Tuple[str] = None,
-                    self_json_api: Api = None,
-                    **kwargs) -> None:
+    def after_route(
+        self,
+        resource: Union[ResourceList, ResourceDetail] = None,
+        view=None,
+        urls: Tuple[str] = None,
+        self_json_api: Api = None,
+        **kwargs,
+    ) -> None:
         """
         Навешиваем декараторы (с инициализацией пермишенов) на роутеры
         :param resource:
@@ -94,13 +94,13 @@ class PermissionPlugin(BasePlugin):
         :param kwargs:
         :return:
         """
-        if getattr(resource, '_permission_plugin_inited', False):
+        if getattr(resource, "_permission_plugin_inited", False):
             return
 
         if issubclass(resource, ResourceList):
-            methods = ('get', 'post')
+            methods = ("get", "post")
         elif issubclass(resource, ResourceDetail):
-            methods = ('get', 'patch', 'delete', 'post')
+            methods = ("get", "patch", "delete", "post")
         else:
             return
 
@@ -116,8 +116,9 @@ class PermissionPlugin(BasePlugin):
         # Для избежание повторной инициализации плагина и навешивание декораторов с пермишеннами на API
         resource._permission_plugin_inited = True
 
-    def _permission_method(self, resource: Union[ResourceList, ResourceDetail],
-                           type_method: str, self_json_api: Api) -> None:
+    def _permission_method(
+        self, resource: Union[ResourceList, ResourceDetail], type_method: str, self_json_api: Api
+    ) -> None:
         """
         Обвешиваем ресурс декораторами с пермишенами, либо запрещаем першишен если он явно отключён
         :param Union[ResourceList, ResourceDetail] resource:
@@ -128,25 +129,25 @@ class PermissionPlugin(BasePlugin):
         l_type = type_method.lower()
         u_type = type_method.upper()
         if issubclass(resource, ResourceList):
-            methods = getattr(resource, 'methods', ('GET', 'POST'))
-            type_ = 'get_list' if l_type == 'get' else l_type
+            methods = getattr(resource, "methods", ("GET", "POST"))
+            type_ = "get_list" if l_type == "get" else l_type
             many = True
         elif issubclass(resource, ResourceDetail):
-            methods = getattr(resource, 'methods', ('GET', 'PATCH', 'DELETE'))
+            methods = getattr(resource, "methods", ("GET", "PATCH", "DELETE"))
             type_ = l_type
             many = False
         else:
             return
-        model = resource.data_layer['model']
+        model = resource.data_layer["model"]
         if not hasattr(resource, l_type):
             return
 
-        permissions = resource.data_layer.get(f'permission_{l_type}', [])
+        permissions = resource.data_layer.get(f"permission_{l_type}", [])
         PermissionToMapper.add_permission(type_=type_, model=model, permission_class=permissions)
 
-        if self.strict and getattr(resource, 'event', False) is False and u_type in methods:
+        if self.strict and getattr(resource, "event", False) is False and u_type in methods:
             if not permissions:
-                raise PermissionException(f'No permission case for {model.__name__} {type_}')
+                raise PermissionException(f"No permission case for {model.__name__} {type_}")
 
         old_method = getattr(resource, l_type)
 
@@ -159,12 +160,19 @@ class PermissionPlugin(BasePlugin):
 
     @classmethod
     def _resource_method_bad_request(cls, *args, **kwargs):
-        raise BadRequest('No method')
+        raise BadRequest("No method")
 
     @classmethod
-    def _permission_for_link_schema(cls, *args, schema=None, model=None, prefix_name_column: str = '',
-                                    columns: Optional[Union[List[str], Set[str]]] = None,
-                                    is_nested: bool = False, **kwargs):
+    def _permission_for_link_schema(
+        cls,
+        *args,
+        schema=None,
+        model=None,
+        prefix_name_column: str = "",
+        columns: Optional[Union[List[str], Set[str]]] = None,
+        is_nested: bool = False,
+        **kwargs,
+    ):
         """
         Навешиваем ограничения на схему, на которую ссылается поле
         :param args:
@@ -179,13 +187,13 @@ class PermissionPlugin(BasePlugin):
         if not columns:
             return
         # уровень вложенности
-        nesting_size_prefix_column: int = len(prefix_name_column.split('.')) if prefix_name_column else 0
+        nesting_size_prefix_column: int = len(prefix_name_column.split(".")) if prefix_name_column else 0
 
         permission_column: List[str] = []
-        _prefix = f'{prefix_name_column}.' if prefix_name_column else ''
+        _prefix = f"{prefix_name_column}." if prefix_name_column else ""
         for i_column in columns:
             if i_column.startswith(_prefix) and i_column != prefix_name_column:
-                i_name = i_column.split('.')[nesting_size_prefix_column:]
+                i_name = i_column.split(".")[nesting_size_prefix_column:]
                 permission_column.append(i_name[0])
         permission_column = list(set(permission_column))
 
@@ -199,7 +207,7 @@ class PermissionPlugin(BasePlugin):
             if i_name_field in permission_column:
                 name_fields.append(i_name_field)
 
-        only = getattr(schema, 'only')
+        only = getattr(schema, "only")
         only = set(only) if only else set(name_fields)
         # Оставляем поля только те, которые пользователь запросил через параметр fields[...]
         only &= set(name_fields)
@@ -209,13 +217,17 @@ class PermissionPlugin(BasePlugin):
 
         schema.only = only
 
-        include_data = tuple(i_include for i_include in getattr(schema, 'include_data', []) if i_include in name_fields)
-        setattr(schema, 'include_data', include_data)
+        include_data = tuple(i_include for i_include in getattr(schema, "include_data", []) if i_include in name_fields)
+        setattr(schema, "include_data", include_data)
 
         # навешиваем ограничения на поля схемы, на которую указывает поле JSONB. Если
         # ограничений нет, то выгружаем все поля
         for i_field_name, i_field in schema.fields.items():
-            if i_field_name in permission_column and isinstance(i_field, fields.Nested) and not isinstance(i_field, Relationship):
+            if (
+                i_field_name in permission_column
+                and isinstance(i_field, fields.Nested)
+                and not isinstance(i_field, Relationship)
+            ):
                 i_schema = i_field.schema
                 if isinstance(i_schema, SchemaABC):
                     cls_schema = type(i_schema)
@@ -233,23 +245,23 @@ class PermissionPlugin(BasePlugin):
                 i_field._schema = i_schema
                 cls._permission_for_link_schema(
                     schema=i_schema,
-                    prefix_name_column=f'{prefix_name_column}.{i_field_name}' if prefix_name_column else i_field_name,
+                    prefix_name_column=f"{prefix_name_column}.{i_field_name}" if prefix_name_column else i_field_name,
                     columns=columns,
                     is_nested=True,
-                    **kwargs
+                    **kwargs,
                 )
         if not is_nested:
             # Выдераем из схем поля, которые пользователь не должен увидеть
-            for i_include in getattr(schema, 'include_data', []):
+            for i_include in getattr(schema, "include_data", []):
                 if i_include in schema.fields:
                     field = get_model_field(schema, i_include)
                     i_model = cls._get_model(model, field)
                     cls._permission_for_link_schema(
-                        schema=schema.declared_fields[i_include].__dict__['_Relationship__schema'],
+                        schema=schema.declared_fields[i_include].__dict__["_Relationship__schema"],
                         model=i_model,
-                        prefix_name_column=f'{prefix_name_column}.{i_include}' if prefix_name_column else i_include,
+                        prefix_name_column=f"{prefix_name_column}.{i_include}" if prefix_name_column else i_include,
                         columns=columns,
-                        **kwargs
+                        **kwargs,
                     )
 
     @classmethod
@@ -262,17 +274,13 @@ class PermissionPlugin(BasePlugin):
         :param kwargs:
         :return:
         """
-        permission_user: PermissionUser = kwargs.get('_permission_user')
+        permission_user: PermissionUser = kwargs.get("_permission_user")
         if permission_user is None:
             raise Exception("No permission for user")
 
         permission_column: Set[str] = permission_user.permission_for_get(model=model).columns_and_jsonb_columns
         cls._permission_for_link_schema(
-            schema=schema,
-            model=model,
-            prefix_name_column='',
-            columns=permission_column,
-            **kwargs
+            schema=schema, model=model, prefix_name_column="", columns=permission_column, **kwargs
         )
 
     def after_init_schema_in_resource_list_post(self, *args, schema=None, model=None, **kwargs):
@@ -287,8 +295,9 @@ class PermissionPlugin(BasePlugin):
     def after_init_schema_in_resource_detail_patch(self, *args, schema=None, model=None, **kwargs):
         self._permission_for_schema(self, *args, schema=schema, model=model, **kwargs)
 
-    def data_layer_create_object_clean_data(self, *args, data: Dict = None, view_kwargs=None,
-                                            join_fields: List[str] = None, self_json_api=None, **kwargs):
+    def data_layer_create_object_clean_data(
+        self, *args, data: Dict = None, view_kwargs=None, join_fields: List[str] = None, self_json_api=None, **kwargs
+    ):
         """
         Обрабатывает данные, которые пойдут непосредственно на создание нового объекта
         :param args:
@@ -300,10 +309,13 @@ class PermissionPlugin(BasePlugin):
         :return:
         """
         permission: PermissionUser = self._get_permission_user(view_kwargs)
-        return permission.permission_for_post_data(model=self_json_api.model, data=data, join_fields=join_fields, **view_kwargs)
+        return permission.permission_for_post_data(
+            model=self_json_api.model, data=data, join_fields=join_fields, **view_kwargs
+        )
 
-    def data_layer_get_object_update_query(self, *args, query: Query = None, qs: QueryStringManager = None,
-                                           view_kwargs=None, self_json_api=None, **kwargs) -> Query:
+    def data_layer_get_object_update_query(
+        self, *args, query: Query = None, qs: QueryStringManager = None, view_kwargs=None, self_json_api=None, **kwargs
+    ) -> Query:
         """
         Во время создания запроса к БД на выгрузку объекта. Тут можно пропатчить запрос к БД.
         Навешиваем ограничения на запрос, чтобы не тянулись поля из БД, которые данному
@@ -346,8 +358,9 @@ class PermissionPlugin(BasePlugin):
         self_json_api.eagerload_includes = lambda x, y: x
         return query
 
-    def data_layer_get_collection_update_query(self, *args, query: Query = None, qs: QueryStringManager = None,
-                                               view_kwargs=None, self_json_api=None, **kwargs) -> Query:
+    def data_layer_get_collection_update_query(
+        self, *args, query: Query = None, qs: QueryStringManager = None, view_kwargs=None, self_json_api=None, **kwargs
+    ) -> Query:
         """
         Во время создания запроса к БД на выгрузку объектов. Тут можно пропатчить запрос к БД
         :param args:
@@ -381,12 +394,20 @@ class PermissionPlugin(BasePlugin):
         query = query.options(load_only(*name_columns))
 
         # Запретим использовать стандартную функцию eagerload_includes для присоединения сторонних молелей
-        setattr(self_json_api, 'eagerload_includes', False)
+        setattr(self_json_api, "eagerload_includes", False)
         query = self._eagerload_includes(query, qs, permission, self_json_api=self_json_api)
         return query
 
-    def data_layer_update_object_clean_data(self, *args, data: Dict = None, obj=None, view_kwargs=None,
-                                            join_fields: List[str] = None, self_json_api=None, **kwargs) -> Dict:
+    def data_layer_update_object_clean_data(
+        self,
+        *args,
+        data: Dict = None,
+        obj=None,
+        view_kwargs=None,
+        join_fields: List[str] = None,
+        self_json_api=None,
+        **kwargs,
+    ) -> Dict:
         """
         Обрабатывает данные, которые пойдут непосредственно на обновления объекта
         :param args:
@@ -399,11 +420,14 @@ class PermissionPlugin(BasePlugin):
         :return: возвращает обновлённый набор данных для нового объекта
         """
         permission: PermissionUser = self._get_permission_user(view_kwargs)
-        clean_data = permission.permission_for_patch_data(model=self_json_api.model, data=data, obj=obj,
-                                                          join_fields=join_fields, **view_kwargs)
+        clean_data = permission.permission_for_patch_data(
+            model=self_json_api.model, data=data, obj=obj, join_fields=join_fields, **view_kwargs
+        )
         return clean_data
 
-    def data_layer_delete_object_clean_data(self, *args, obj=None, view_kwargs=None, self_json_api=None, **kwargs) -> None:
+    def data_layer_delete_object_clean_data(
+        self, *args, obj=None, view_kwargs=None, self_json_api=None, **kwargs
+    ) -> None:
         """
         Выполняется до удаления объекта в БД
         :param args:
@@ -418,7 +442,7 @@ class PermissionPlugin(BasePlugin):
 
     @classmethod
     def _get_permission_user(cls, view_kwargs) -> PermissionUser:
-        permission_user = view_kwargs.get('_permission_user')
+        permission_user = view_kwargs.get("_permission_user")
         if permission_user is not None:
             return permission_user
         raise Exception("No permission for user")
@@ -437,7 +461,7 @@ class PermissionPlugin(BasePlugin):
             mapper = getattr(mapper_old, i_name_foreign_key, None)
             if mapper is None:
                 # Внешний ключ должен присутствовать в маппере
-                raise ValueError('Not foreign ket %s in mapper %s' % (i_name_foreign_key, mapper_old.__name__))
+                raise ValueError("Not foreign ket %s in mapper %s" % (i_name_foreign_key, mapper_old.__name__))
             mapper = mapper.mapper.class_
         return mapper
 
@@ -456,8 +480,9 @@ class PermissionPlugin(BasePlugin):
         return True
 
     @classmethod
-    def _update_qs_fields(cls, type_schema: str, fields: List[str], qs: QueryStringManager = None,
-                          name_foreign_key: str = None) -> None:
+    def _update_qs_fields(
+        cls, type_schema: str, fields: List[str], qs: QueryStringManager = None, name_foreign_key: str = None
+    ) -> None:
         """
         Обновляем fields в qs для работы схемы (чтобы она не обращалась к полям, которые не доступны пользователю)
         :param str type_schema: название типа схемы Meta.type_
@@ -466,22 +491,28 @@ class PermissionPlugin(BasePlugin):
         :param str name_foreign_key: название поля в схеме, которое ссылается на схему type_schema
         :return:
         """
-        old_fields = qs._get_key_values('fields')
+        old_fields = qs._get_key_values("fields")
         if type_schema in old_fields:
             new_fields = list(set(old_fields.get(type_schema, [])) & set(fields))
         else:
             new_fields = fields
-        new_qs = {k: v for k, v in qs.qs.items() if v != ''}
-        include = new_qs.get('include', '').split(',')
+        new_qs = {k: v for k, v in qs.qs.items() if v != ""}
+        include = new_qs.get("include", "").split(",")
         if not new_fields and include and name_foreign_key in include:
-            new_qs['include'] = ','.join([inc for inc in include if inc != name_foreign_key])
+            new_qs["include"] = ",".join([inc for inc in include if inc != name_foreign_key])
         else:
-            new_qs[f'fields[{type_schema}]'] = ','.join(new_fields)
+            new_qs[f"fields[{type_schema}]"] = ",".join(new_fields)
         qs.qs = ImmutableMultiDict(new_qs)
 
     @classmethod
-    def _get_access_fields_in_schema(cls, name_foreign_key: str, cls_schema, permission: PermissionUser = None,
-                                     model=None, qs: QueryStringManager = None) -> List[str]:
+    def _get_access_fields_in_schema(
+        cls,
+        name_foreign_key: str,
+        cls_schema,
+        permission: PermissionUser = None,
+        model=None,
+        qs: QueryStringManager = None,
+    ) -> List[str]:
         """
         Получаем список названий полей, которые доступны пользователю и есть в схеме
         :param name_foreign_key: название "внешнего ключа"
@@ -560,8 +591,8 @@ class PermissionPlugin(BasePlugin):
                     if user_requested_columns:
                         name_columns = set(name_columns) & set(user_requested_columns)
                     # Убираем relationship поля
-                    name_columns = (
-                        set(name_columns) & set(get_columns_for_query(joinload_object.path[i].property.mapper.class_))
+                    name_columns = set(name_columns) & set(
+                        get_columns_for_query(joinload_object.path[i].property.mapper.class_)
                     )
                     required_columns_names = []
                     for i_name in name_columns:
@@ -591,15 +622,16 @@ class PermissionPlugin(BasePlugin):
                 joinload_object = joinedload(getattr(self_json_api.model, field))
 
                 # ограничиваем список полей (которые доступны & которые запросил пользователь)
-                name_columns = cls._get_access_fields_in_schema(include, self_json_api.resource.schema, permission,
-                                                                model=self_json_api.model, qs=qs)
+                name_columns = cls._get_access_fields_in_schema(
+                    include, self_json_api.resource.schema, permission, model=self_json_api.model, qs=qs
+                )
                 related_schema_cls = get_related_schema(self_json_api.resource.schema, include)
                 user_requested_columns = qs.fields.get(related_schema_cls.Meta.type_)
                 if user_requested_columns:
                     name_columns = set(name_columns) & set(user_requested_columns)
                 # Убираем relationship поля
-                name_columns = (
-                    set(name_columns) & set(get_columns_for_query(joinload_object.path[0].property.mapper.class_))
+                name_columns = set(name_columns) & set(
+                    get_columns_for_query(joinload_object.path[0].property.mapper.class_)
                 )
                 required_columns_names = []
                 for i_name in name_columns:
