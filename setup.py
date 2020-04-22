@@ -2,7 +2,7 @@ import pathlib
 
 from setuptools import setup, find_packages
 
-__version__ = '0.1.0'
+__version__ = "1.0.0"
 
 
 try:
@@ -23,33 +23,36 @@ def get_requirements(filename=None):
     :rtype: list
     """
     if filename is None:
-        filename = 'requirements.txt'
+        filename = "requirements.txt"
 
     file = WORK_DIR / filename
 
-    install_reqs = parse_requirements(str(file), session='hack')
+    install_reqs = parse_requirements(str(file), session="hack")
     return [str(ir.req) for ir in install_reqs]
 
 
 setup(
     name="ComboJSONAPI",
     version=__version__,
-    description='REST JSONAPI extension to create web api (currently only flask is supported)',  # TODO: separate desription for pypi
-    url='',  # TODO
-    author='AdCombo API Team',
-    author_email='',  # TODO
-    license='MIT',  # TODO: discuss
+    description="REST JSONAPI extension to create web api (currently only flask is supported)",  # TODO: separate desription for pypi
+    url="https://github.com/AdCombo/combojsonapi",
+    author="AdCombo API Team",
+    author_email="",  # TODO
+    license="MIT",  # TODO: discuss
     classifiers=[
-        'Framework :: Flask',
-        'Programming Language :: Python :: 3.6',
-        'License :: OSI Approved :: MIT License',
+        "Framework :: Flask",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "License :: OSI Approved :: MIT License",
     ],
-    keywords='web api rest rpc swagger jsonapi flask sqlalchemy marshmallow plugin',
-    packages=find_packages(exclude=['tests']),
+    keywords="web api rest rpc swagger jsonapi flask sqlalchemy marshmallow plugin",
+    packages=find_packages(exclude=["tests"]),
     zip_safe=False,
-    platforms='any',
+    platforms="any",
+    # this would'n work now
     install_requires=get_requirements(),
-    setup_requires=['pytest-runner'],
-    tests_require=['pytest'],
-    extras_require={'tests': 'pytest', 'docs': 'sphinx'}
+    setup_requires=["pytest-runner"],
+    tests_require=["pytest"],
+    extras_require={"tests": "pytest", "docs": "sphinx"},
 )

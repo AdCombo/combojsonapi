@@ -1,6 +1,16 @@
 Changelog
 *********
 
+
+**1.0.0**
+=========
+
+Changes
+=======
+
+* Rename Flask-REST-JSONAPI to Flask-COMBO-JSONAPI #- `@mahenzon`_
+
+
 **0.1.1**
 =========
 
@@ -21,14 +31,14 @@ Bug Fixes
 * Fix sorting in plugin `PostgreSqlJSONB`_ #- `@Znbiz`_
 * Improved model fields check for options(load_only) in `Permission`_ #- `@Znbiz`_
 * Implement disable_global_decorators, minor refactor and upgrade events, update docs in plugin
-  `EventPlugin`_  #- `@Suren Khorenyan`_
+  `EventPlugin`_  #- `@mahenzon`_
 * typo permission_for_path -> permission_for_patch and create get_decorators_for_resource
-  in plugin `Permission`_ #- `@Suren Khorenyan`_
-* Create status util #- `@Suren Khorenyan`_
-* Refactor api spec params for get in plugin `ApiSpecPlugin`_ #- `@Suren Khorenyan`_
-* Fix permission plugin initialization #- `@Suren Khorenyan`_
-* Constant splitter for filters, sorts and includes #- `@Suren Khorenyan`_
-* Configure setup, update .gitignore #- `@Suren Khorenyan`_
+  in plugin `Permission`_ #- `@mahenzon`_
+* Create status util #- `@mahenzon`_
+* Refactor api spec params for get in plugin `ApiSpecPlugin`_ #- `@mahenzon`_
+* Fix permission plugin initialization #- `@mahenzon`_
+* Constant splitter for filters, sorts and includes #- `@mahenzon`_
+* Configure setup, update .gitignore #- `@mahenzon`_
 
 **0.1.0**
 =========
@@ -49,6 +59,6 @@ Enhancements
 .. _`ApiSpecPlugin`: https://github.com/AdCombo/ComboJSONAPI/docs/api_spec_plugin.rst
 .. _`Permission`: https://github.com/AdCombo/ComboJSONAPI/docs/permission_plugin.rst
 
-.. _`@Suren Khorenyan`: https://github.com/mahenzon
+.. _`@mahenzon`: https://github.com/mahenzon
 .. _`@Znbiz`: https://github.com/znbiz
 .. _`@Yakov Shapovalov`: https://github.com/photovirus

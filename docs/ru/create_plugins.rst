@@ -9,7 +9,7 @@
 .. code:: python
 
     from flask import Flask
-    from flask_rest_jsonapi import Api
+    from flask_combo_jsonapi import Api
     from combojsonapi.event import EventPlugin
 
     app = Flask(__name__)
@@ -176,9 +176,9 @@ API для плагинов
     from sqlalchemy import Column, Integer, String
     from sqlalchemy.orm import Query, load_only, scoped_session
     from combojsonapi.utils import Relationship
-    from flask_rest_jsonapi import Api, ResourceList, ResourceDetail
-    from flask_rest_jsonapi.plugin import BasePlugin
-    from flask_rest_jsonapi.querystring import QueryStringManager
+    from flask_combo_jsonapi import Api, ResourceList, ResourceDetail
+    from flask_combo_jsonapi.plugin import BasePlugin
+    from flask_combo_jsonapi.querystring import QueryStringManager
     from marshmallow_jsonapi.flask import Schema
     from marshmallow_jsonapi import fields
 

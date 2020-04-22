@@ -1,3 +1,8 @@
+.. image:: https://travis-ci.org/AdCombo/combojsonapi.svg?branch=develop
+    :target: https://travis-ci.org/AdCombo/combojsonapi
+.. image:: https://coveralls.io/repos/github/AdCombo/combojsonapi/badge.svg?branch=develop
+    :target: https://coveralls.io/github/AdCombo/combojsonapi?branch=develop
+
 ComboJSONAPI
 ============
 ComboJSONAPI is a set of plugins made for `Flask-JSONAPI <https://github.com/AdCombo/flask-jsonapi>`_ module.

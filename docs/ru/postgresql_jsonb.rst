@@ -45,9 +45,9 @@
     from sqlalchemy import Column, Integer, String
     from sqlalchemy.dialects.postgresql.json import JSONB
     from sqlalchemy.orm import Query, load_only, scoped_session
-    from flask_rest_jsonapi.marshmallow_fields import Relationship
-    from flask_rest_jsonapi import Api, ResourceList, ResourceDetail
-    from flask_rest_jsonapi.querystring import QueryStringManager
+    from flask_combo_jsonapi.marshmallow_fields import Relationship
+    from flask_combo_jsonapi import Api, ResourceList, ResourceDetail
+    from flask_combo_jsonapi.querystring import QueryStringManager
     from combojsonapi.postgresql_jsonb.schema import SchemaJSONB
     from combojsonapi.postgresql_jsonb import PostgreSqlJSONB
     from combojsonapi.spec import ApiSpecPlugin
