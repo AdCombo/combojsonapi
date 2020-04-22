@@ -18,15 +18,15 @@ if APISPEC_VERSION_MAJOR == 0:
 
 
 # from flask-restplus
-RE_URL = re.compile(r'<(?:[^:<>]+:)?([^<>]+)>')
+RE_URL = re.compile(r"<(?:[^:<>]+:)?([^<>]+)>")
 
 # From flask-apispec
 DEFAULT_CONVERTER_MAPPING = {
-    werkzeug.routing.UnicodeConverter: ('string', None),
-    werkzeug.routing.IntegerConverter: ('integer', 'int32'),
-    werkzeug.routing.FloatConverter: ('number', 'float'),
+    werkzeug.routing.UnicodeConverter: ("string", None),
+    werkzeug.routing.IntegerConverter: ("integer", "int32"),
+    werkzeug.routing.FloatConverter: ("number", "float"),
 }
-DEFAULT_TYPE = ('string', None)
+DEFAULT_TYPE = ("string", None)
 
 
 class FlaskPlugin(BasePlugin):
@@ -48,7 +48,7 @@ class FlaskPlugin(BasePlugin):
 
         :param str path: Flask path template.
         """
-        return RE_URL.sub(r'{\1}', path)
+        return RE_URL.sub(r"{\1}", path)
 
     def register_converter(self, converter, conv_type, conv_format=None):
         """Register custom path parameter converter
@@ -66,19 +66,18 @@ class FlaskPlugin(BasePlugin):
         params = []
         for argument in rule.arguments:
             param = {
-                'in': 'path',
-                'name': argument,
-                'required': True,
+                "in": "path",
+                "name": argument,
+                "required": True,
             }
-            type_, format_ = self.converter_mapping.get(
-                type(rule._converters[argument]), DEFAULT_TYPE)
-            schema = {'type': type_}
+            type_, format_ = self.converter_mapping.get(type(rule._converters[argument]), DEFAULT_TYPE)
+            schema = {"type": type_}
             if format_ is not None:
-                schema['format'] = format_
+                schema["format"] = format_
             if self.openapi_version.major < 3:
                 param.update(schema)
             else:
-                param['schema'] = schema
+                param["schema"] = schema
             params.append(param)
         return params
 
@@ -89,14 +88,10 @@ class FlaskPlugin(BasePlugin):
 
         for path_p in self.rule_to_params(rule):
             for operation in operations.values():
-                parameters = operation.setdefault('parameters', [])
+                parameters = operation.setdefault("parameters", [])
                 # If a parameter with same name and location is already
                 # documented, update. Otherwise, append as new parameter.
-                p_doc = next(
-                    (p for p in parameters
-                     if p['in'] == 'path' and p['name'] == path_p['name']),
-                    None
-                )
+                p_doc = next((p for p in parameters if p["in"] == "path" and p["name"] == path_p["name"]), None)
                 if p_doc is not None:
                     # If parameter already documented, mutate to update doc
                     # Ensure manual doc overwrites auto doc

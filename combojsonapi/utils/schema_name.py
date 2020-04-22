@@ -6,7 +6,7 @@ from apispec.ext.marshmallow.common import MODIFIERS
 def create_schema_name(schema=None, name_schema=None):
     if name_schema:
         if name_schema not in class_registry._registry:
-            raise ValueError(f'No schema {name_schema}')
+            raise ValueError(f"No schema {name_schema}")
         cls_schema = class_registry.get_class(name_schema)
         schema = cls_schema()
     elif schema:
@@ -18,9 +18,9 @@ def create_schema_name(schema=None, name_schema=None):
     for modifier in MODIFIERS:
         attribute = getattr(schema, modifier)
         if attribute:
-            modifiers.append(f'{modifier}={attribute}')
-    modifiers_str = ','.join(modifiers)
+            modifiers.append(f"{modifier}={attribute}")
+    modifiers_str = ",".join(modifiers)
     if modifiers_str:
-        modifiers_str = f'({modifiers_str})'
+        modifiers_str = f"({modifiers_str})"
     name_cls_schema = resolver(cls_schema)
-    return f'{name_cls_schema}{modifiers_str}'
+    return f"{name_cls_schema}{modifiers_str}"

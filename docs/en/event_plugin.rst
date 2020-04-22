@@ -49,10 +49,10 @@ We want to upload a user avatar. We'll also load **ApiSpecPlugin**, so we watch 
     from flask_sqlalchemy import SQLAlchemy
     from sqlalchemy import Column, Integer, String
     from sqlalchemy.orm import Query, load_only, scoped_session
-    from flask_rest_jsonapi.marshmallow_fields import Relationship
-    from flask_rest_jsonapi import Api, ResourceList, ResourceDetail
-    from flask_rest_jsonapi.plugin import BasePlugin
-    from flask_rest_jsonapi.querystring import QueryStringManager
+    from flask_combo_jsonapi.marshmallow_fields import Relationship
+    from flask_combo_jsonapi import Api, ResourceList, ResourceDetail
+    from flask_combo_jsonapi.plugin import BasePlugin
+    from flask_combo_jsonapi.querystring import QueryStringManager
     from combojsonapi.event.resource import EventsResource
     from combojsonapi.event import EventPlugin
     from combojsonapi.spec import ApiSpecPlugin

@@ -1,7 +1,7 @@
 from unittest.mock import Mock
 
 import pytest
-from flask_rest_jsonapi.utils import SPLIT_REL
+from flask_combo_jsonapi.utils import SPLIT_REL
 from marshmallow import Schema, fields
 
 from combojsonapi.postgresql_jsonb import PostgreSqlJSONB

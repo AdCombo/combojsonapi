@@ -3,13 +3,12 @@ from typing import Dict, Any, Set, List, Union, Tuple, Generator
 
 from apispec import APISpec
 from apispec.exceptions import APISpecError
-from apispec.ext.marshmallow import MarshmallowPlugin, OpenAPIConverter, make_schema_key, \
-    resolve_schema_instance
+from apispec.ext.marshmallow import MarshmallowPlugin, OpenAPIConverter, make_schema_key, resolve_schema_instance
 from marshmallow import fields, Schema
-from flask_rest_jsonapi import Api
-from flask_rest_jsonapi.plugin import BasePlugin
-from flask_rest_jsonapi.resource import ResourceList, ResourceDetail
-from flask_rest_jsonapi.utils import SPLIT_REL
+from flask_combo_jsonapi import Api
+from flask_combo_jsonapi.plugin import BasePlugin
+from flask_combo_jsonapi.resource import ResourceList, ResourceDetail
+from flask_combo_jsonapi.utils import SPLIT_REL
 
 from combojsonapi.spec.apispec import DocBlueprintMixin
 from combojsonapi.spec.compat import APISPEC_VERSION_MAJOR
@@ -19,6 +18,7 @@ from combojsonapi.utils import Relationship, create_schema_name, status
 
 class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
     """Плагин для связки json_api и swagger"""
+
     def __init__(self, app=None, spec_kwargs=None, decorators=None, tags: Dict[str, str] = None):
         """
 
@@ -42,19 +42,19 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
         self.app = app
         self._app = app
         # Initialize spec
-        openapi_version = app.config.get('OPENAPI_VERSION', '2.0')
-        openapi_major_version = int(openapi_version.split('.')[0])
+        openapi_version = app.config.get("OPENAPI_VERSION", "2.0")
+        openapi_major_version = int(openapi_version.split(".")[0])
         if openapi_major_version < 3:
-            base_path = app.config.get('APPLICATION_ROOT')
+            base_path = app.config.get("APPLICATION_ROOT")
             # Don't pass basePath if '/' to avoid a bug in apispec
             # https://github.com/marshmallow-code/apispec/issues/78#issuecomment-431854606
             # TODO: Remove this condition when the bug is fixed
-            if base_path != '/':
-                self.spec_kwargs.setdefault('basePath', base_path)
-        self.spec_kwargs.update(app.config.get('API_SPEC_OPTIONS', {}))
+            if base_path != "/":
+                self.spec_kwargs.setdefault("basePath", base_path)
+        self.spec_kwargs.update(app.config.get("API_SPEC_OPTIONS", {}))
         self.spec = APISpec(
             app.name,
-            app.config.get('API_VERSION', '1'),
+            app.config.get("API_VERSION", "1"),
             openapi_version=openapi_version,
             plugins=[MarshmallowPlugin(), RestfulPlugin()],
             **self.spec_kwargs,
@@ -62,7 +62,7 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
 
         tags = tags if tags else {}
         for tag_name, tag_description in tags.items():
-            self.spec_tag[tag_name] = {'name': tag_name, 'description': tag_description, 'add_in_spec': False}
+            self.spec_tag[tag_name] = {"name": tag_name, "description": tag_description, "add_in_spec": False}
             self._add_tags_in_spec(self.spec_tag[tag_name])
 
     def after_init_plugin(self, *args, app=None, **kwargs):
@@ -82,15 +82,17 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
         # Initialize blueprint serving spec
         self._register_doc_blueprint()
 
-    def after_route(self,
-                    resource: Union[ResourceList, ResourceDetail] = None,
-                    view=None,
-                    urls: Tuple[str] = None,
-                    self_json_api: Api = None,
-                    tag: str = None,
-                    default_parameters=None,
-                    default_schema: Schema = None,
-                    **kwargs) -> None:
+    def after_route(
+        self,
+        resource: Union[ResourceList, ResourceDetail] = None,
+        view=None,
+        urls: Tuple[str] = None,
+        self_json_api: Api = None,
+        tag: str = None,
+        default_parameters=None,
+        default_schema: Schema = None,
+        **kwargs,
+    ) -> None:
         """
 
         :param resource:
@@ -114,11 +116,11 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
         # We add tags to the apiscpec
         tag_name = view.title()
         if tag is None and view.title() not in self.spec_tag:
-            dict_tag = {'name': view.title(), 'description': '', 'add_in_spec': False}
-            self.spec_tag[dict_tag['name']] = dict_tag
+            dict_tag = {"name": view.title(), "description": "", "add_in_spec": False}
+            self.spec_tag[dict_tag["name"]] = dict_tag
             self._add_tags_in_spec(dict_tag)
         elif tag:
-            tag_name = self.spec_tag[tag]['name']
+            tag_name = self.spec_tag[tag]["name"]
 
         urls = urls if urls else tuple()
         for i_url in urls:
@@ -128,7 +130,7 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
                 default_parameters=default_parameters,
                 default_schema=default_schema,
                 tag_name=tag_name,
-                **kwargs
+                **kwargs,
             )
 
     @property
@@ -150,11 +152,9 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
         :return:
         """
         return {
-            'tags': [tag_name],
-            'produces': [
-                'application/json',
-            ],
-            'parameters': default_parameters if default_parameters else [],
+            "tags": [tag_name],
+            "produces": ["application/json",],
+            "parameters": default_parameters if default_parameters else [],
         }
 
     def __get_parameters_for_include_models(self, resource) -> dict:
@@ -163,29 +163,26 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
             for i_field_name, i_field in resource.schema._declared_fields.items()
             if isinstance(i_field, Relationship)
         ]
-        models_for_include = ','.join(fields_names)
-        example_models_for_include = '\n'.join([f'`{f}`' for f in fields_names])
+        models_for_include = ",".join(fields_names)
+        example_models_for_include = "\n".join([f"`{f}`" for f in fields_names])
         return {
-            'default': models_for_include,
-            'name': 'include',
-            'in': 'query',
-            'format': 'string',
-            'required': False,
-            'description': f'Related relationships to include.\nAvailable:\n{example_models_for_include}',
+            "default": models_for_include,
+            "name": "include",
+            "in": "query",
+            "format": "string",
+            "required": False,
+            "description": f"Related relationships to include.\nAvailable:\n{example_models_for_include}",
         }
 
     def __get_parameters_for_sparse_fieldsets(self, resource, description) -> dict:
         # Sparse Fieldsets
         return {
-            'name': f'fields[{resource.schema.Meta.type_}]',
-            'in': 'query',
-            'type': 'array',
-            'required': False,
-            'description': description.format(resource.schema.Meta.type_),
-            'items': {
-                'type': 'string',
-                'enum': list(resource.schema._declared_fields.keys()),
-            }
+            "name": f"fields[{resource.schema.Meta.type_}]",
+            "in": "query",
+            "type": "array",
+            "required": False,
+            "description": description.format(resource.schema.Meta.type_),
+            "items": {"type": "string", "enum": list(resource.schema._declared_fields.keys()),},
         }
 
     def __get_parameters_for_declared_fields(self, resource, description) -> Generator[dict, None, None]:
@@ -195,15 +192,15 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
                 continue
             schema_name = create_schema_name(schema=i_field.schema)
             new_parameter = {
-                'name': f'fields[{i_field.schema.Meta.type_}]',
-                'in': 'query',
-                'type': 'array',
-                'required': False,
-                'description': description.format(i_field.schema.Meta.type_),
-                'items': {
-                    'type': 'string',
-                    'enum': list(self.spec.components._schemas[schema_name]['properties'].keys())
-                }
+                "name": f"fields[{i_field.schema.Meta.type_}]",
+                "in": "query",
+                "type": "array",
+                "required": False,
+                "description": description.format(i_field.schema.Meta.type_),
+                "items": {
+                    "type": "string",
+                    "enum": list(self.spec.components._schemas[schema_name]["properties"].keys()),
+                },
             }
             type_schemas.add(i_field.schema.Meta.type_)
             yield new_parameter
@@ -212,69 +209,65 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
     def __list_filters_data(self) -> tuple:
         return (
             {
-                'default': 1,
-                'name': 'page[number]',
-                'in': 'query',
-                'format': 'int64',
-                'required': False,
-                'description': 'Page offset',
+                "default": 1,
+                "name": "page[number]",
+                "in": "query",
+                "format": "int64",
+                "required": False,
+                "description": "Page offset",
             },
             {
-                'default': 10,
-                'name': 'page[size]',
-                'in': 'query',
-                'format': 'int64',
-                'required': False,
-                'description': 'Max number of items',
+                "default": 10,
+                "name": "page[size]",
+                "in": "query",
+                "format": "int64",
+                "required": False,
+                "description": "Max number of items",
             },
+            {"name": "sort", "in": "query", "format": "string", "required": False, "description": "Sort",},
             {
-                'name': 'sort',
-                'in': 'query',
-                'format': 'string',
-                'required': False,
-                'description': 'Sort',
-            },
-            {
-                'name': 'filter',
-                'in': 'query',
-                'format': 'string',
-                'required': False,
-                'description': 'Filter (https://flask-rest-jsonapi.readthedocs.io/en/latest/filtering.html)',
+                "name": "filter",
+                "in": "query",
+                "format": "string",
+                "required": False,
+                "description": "Filter (https://flask-combo-jsonapi.readthedocs.io/en/latest/filtering.html)",
             },
         )
 
+    def __update_parameter_for_field_spec(self, new_param: dict, fld_sped: dict) -> None:
+        """
+        :param new_param:
+        :param fld_sped:
+        :return:
+        """
+        if "items" in fld_sped:
+            new_items = {
+                "type": fld_sped["items"].get("type"),
+            }
+            if "enum" in fld_sped["items"]:
+                new_items["enum"] = fld_sped["items"]["enum"]
+            new_param.update({"items": new_items})
+
     def __get_parameter_for_not_nested(self, field_name, field_spec) -> dict:
         new_parameter = {
-            'name': f'filter[{field_name}]',
-            'in': 'query',
-            'type': field_spec.get('type'),
-            'required': False,
-            'description': f'{field_name} attribute filter'
+            "name": f"filter[{field_name}]",
+            "in": "query",
+            "type": field_spec.get("type"),
+            "required": False,
+            "description": f"{field_name} attribute filter",
         }
-        if 'items' in field_spec:
-            new_items = {
-                'type': field_spec['items'].get('type'),
-            }
-            if 'enum' in field_spec['items']:
-                new_items['enum'] = field_spec['items']['enum']
-            new_parameter.update({'items': new_items})
+        self.__update_parameter_for_field_spec(new_parameter, field_spec)
         return new_parameter
 
     def __get_parameter_for_nested_with_filtering(self, field_name, field_jsonb_name, field_jsonb_spec):
         new_parameter = {
-            'name': f'filter[{field_name}{SPLIT_REL}{field_jsonb_name}]',
-            'in': 'query',
-            'type': field_jsonb_spec.get('type'),
-            'required': False,
-            'description': f'{field_name}{SPLIT_REL}{field_jsonb_name} attribute filter'
+            "name": f"filter[{field_name}{SPLIT_REL}{field_jsonb_name}]",
+            "in": "query",
+            "type": field_jsonb_spec.get("type"),
+            "required": False,
+            "description": f"{field_name}{SPLIT_REL}{field_jsonb_name} attribute filter",
         }
-        if 'items' in field_jsonb_spec:
-            new_items = {
-                'type': field_jsonb_spec['items'].get('type'),
-            }
-            if 'enum' in field_jsonb_spec['items']:
-                new_items['enum'] = field_jsonb_spec['items']['enum']
-            new_parameter.update({'items': new_items})
+        self.__update_parameter_for_field_spec(new_parameter, field_jsonb_spec)
         return new_parameter
 
     def __get_parameters_for_nested_with_filtering(self, field, field_name) -> Generator[dict, None, None]:
@@ -282,8 +275,8 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
         field_schema_name = create_schema_name(schema=field.schema)
         component_schema = self.spec.components._schemas[field_schema_name]
         for i_field_jsonb_name, i_field_jsonb in field.schema._declared_fields.items():
-            i_field_jsonb_spec = component_schema['properties'][i_field_jsonb_name]
-            if i_field_jsonb_spec.get('type') == 'object':
+            i_field_jsonb_spec = component_schema["properties"][i_field_jsonb_name]
+            if i_field_jsonb_spec.get("type") == "object":
                 # Пропускаем создание фильтров для dict. Просто не понятно как фильтровать по таким
                 # полям
                 continue
@@ -295,122 +288,136 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
     def __get_list_resource_fields_filters(self, resource) -> Generator[dict, None, None]:
         schema_name = create_schema_name(schema=resource.schema)
         for i_field_name, i_field in resource.schema._declared_fields.items():
-            i_field_spec = self.spec.components._schemas[schema_name]['properties'][i_field_name]
+            i_field_spec = self.spec.components._schemas[schema_name]["properties"][i_field_name]
             if not isinstance(i_field, fields.Nested):
-                if i_field_spec.get('type') == 'object':
+                if i_field_spec.get("type") == "object":
                     # Skip filtering by dicts
                     continue
                 yield self.__get_parameter_for_not_nested(i_field_name, i_field_spec)
-            elif getattr(i_field.schema.Meta, 'filtering', False):
+            elif getattr(i_field.schema.Meta, "filtering", False):
                 yield from self.__get_parameters_for_nested_with_filtering(i_field, i_field_name)
 
     def _get_operations_for_get(self, resource, tag_name, default_parameters):
         operations_get = self._get_operations_for_all(tag_name, default_parameters)
-        operations_get['responses'] = {
+        operations_get["responses"] = {
             **status[HTTPStatus.OK],
             **status[HTTPStatus.NOT_FOUND],
         }
 
         if issubclass(resource, ResourceDetail):
-            operations_get['parameters'].append(self.param_id)
+            operations_get["parameters"].append(self.param_id)
 
         if resource.schema is None:
             return operations_get
 
-        description = 'List that refers to the name(s) of the fields to be returned `{}`'
+        description = "List that refers to the name(s) of the fields to be returned `{}`"
 
-        operations_get['parameters'].extend((
-            self.__get_parameters_for_include_models(resource),
-            self.__get_parameters_for_sparse_fieldsets(resource, description),
-        ))
-        operations_get['parameters'].extend(self.__get_parameters_for_declared_fields(resource, description))
+        operations_get["parameters"].extend(
+            (
+                self.__get_parameters_for_include_models(resource),
+                self.__get_parameters_for_sparse_fieldsets(resource, description),
+            )
+        )
+        operations_get["parameters"].extend(self.__get_parameters_for_declared_fields(resource, description))
 
         if issubclass(resource, ResourceList):
-            operations_get['parameters'].extend(self.__list_filters_data)
-            operations_get['parameters'].extend(self.__get_list_resource_fields_filters(resource))
+            operations_get["parameters"].extend(self.__list_filters_data)
+            operations_get["parameters"].extend(self.__get_list_resource_fields_filters(resource))
 
         return operations_get
 
-    def _add_paths_in_spec(self, path: str = '', resource: Any = None, tag_name: str = '',
-                           default_parameters: List = None,
-                           default_schema: Schema = None, **kwargs) -> None:
+    def _add_paths_in_spec(
+        self,
+        path: str = "",
+        resource: Any = None,
+        tag_name: str = "",
+        default_parameters: List = None,
+        default_schema: Schema = None,
+        **kwargs,
+    ) -> None:
         operations = {}
         methods: Set[str] = {i_method.lower() for i_method in resource.methods}
 
         attributes = {}
         if resource.schema:
-            attributes = {
-                '$ref': f'#/definitions/{create_schema_name(resource.schema)}'
-            }
-        schema = default_schema if default_schema else {
-            'type': 'object',
-            'properties': {
-                'data': {
-                    'type': 'object',
-                    'properties': {
-                        'type': {
-                            'type': 'string'
+            attributes = {"$ref": f"#/definitions/{create_schema_name(resource.schema)}"}
+        schema = (
+            default_schema
+            if default_schema
+            else {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                            },
+                            "id": {
+                                "type": "string",
+                            },
+                            "attributes": attributes,
+                            "relationships": {
+                                "type": "object",
+                            },
                         },
-                        'id': {
-                            'type': 'string'
-                        },
-                        'attributes': attributes,
-                        'relationships': {
-                            'type': 'object'
-                        }
+                        "required": [
+                            "type",
+                        ],
                     },
-                    'required': [
-                        'type',
-                    ],
                 },
-            },
-        }
+            }
+        )
 
-        if 'get' in methods:
-            operations['get'] = self._get_operations_for_get(resource, tag_name, default_parameters)
-        if 'post' in methods:
-            operations['post'] = self._get_operations_for_all(tag_name, default_parameters)
-            operations['post']['responses'] = {
-                '201': {'description': 'Created'},
-                '202': {'description': 'Accepted'},
-                '403': {'description': 'This implementation does not accept client-generated IDs'},
-                '404': {'description': 'Not Found'},
-                '409': {'description': 'Conflict'}
+        if "get" in methods:
+            operations["get"] = self._get_operations_for_get(resource, tag_name, default_parameters)
+        if "post" in methods:
+            operations["post"] = self._get_operations_for_all(tag_name, default_parameters)
+            operations["post"]["responses"] = {
+                "201": {"description": "Created"},
+                "202": {"description": "Accepted"},
+                "403": {"description": "This implementation does not accept client-generated IDs"},
+                "404": {"description": "Not Found"},
+                "409": {"description": "Conflict"},
             }
-            operations['post']['parameters'].append({
-                'name': 'POST body',
-                'in': 'body',
-                'schema': schema,
-                'required': True,
-                'description': f'{tag_name} attributes'
-            })
-        if 'patch' in methods:
-            operations['patch'] = self._get_operations_for_all(tag_name, default_parameters)
-            operations['patch']['responses'] = {
-                '200': {'description': 'Success'},
-                '201': {'description': 'Created'},
-                '204': {'description': 'No Content'},
-                '403': {'description': 'Forbidden'},
-                '404': {'description': 'Not Found'},
-                '409': {'description': 'Conflict'}
+            operations["post"]["parameters"].append(
+                {
+                    "name": "POST body",
+                    "in": "body",
+                    "schema": schema,
+                    "required": True,
+                    "description": f"{tag_name} attributes",
+                }
+            )
+        if "patch" in methods:
+            operations["patch"] = self._get_operations_for_all(tag_name, default_parameters)
+            operations["patch"]["responses"] = {
+                "200": {"description": "Success"},
+                "201": {"description": "Created"},
+                "204": {"description": "No Content"},
+                "403": {"description": "Forbidden"},
+                "404": {"description": "Not Found"},
+                "409": {"description": "Conflict"},
             }
-            operations['patch']['parameters'].append(self.param_id)
-            operations['patch']['parameters'].append({
-                'name': 'POST body',
-                'in': 'body',
-                'schema': schema,
-                'required': True,
-                'description': f'{tag_name} attributes'
-            })
-        if 'delete' in methods:
-            operations['delete'] = self._get_operations_for_all(tag_name, default_parameters)
-            operations['delete']['parameters'].append(self.param_id)
-            operations['delete']['responses'] = {
-                '200': {'description': 'Success'},
-                '202': {'description': 'Accepted'},
-                '204': {'description': 'No Content'},
-                '403': {'description': 'Forbidden'},
-                '404': {'description': 'Not Found'}
+            operations["patch"]["parameters"].append(self.param_id)
+            operations["patch"]["parameters"].append(
+                {
+                    "name": "POST body",
+                    "in": "body",
+                    "schema": schema,
+                    "required": True,
+                    "description": f"{tag_name} attributes",
+                }
+            )
+        if "delete" in methods:
+            operations["delete"] = self._get_operations_for_all(tag_name, default_parameters)
+            operations["delete"]["parameters"].append(self.param_id)
+            operations["delete"]["responses"] = {
+                "200": {"description": "Success"},
+                "202": {"description": "Accepted"},
+                "204": {"description": "No Content"},
+                "403": {"description": "Forbidden"},
+                "404": {"description": "Not Found"},
             }
         rule = None
         for i_rule in self.app.url_map._rules:
@@ -442,17 +449,17 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
         :param tag: {'name': '<name tag>', 'description': '<tag description>', 'add_in_spec': <added tag in spec?>}
         :return:
         """
-        if tag.get('add_in_spec', True) is False:
-            self.spec_tag[tag['name']]['add_in_spec'] = True
-            tag_in_spec = {'name': tag['name'], 'description': tag['description']}
+        if tag.get("add_in_spec", True) is False:
+            self.spec_tag[tag["name"]]["add_in_spec"] = True
+            tag_in_spec = {"name": tag["name"], "description": tag["description"]}
             if APISPEC_VERSION_MAJOR < 1:
                 self.spec.add_tag(tag_in_spec)
             else:
                 self.spec.tag(tag_in_spec)
 
 
-# Рефактор, чтобы не выкидывались варнинги о том что схема уже добавлена, переделал формирования имени для существующих
-# схем
+# Refactoring to get rid of warnings about already present schemas
+# Creation of new schemas' names was changed
 def resolve_nested_schema(self, schema):
     """Return the Open API representation of a marshmallow Schema.
 
