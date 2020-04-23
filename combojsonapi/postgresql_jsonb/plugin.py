@@ -1,6 +1,6 @@
 import datetime
 from decimal import Decimal
-from typing import Any
+from typing import Any, Optional, Union, Dict, Type
 
 import sqlalchemy
 from sqlalchemy import cast, String, Integer, Boolean, DECIMAL, not_
@@ -18,6 +18,13 @@ from combojsonapi.utils import Relationship
 from combojsonapi.postgresql_jsonb.schema import SchemaJSONB
 
 
+TYPE_MARSHMALLOW_FIELDS = Type[Union[
+    ma_fields.Email, ma_fields.Dict, ma_fields.List,
+    ma_fields.Decimal, ma_fields.Url, ma_fields.DateTime, Any
+]]
+TYPE_PYTHON = Type[Union[str, dict, list, Decimal, datetime.datetime]]
+
+
 def is_seq_collection(obj):
     """
     является ли переданный объект set, list, tuple
@@ -28,6 +35,27 @@ def is_seq_collection(obj):
 
 
 class PostgreSqlJSONB(BasePlugin):
+    mapping_ma_field_to_type: Dict[TYPE_MARSHMALLOW_FIELDS, TYPE_PYTHON] = {
+        ma_fields.Email: str,
+        ma_fields.Dict: dict,
+        ma_fields.List: list,
+        ma_fields.Decimal: Decimal,
+        ma_fields.Url: str,
+        ma_fields.DateTime: datetime.datetime,
+    }
+
+    def get_property_type(
+            self, marshmallow_field: TYPE_MARSHMALLOW_FIELDS, schema: Optional[Schema] = None
+    ) -> TYPE_PYTHON:
+        if schema is not None:
+            self.mapping_ma_field_to_type.update({
+                v: k for k, v in schema.TYPE_MAPPING.items()
+            })
+        return self.mapping_ma_field_to_type[type(marshmallow_field)]
+
+    def add_mapping_field_to_python_type(self, marshmallow_field: Any, type_python: TYPE_PYTHON) -> None:
+        self.mapping_ma_field_to_type[marshmallow_field] = type_python
+
     def before_data_layers_sorting_alchemy_nested_resolve(self, self_nested: Any) -> Any:
         """
         Вызывается до создания сортировки в функции Nested.resolve, если после выполнения вернёт None, то
@@ -86,8 +114,7 @@ class PostgreSqlJSONB(BasePlugin):
                 return False
         return False
 
-    @classmethod
-    def _create_sort(cls, self_nested: Any, marshmallow_field, model_column, order):
+    def _create_sort(self, self_nested: Any, marshmallow_field, model_column, order):
         """
         Create sqlalchemy sort
         :param Nested self_nested:
@@ -106,7 +133,7 @@ class PostgreSqlJSONB(BasePlugin):
             self_nested.sort_["field"] = SPLIT_REL.join(fields[1:])
             marshmallow_field = marshmallow_field.schema._declared_fields[fields[1]]
             model_column = getattr(mapper, sqlalchemy_relationship_name)
-            return cls._create_sort(self_nested, marshmallow_field, model_column, order)
+            return self._create_sort(self_nested, marshmallow_field, model_column, order)
         elif not isinstance(getattr(marshmallow_field, "schema", None), SchemaJSONB):
             raise InvalidFilters(f"Invalid JSONB sort: {SPLIT_REL.join(self_nested.fields)}")
         fields = self_nested.sort_["field"].split(SPLIT_REL)
@@ -126,16 +153,10 @@ class PostgreSqlJSONB(BasePlugin):
             return getattr(marshmallow_field, f"_{order}_sql_filter_")(
                 marshmallow_field=marshmallow_field, model_column=model_column
             )
-        mapping_ma_field_to_type = {v: k for k, v in self_nested.schema.TYPE_MAPPING.items()}
-        mapping_ma_field_to_type[ma_fields.Email] = str
-        mapping_ma_field_to_type[ma_fields.Dict] = dict
-        mapping_ma_field_to_type[ma_fields.List] = list
-        mapping_ma_field_to_type[ma_fields.Decimal] = Decimal
-        mapping_ma_field_to_type[ma_fields.Url] = str
-        mapping_ma_field_to_type[ma_fields.DateTime] = datetime.datetime
+
+        property_type = self.get_property_type(marshmallow_field=marshmallow_field, schema=self_nested.schema)
         mapping_type_to_sql_type = {str: String, bytes: String, Decimal: DECIMAL, int: Integer, bool: Boolean}
 
-        property_type = mapping_ma_field_to_type[type(marshmallow_field)]
         extra_field = model_column.op("->>")(field_in_jsonb)
         sort = ""
         order_op = desc_op if order == "desc" else asc_op
@@ -146,8 +167,7 @@ class PostgreSqlJSONB(BasePlugin):
                 sort = order_op(extra_field.cast(mapping_type_to_sql_type[property_type]))
         return sort
 
-    @classmethod
-    def _create_filter(cls, self_nested: Any, marshmallow_field, model_column, operator, value):
+    def _create_filter(self, self_nested: Any, marshmallow_field, model_column, operator, value):
         """
         Create sqlalchemy filter
         :param Nested self_nested:
@@ -168,7 +188,7 @@ class PostgreSqlJSONB(BasePlugin):
             marshmallow_field = marshmallow_field.schema._declared_fields[fields[1]]
             join_list = [[model_column]]
             model_column = getattr(mapper, sqlalchemy_relationship_name)
-            filter, joins = cls._create_filter(self_nested, marshmallow_field, model_column, operator, value)
+            filter, joins = self._create_filter(self_nested, marshmallow_field, model_column, operator, value)
             join_list += joins
             return filter, join_list
         elif not isinstance(getattr(marshmallow_field, "schema", None), SchemaJSONB):
@@ -198,40 +218,33 @@ class PostgreSqlJSONB(BasePlugin):
                 ),
                 [],
             )
-        mapping = {v: k for k, v in self_nested.schema.TYPE_MAPPING.items()}
-        mapping[ma_fields.Email] = str
-        mapping[ma_fields.Dict] = dict
-        mapping[ma_fields.List] = list
-        mapping[ma_fields.Decimal] = Decimal
-        mapping[ma_fields.Url] = str
-        mapping[ma_fields.DateTime] = datetime.datetime
 
         # Нужно проводить валидацию и делать десериализацию значение указанных в фильтре, так как поля Enum
         # например выгружаются как 'name_value(str)', а в БД хранится как просто число
         value = deserialize_field(marshmallow_field, value)
 
-        property_type = mapping[type(marshmallow_field)]
+        property_type = self.get_property_type(marshmallow_field=marshmallow_field, schema=self_nested.schema)
         extra_field = model_column.op("->>")(field_in_jsonb)
-        filter = ""
+        filter_ = ""
         if property_type == Decimal:
-            filter = getattr(cast(extra_field, DECIMAL), self_nested.operator)(value)
+            filter_ = getattr(cast(extra_field, DECIMAL), self_nested.operator)(value)
 
         if property_type in {str, bytes}:
-            filter = getattr(cast(extra_field, String), self_nested.operator)(value)
+            filter_ = getattr(cast(extra_field, String), self_nested.operator)(value)
 
         if property_type == int:
             field = cast(extra_field, Integer)
             if value:
-                filter = getattr(field, self_nested.operator)(value)
+                filter_ = getattr(field, self_nested.operator)(value)
             else:
-                filter = or_(getattr(field, self_nested.operator)(value), field.is_(None))
+                filter_ = or_(getattr(field, self_nested.operator)(value), field.is_(None))
 
         if property_type == bool:
-            filter = cast(extra_field, Boolean) == value
+            filter_ = cast(extra_field, Boolean) == value
 
         if property_type == list:
-            filter = model_column.op("->")(field_in_jsonb).op("?")(value[0] if is_seq_collection(value) else value)
+            filter_ = model_column.op("->")(field_in_jsonb).op("?")(value[0] if is_seq_collection(value) else value)
             if operator in ["notin", "notin_"]:
-                filter = not_(filter)
+                filter_ = not_(filter_)
 
-        return filter, []
+        return filter_, []

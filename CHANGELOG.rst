@@ -1,6 +1,14 @@
 Changelog
 *********
 
+**Future**
+==========
+
+Enhancements
+============
+
+* Added for custom marshmallow fields for PostgreSQL filtering (in PermissionPlugin) #- `@Znbiz`_
+
 
 **1.0.0**
 =========
