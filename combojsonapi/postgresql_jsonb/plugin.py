@@ -105,7 +105,7 @@ class PostgreSqlJSONB(BasePlugin):
         fields = filter_name.split(SPLIT_REL)
         for i, i_field in enumerate(fields):
             if isinstance(getattr(schema._declared_fields[i_field], "schema", None), SchemaJSONB):
-                if i != (len(fields) - 2):
+                if i == (len(fields) - 1):
                     raise InvalidFilters(f"Invalid JSONB filter: {filter_name}")
                 return True
             elif isinstance(schema._declared_fields[i_field], Relationship):
@@ -140,7 +140,8 @@ class PostgreSqlJSONB(BasePlugin):
         self_nested.sort_["field"] = SPLIT_REL.join(fields[:-1])
         field_in_jsonb = fields[-1]
 
-        marshmallow_field = marshmallow_field.schema._declared_fields[field_in_jsonb]
+        for field in fields[1:]:
+            marshmallow_field = marshmallow_field.schema._declared_fields[field]
         if hasattr(marshmallow_field, f"_{order}_sql_filter_"):
             """
             У marshmallow field может быть реализована своя логика создания сортировки для sqlalchemy
@@ -150,6 +151,11 @@ class PostgreSqlJSONB(BasePlugin):
             * marshmallow_field - объект класса поля marshmallow
             * model_column - объект класса поля sqlalchemy
             """
+            # All values between the first and last field will be the path to the desired value by which to sort,
+            # so we write the path through "->"
+            for field in fields[1:-1]:
+                model_column = model_column.op("->")(field)
+            model_column = model_column.op("->>")(field_in_jsonb)
             return getattr(marshmallow_field, f"_{order}_sql_filter_")(
                 marshmallow_field=marshmallow_field, model_column=model_column
             )
@@ -157,6 +163,8 @@ class PostgreSqlJSONB(BasePlugin):
         property_type = self.get_property_type(marshmallow_field=marshmallow_field, schema=self_nested.schema)
         mapping_type_to_sql_type = {str: String, bytes: String, Decimal: DECIMAL, int: Integer, bool: Boolean}
 
+        for field in fields[1:-1]:
+            model_column = model_column.op("->")(field)
         extra_field = model_column.op("->>")(field_in_jsonb)
         sort = ""
         order_op = desc_op if order == "desc" else asc_op
@@ -195,7 +203,8 @@ class PostgreSqlJSONB(BasePlugin):
             raise InvalidFilters(f"Invalid JSONB filter: {SPLIT_REL.join(field_in_jsonb)}")
         self_nested.filter_["name"] = SPLIT_REL.join(fields[:-1])
         try:
-            marshmallow_field = marshmallow_field.schema._declared_fields[field_in_jsonb]
+            for field in fields[1:]:
+                marshmallow_field = marshmallow_field.schema._declared_fields[field]
         except KeyError:
             raise InvalidFilters(f'There is no "{field_in_jsonb}" attribute in the "{fields[-2]}" field.')
         if hasattr(marshmallow_field, f"_{operator}_sql_filter_"):
@@ -209,10 +218,13 @@ class PostgreSqlJSONB(BasePlugin):
             * value - значения для фильтра
             * operator - сам оператор, например: "eq", "in"...
             """
+            for field in fields[1:-1]:
+                model_column = model_column.op("->")(field)
+            model_column = model_column.op("->>")(field_in_jsonb)
             return (
                 getattr(marshmallow_field, f"_{operator}_sql_filter_")(
                     marshmallow_field=marshmallow_field,
-                    model_column=model_column.op("->>")(field_in_jsonb),
+                    model_column=model_column,
                     value=value,
                     operator=self_nested.operator,
                 ),
@@ -224,6 +236,8 @@ class PostgreSqlJSONB(BasePlugin):
         value = deserialize_field(marshmallow_field, value)
 
         property_type = self.get_property_type(marshmallow_field=marshmallow_field, schema=self_nested.schema)
+        for field in fields[1:-1]:
+            model_column = model_column.op("->")(field)
         extra_field = model_column.op("->>")(field_in_jsonb)
         filter_ = ""
         if property_type == Decimal:

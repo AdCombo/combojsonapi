@@ -40,12 +40,28 @@ def schema(custom_field):
 
     class TestSchema(SchemaJSONB):
         name = fields.Integer()
+        lvl1 = fields.Nested('TestSchemaLvl2')
         type_test = custom_field(allowed_values=[1, 2, 3, 5, 8])
+
+    class TestSchemaLvl2(SchemaJSONB):
+        name = fields.String()
+        list = fields.List(fields.String())
+        list._ilike_sql_filter_ = assert_custom_opertor
+        name._desc_sql_filter_ = assert_custom_sort
 
     class ParentSchema(Schema):
         test_schema = fields.Nested('TestSchema')
 
     return ParentSchema
+
+
+def assert_custom_opertor(marshmallow_field, model_column, value, operator):
+    assert operator == '__ilike__'
+    return True
+
+
+def assert_custom_sort(marshmallow_field, model_column):
+    return True
 
 
 class TestPostgreSqlJSONB:
@@ -86,4 +102,87 @@ class TestPostgreSqlJSONB:
             value=mock_value
         )
 
+    def test__create_sort(self, plugin, schema):
+        mock_self_nested = Mock()
+        mock_self_nested.sort_ = {'field': f'test_schema{SPLIT_REL}lvl1{SPLIT_REL}name', 'order': 'asc'}
+        mock_self_nested.name = 'test_schema'
+        mock_self_nested.schema = schema
+        mock_marshmallow_field = schema().fields['test_schema']
+        mock_model_column = Mock()
 
+        plugin._create_sort(
+            self_nested=mock_self_nested,
+            marshmallow_field=mock_marshmallow_field,
+            model_column=mock_model_column,
+            order='desc')
+
+        mock_model_column.op("->").assert_called_once()
+
+    def test__create_sort_with_custom_sort(self, plugin, schema):
+        mock_self_nested = Mock()
+        mock_self_nested.sort_ = {'field': f'test_schema{SPLIT_REL}lvl1{SPLIT_REL}name', 'order': 'decs'}
+        mock_self_nested.name = 'test_schema'
+        mock_self_nested.schema = schema
+        mock_marshmallow_field = schema().fields['test_schema']
+        mock_model_column = Mock()
+
+        res = plugin._create_sort(
+            self_nested=mock_self_nested,
+            marshmallow_field=mock_marshmallow_field,
+            model_column=mock_model_column,
+            order='desc')
+
+        mock_model_column.op("->").assert_called_once()
+        assert res == True
+
+    def test__create_filter(self, plugin, schema):
+        mock_operator = 'eq'
+        mock_value = 'string'
+        mock_self_nested = Mock()
+        mock_self_nested.filter_ = {
+            'name': f'test_schema{SPLIT_REL}lvl1{SPLIT_REL}name',
+            'op': mock_operator,
+            'val': mock_value,
+        }
+        mock_self_nested.operator = '__eq__'
+        mock_self_nested.name = 'test_schema'
+        mock_self_nested.name = 'test_schema'
+
+        mock_self_nested.schema = schema
+        mock_marshmallow_field = schema().fields['test_schema']
+        mock_model_column = Mock()
+
+
+        plugin._create_filter(
+            self_nested=mock_self_nested,
+            marshmallow_field=mock_marshmallow_field,
+            model_column=mock_model_column,
+            operator=mock_operator,
+            value=mock_value)
+
+        mock_model_column.op("->").assert_called_once()
+
+    def test__create_filter_with_custom_op(self, plugin, schema):
+        mock_operator = 'ilike'
+        mock_value = 'string'
+        mock_self_nested = Mock()
+        mock_self_nested.filter_ = {
+            'name': f'test_schema{SPLIT_REL}lvl1{SPLIT_REL}list',
+            'op': mock_operator,
+            'val': mock_value,
+        }
+        mock_self_nested.operator = '__ilike__'
+        mock_self_nested.name = 'test_schema'
+
+        mock_self_nested.schema = schema
+        mock_marshmallow_field = schema().fields['test_schema']
+        mock_model_column = Mock()
+
+        plugin._create_filter(
+            self_nested=mock_self_nested,
+            marshmallow_field=mock_marshmallow_field,
+            model_column=mock_model_column,
+            operator=mock_operator,
+            value=mock_value)
+
+        mock_model_column.op("->").assert_called_once()
