@@ -8,8 +8,8 @@ Changelog
 Enhancements
 ============
 
-* Added for custom marshmallow fields for PostgreSQL filtering (in PermissionPlugin) #- `@Znbiz`_
-* Filtering and sorting nested JSONB fields (PostgreSqlJSONB) #- `@tarasovdg1`_
+* Add custom marshmallow fields for PostgreSQL filtering (PostgreSqlJSONB plugin) #- `@Znbiz`_
+* Filtering and sorting nested JSONB fields (PostgreSqlJSONB plugin) #- `@tarasovdg1`_
 
 
 **1.0.0**
