@@ -2,6 +2,16 @@ Changelog
 *********
 
 
+**1.0.3**
+=========
+
+Enhancements
+============
+
+* Add custom marshmallow fields for PostgreSQL filtering (PostgreSqlJSONB plugin) #- `@Znbiz`_
+* Filtering and sorting nested JSONB fields (PostgreSqlJSONB plugin) #- `@tarasovdg1`_
+
+
 **1.0.0**
 =========
 
@@ -62,3 +72,4 @@ Enhancements
 .. _`@mahenzon`: https://github.com/mahenzon
 .. _`@Znbiz`: https://github.com/znbiz
 .. _`@Yakov Shapovalov`: https://github.com/photovirus
+.. _`@tarasovdg1`: https://github.com/tarasovdg1
