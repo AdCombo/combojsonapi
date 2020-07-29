@@ -12,15 +12,6 @@ Enhancements
 * Filtering and sorting nested JSONB fields (PostgreSqlJSONB) #- `@tarasovdg1`_
 
 
-**1.0.3**
-=========
-
-Changes
-=======
-
-* Filtering and sorting nested JSONB fields #- `@tarasovdg1`_
-
-
 **1.0.0**
 =========
 
