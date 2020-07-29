@@ -22,7 +22,6 @@ setup(
     packages=find_packages(exclude=["tests"]),
     zip_safe=False,
     platforms="any",
-    # this would'n work now Suren, what wil not work now?:)
     install_requires=[
         'sqlalchemy',
         'marshmallow==3.2.1',
