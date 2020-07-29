@@ -10,6 +10,15 @@ Enhancements
 * Added for custom marshmallow fields for PostgreSQL filtering (in PermissionPlugin) #- `@Znbiz`_
 
 
+**1.0.3**
+=========
+
+Changes
+=======
+
+* Filtering and sorting nested JSONB fields #- `@tarasovdg1`_
+
+
 **1.0.0**
 =========
 
@@ -70,3 +79,4 @@ Enhancements
 .. _`@mahenzon`: https://github.com/mahenzon
 .. _`@Znbiz`: https://github.com/znbiz
 .. _`@Yakov Shapovalov`: https://github.com/photovirus
+.. _`@tarasovdg1`: https://github.com/tarasovdg1
