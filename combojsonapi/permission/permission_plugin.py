@@ -1,9 +1,10 @@
 from collections import OrderedDict
 from functools import wraps
-from typing import Union, Tuple, List, Dict, Optional, Set
+from typing import Union, Tuple, List, Dict, Optional, Set, Type
 
+from flask_combo_jsonapi.data_layers.alchemy import SqlalchemyDataLayer
 from werkzeug.datastructures import ImmutableMultiDict
-from marshmallow import class_registry, fields
+from marshmallow import class_registry, fields, Schema
 from marshmallow.base import SchemaABC
 from sqlalchemy import Column
 from sqlalchemy.orm.attributes import InstrumentedAttribute
@@ -62,8 +63,7 @@ def permission(method, request_type: str, many=False, decorators=None):
         permission_user = PermissionUser(request_type=request_type, many=many)
         return method(*args, **kwargs, _permission_user=permission_user)
 
-    decorators = decorators if decorators else []
-    for i_decorator in decorators:
+    for i_decorator in decorators or []:
         wrapper = i_decorator(wrapper)
     return wrapper
 
@@ -79,7 +79,7 @@ class PermissionPlugin(BasePlugin):
 
     def after_route(
         self,
-        resource: Union[ResourceList, ResourceDetail] = None,
+        resource: Type[Union[ResourceList, ResourceDetail]] = None,
         view=None,
         urls: Tuple[str] = None,
         self_json_api: Api = None,
@@ -117,7 +117,7 @@ class PermissionPlugin(BasePlugin):
         resource._permission_plugin_inited = True
 
     def _permission_method(
-        self, resource: Union[ResourceList, ResourceDetail], type_method: str, self_json_api: Api
+        self, resource: Type[Union[ResourceList, ResourceDetail]], type_method: str, self_json_api: Api
     ) -> None:
         """
         Обвешиваем ресурс декораторами с пермишенами, либо запрещаем першишен если он явно отключён
@@ -149,11 +149,10 @@ class PermissionPlugin(BasePlugin):
             if not permissions:
                 raise PermissionException(f"No permission case for {model.__name__} {type_}")
 
-        old_method = getattr(resource, l_type)
-
-        decorators = get_decorators_for_resource(resource, self_json_api)
-        new_method = permission(old_method, request_type=l_type, many=many, decorators=decorators)
         if u_type in methods:
+            old_method = getattr(resource, l_type)
+            decorators = get_decorators_for_resource(resource, self_json_api)
+            new_method = permission(old_method, request_type=l_type, many=many, decorators=decorators)
             setattr(resource, l_type, new_method)
         else:
             setattr(resource, l_type, self._resource_method_bad_request)
@@ -167,7 +166,6 @@ class PermissionPlugin(BasePlugin):
         cls,
         *args,
         schema=None,
-        model=None,
         prefix_name_column: str = "",
         columns: Optional[Union[List[str], Set[str]]] = None,
         is_nested: bool = False,
@@ -177,7 +175,6 @@ class PermissionPlugin(BasePlugin):
         Навешиваем ограничения на схему, на которую ссылается поле
         :param args:
         :param schema:
-        :param model:
         :param prefix_name_column: обрабатывать колонки, с которыми можно работать
         :param columns:
         :param is_nested: тип связи nested или relationship?
@@ -254,11 +251,8 @@ class PermissionPlugin(BasePlugin):
             # Выдераем из схем поля, которые пользователь не должен увидеть
             for i_include in getattr(schema, "include_data", []):
                 if i_include in schema.fields:
-                    field = get_model_field(schema, i_include)
-                    i_model = cls._get_model(model, field)
                     cls._permission_for_link_schema(
                         schema=schema.declared_fields[i_include].__dict__["_Relationship__schema"],
-                        model=i_model,
                         prefix_name_column=f"{prefix_name_column}.{i_include}" if prefix_name_column else i_include,
                         columns=columns,
                         **kwargs,
@@ -280,7 +274,7 @@ class PermissionPlugin(BasePlugin):
 
         permission_column: Set[str] = permission_user.permission_for_get(model=model).columns_and_jsonb_columns
         cls._permission_for_link_schema(
-            schema=schema, model=model, prefix_name_column="", columns=permission_column, **kwargs
+            schema=schema, prefix_name_column="", columns=permission_column, **kwargs
         )
 
     def after_init_schema_in_resource_list_post(self, *args, schema=None, model=None, **kwargs):
@@ -296,7 +290,8 @@ class PermissionPlugin(BasePlugin):
         self._permission_for_schema(self, *args, schema=schema, model=model, **kwargs)
 
     def data_layer_create_object_clean_data(
-        self, *args, data: Dict = None, view_kwargs=None, join_fields: List[str] = None, self_json_api=None, **kwargs
+        self, *args, data: Dict = None, view_kwargs=None, join_fields: List[str] = None,
+            self_json_api: SqlalchemyDataLayer = None, **kwargs
     ):
         """
         Обрабатывает данные, которые пойдут непосредственно на создание нового объекта
@@ -461,7 +456,7 @@ class PermissionPlugin(BasePlugin):
             mapper = getattr(mapper_old, i_name_foreign_key, None)
             if mapper is None:
                 # Внешний ключ должен присутствовать в маппере
-                raise ValueError("Not foreign ket %s in mapper %s" % (i_name_foreign_key, mapper_old.__name__))
+                raise ValueError("No foreign key %s in mapper %s" % (i_name_foreign_key, mapper_old.__name__))
             mapper = mapper.mapper.class_
         return mapper
 
@@ -509,7 +504,7 @@ class PermissionPlugin(BasePlugin):
         cls,
         name_foreign_key: str,
         cls_schema,
-        permission: PermissionUser = None,
+        permission_user: PermissionUser = None,
         model=None,
         qs: QueryStringManager = None,
     ) -> List[str]:
@@ -517,7 +512,7 @@ class PermissionPlugin(BasePlugin):
         Получаем список названий полей, которые доступны пользователю и есть в схеме
         :param name_foreign_key: название "внешнего ключа"
         :param cls_schema: класс со схемой
-        :param PermissionUser permission: пермишены для пользователя
+        :param PermissionUser permission_user: пермишены для пользователя
         :param model:
         :return:
         """
@@ -526,7 +521,7 @@ class PermissionPlugin(BasePlugin):
         field_foreign_key = get_model_field(cls_schema, name_foreign_key)
         mapper = cls._get_model(model, field_foreign_key)
         current_schema = cls._get_schema(cls_schema, name_foreign_key)
-        permission_for_get: PermissionForGet = permission.permission_for_get(mapper)
+        permission_for_get: PermissionForGet = permission_user.permission_for_get(mapper)
         # ограничиваем выгрузку полей в соответствие с пермишенами
         name_columns = []
         if permission_for_get.columns is not None:
@@ -546,102 +541,118 @@ class PermissionPlugin(BasePlugin):
 
         if isinstance(related_schema_cls, SchemaABC):
             related_schema_cls = related_schema_cls.__class__
-        else:
+        elif isinstance(related_schema_cls, str):
             related_schema_cls = class_registry.get_class(related_schema_cls)
 
         return related_schema_cls
 
     @classmethod
-    def _eagerload_includes(cls, query, qs, permission: PermissionUser = None, self_json_api=None):
-        """Переопределил и доработал функцию eagerload_includes в SqlalchemyDataLayer, с целью навешать ограничение (для данного
-        пермишена) на выдачу полей из БД для модели, на которую ссылается relationship
+    def _get_or_update_joinedload_object(cls, joinedload_object, qs: QueryStringManager, permission_user: PermissionUser,
+                                         model, current_schema: Schema, field: str, include: str, path_index: int):
+        """
+        Checks permissions and makes query joinedload option for accessed fields.
+        :param joinedload_object: sqlalchemy joinedload or None
+        :param qs:
+        :param permission_user:
+        :param model:
+        :param current_schema:
+        :param field: attribute of the schema field, pointing to a field from another model
+        :param include: param or part of dot-splitted param from querystring "include"
+        :param path_index:
+        :return:
+        """
+        if joinedload_object is None:
+            joinedload_object = joinedload(getattr(model, field))
+        else:
+            joinedload_object = joinedload_object.joinedload(getattr(model, field))
+
+        # ограничиваем список полей (которые доступны & которые запросил пользователь)
+        name_columns = cls._get_access_fields_in_schema(include, current_schema, permission_user, model=model, qs=qs)
+        related_schema_cls = cls._get_schema(current_schema, include)
+        user_requested_columns = qs.fields.get(related_schema_cls.Meta.type_)
+        if user_requested_columns:
+            name_columns = set(name_columns) & set(user_requested_columns)
+        # Убираем relationship поля
+        name_columns = set(name_columns) & set(
+            get_columns_for_query(joinedload_object.path[path_index].property.mapper.class_)
+        )
+        required_columns_names = []
+        for i_name in name_columns:
+            required_columns_names.extend(
+                get_required_fields(i_name, joinedload_object.path[path_index].property.mapper.class_)
+            )
+        name_columns = list(set(name_columns) | set(required_columns_names))
+
+        joinedload_object.load_only(*list(name_columns))
+        return joinedload_object, related_schema_cls
+
+    @classmethod
+    def _get_joinedload_object_for_splitted_include(cls, include: str, qs: QueryStringManager,
+                                                    permission_user: PermissionUser, current_schema: Schema, model):
+        """
+        Processes dot-splitted params from "include" and makes joinedload option for query.
+        """
+        joinedload_object = None
+        for i, obj in enumerate(include.split(SPLIT_REL)):
+            try:
+                field = get_model_field(current_schema, obj)
+            except Exception as e:
+                raise InvalidInclude(str(e))
+
+            if cls._is_access_foreign_key(obj, model, permission_user) is False:
+                continue
+
+            joinedload_object, current_schema = cls._get_or_update_joinedload_object(
+                joinedload_object=joinedload_object, qs=qs, permission_user=permission_user, model=model,
+                current_schema=current_schema, field=field, include=obj, path_index=i
+            )
+            try:
+                model = cls._get_model(model, field)
+            except ValueError as e:
+                raise InvalidInclude(str(e))
+
+        return joinedload_object
+
+    @classmethod
+    def _get_joinedload_object_for_include(cls, include, qs, permission_user, current_schema, model):
+        """
+        Processes params from "include" and makes joinedload option for query
+        """
+        try:
+            field = get_model_field(current_schema, include)
+        except Exception as e:
+            raise InvalidInclude(str(e))
+
+        joinedload_object, _ = cls._get_or_update_joinedload_object(joinedload_object=None, model=model, path_index=0,
+                                                                    permission_user=permission_user, qs=qs, field=field,
+                                                                    current_schema=current_schema, include=include)
+        return joinedload_object
+
+    @classmethod
+    def _eagerload_includes(cls, query: Query, qs: QueryStringManager, permission_user: PermissionUser = None,
+                            self_json_api: SqlalchemyDataLayer = None):
+        """
+        Processes "include" param from querystring and applies permissions for included models.
         Use eagerload feature of sqlalchemy to optimize data retrieval for include querystring parameter
 
         :param Query query: sqlalchemy queryset
         :param QueryStringManager qs: a querystring manager to retrieve information from url
-        :param PermissionUser permission: пермишены для пользователя
+        :param PermissionUser permission_user: пермишены для пользователя
         :param self_json_api:
         :return Query: the query with includes eagerloaded
         """
+        current_schema = self_json_api.resource.schema
+        model = self_json_api.model
         for include in qs.include:
-            joinload_object = None
-
             if SPLIT_REL in include:
-                current_schema = self_json_api.resource.schema
-                model = self_json_api.model
-                for i, obj in enumerate(include.split(SPLIT_REL)):
-                    try:
-                        field = get_model_field(current_schema, obj)
-                    except Exception as e:
-                        raise InvalidInclude(str(e))
-
-                    # Возможно пользовать неимеет доступа, к данному внешнему ключу
-                    if cls._is_access_foreign_key(obj, model, permission) is False:
-                        continue
-
-                    if joinload_object is None:
-                        joinload_object = joinedload(getattr(model, field))
-                    else:
-                        joinload_object = joinload_object.joinedload(getattr(model, field))
-
-                    # ограничиваем список полей (которые доступны & которые запросил пользователь)
-                    name_columns = cls._get_access_fields_in_schema(obj, current_schema, permission, model=model, qs=qs)
-                    current_schema = cls._get_schema(current_schema, obj)
-                    user_requested_columns = qs.fields.get(current_schema.Meta.type_)
-                    if user_requested_columns:
-                        name_columns = set(name_columns) & set(user_requested_columns)
-                    # Убираем relationship поля
-                    name_columns = set(name_columns) & set(
-                        get_columns_for_query(joinload_object.path[i].property.mapper.class_)
-                    )
-                    required_columns_names = []
-                    for i_name in name_columns:
-                        required_columns_names.extend(
-                            get_required_fields(i_name, joinload_object.path[i].property.mapper.class_)
-                        )
-                    name_columns = list(set(name_columns) | set(required_columns_names))
-
-                    joinload_object.load_only(*list(name_columns))
-
-                    try:
-                        # Нужный внешний ключ может отсутствовать
-                        model = cls._get_model(model, field)
-                    except ValueError as e:
-                        raise InvalidInclude(str(e))
-
+                joinedload_object = cls._get_joinedload_object_for_splitted_include(include, qs, permission_user,
+                                                                                    current_schema, model)
             else:
-                try:
-                    field = get_model_field(self_json_api.resource.schema, include)
-                except Exception as e:
-                    raise InvalidInclude(str(e))
-
                 # Возможно пользовать неимеет доступа, к данному внешнему ключу
-                if cls._is_access_foreign_key(include, self_json_api.model, permission) is False:
+                if cls._is_access_foreign_key(include, model, permission_user) is False:
                     continue
-
-                joinload_object = joinedload(getattr(self_json_api.model, field))
-
-                # ограничиваем список полей (которые доступны & которые запросил пользователь)
-                name_columns = cls._get_access_fields_in_schema(
-                    include, self_json_api.resource.schema, permission, model=self_json_api.model, qs=qs
-                )
-                related_schema_cls = get_related_schema(self_json_api.resource.schema, include)
-                user_requested_columns = qs.fields.get(related_schema_cls.Meta.type_)
-                if user_requested_columns:
-                    name_columns = set(name_columns) & set(user_requested_columns)
-                # Убираем relationship поля
-                name_columns = set(name_columns) & set(
-                    get_columns_for_query(joinload_object.path[0].property.mapper.class_)
-                )
-                required_columns_names = []
-                for i_name in name_columns:
-                    required_columns_names.extend(
-                        get_required_fields(i_name, joinload_object.path[0].property.mapper.class_)
-                    )
-                name_columns = list(set(name_columns) | set(required_columns_names))
-
-                joinload_object.load_only(*list(name_columns))
-
-            query = query.options(joinload_object)
+                joinedload_object = cls._get_joinedload_object_for_include(include, qs, permission_user,
+                                                                           current_schema, model)
+            query = query.options(joinedload_object)
 
         return query
