@@ -1,6 +1,6 @@
 import math
 from copy import deepcopy
-from typing import Set, List, Dict, Any, Tuple
+from typing import Set, List, Dict, Any, Tuple, Type, Union
 
 from sqlalchemy.orm import class_mapper, ColumnProperty, RelationshipProperty
 
@@ -18,7 +18,7 @@ PERMISSION_TO_MAPPER = Dict[
 class PermissionToMapper:
     """
     Contains all system permissions
-    Gouped by get/post/patch/delete
+    Grouped by get/post/patch/delete
     """
 
     get: PERMISSION_TO_MAPPER = {}
@@ -30,7 +30,7 @@ class PermissionToMapper:
     @classmethod
     def add_permission(cls, type_: str, model, permission_class: list) -> None:
         """
-        Ads new permission class
+        Adds new permission class
         :param type_: get | post | patch | delete
         :param model: sqlalchemy mapper which permissions are for
         :param permission_class:
@@ -117,11 +117,7 @@ class PermissionFields:
         for i_name, i_weight in self._forbidden_columns.items():
             if i_name in columns and columns[i_name] < i_weight:
                 del columns[i_name]
-        not_jsonb_columns = {}
-        for i_name, i_weight in columns.items():
-            if SPLIT_REL not in i_name:
-                not_jsonb_columns[i_name] = i_weight
-        return set(not_jsonb_columns.keys())
+        return {c for c in columns.keys() if SPLIT_REL not in c}
 
     @property
     def columns_and_jsonb_columns(self) -> Set[str]:
@@ -132,7 +128,7 @@ class PermissionFields:
                 del columns[i_name]
         return set(columns.keys())
 
-    def __add__(self, other):
+    def __add__(self, other: 'PermissionFields') -> 'PermissionFields':
         for i_name, i_weight in other._allow_columns.items():
             old_weight = self._allow_columns.get(i_name, -math.inf)
             self._allow_columns[i_name] = i_weight if old_weight < i_weight else old_weight
@@ -143,10 +139,8 @@ class PermissionFields:
         return self
 
     def __init__(self, *args, allow_columns: List = None, forbidden_columns: List = None, weight=0, **kwargs):
-        allow_columns = allow_columns if allow_columns else []
-        forbidden_columns = forbidden_columns if forbidden_columns else []
-        self.allow_columns = (allow_columns, weight)
-        self.forbidden_columns = (forbidden_columns, weight)
+        self.allow_columns = (allow_columns or [], weight)
+        self.forbidden_columns = (forbidden_columns or [], weight)
         self.weight = weight
 
 
@@ -179,11 +173,14 @@ class PermissionForGet(PermissionFields):
         self.filters: List = [] if filters is None else filters
         self.joins: List = [] if joins is None else joins
 
-    def __add__(self, other):
+    def __add__(self, other: 'PermissionForGet') -> 'PermissionForGet':
         super().__add__(other)
         self.filters += other.filters
         self.joins += other.joins
         return self
+
+
+PermissionFieldType = Type[Union[PermissionForGet, PermissionForPatch, PermissionForPost]]
 
 
 class PermissionUser:
@@ -203,36 +200,13 @@ class PermissionUser:
         # Уже расчитанные пермишены для POST запроса в данном запросе для current_user
         self._cache_patch: Dict[str, PermissionForPatch] = {}
 
-    def _join_permission_get(
-        self, *args, many: bool = True, permission_classes: List = None, **kwargs
-    ) -> PermissionForGet:
-        # Объеденим все пермишенны, которые доступны данному пользователю
-        permission: PermissionForGet = PermissionForGet()
+    def _join_permissions(self, permission_type: PermissionFieldType, permission_func: str, *args, many: bool = True,
+                          permission_classes: List['PermissionMixin'] = None, **kwargs):
+        # unite all permissions available to user for request method (permission_type)
+        permission = permission_type()
         for i_custom_perm in permission_classes:
             obj_custom_perm = i_custom_perm()
-            permission += obj_custom_perm.get(*args, many=many, user_permission=self, **kwargs)
-        # Теперь если среди доступных полей есть поля являющиеся ссылками на другие модели, то нужно получить из других
-        # моделей доступные поля
-        return permission
-
-    def _join_permission_post(self, *args, permission_classes: List = None, **kwargs) -> PermissionForPost:
-        # Объеденим все пермишенны, которые доступны данному пользователю для Post запроса
-        permission: PermissionForPost = PermissionForPost()
-        for i_custom_perm in permission_classes:
-            obj_custom_perm = i_custom_perm()
-            permission += obj_custom_perm.post_permission(*args, user_permission=self, **kwargs)
-        # Теперь если среди доступных полей есть поля являющиеся ссылками на другие модели, то нужно получить из других
-        # моделей доступные поля
-        return permission
-
-    def _join_permission_patch(self, *args, permission_classes: List = None, **kwargs) -> PermissionForPatch:
-        # Объеденим все пермишенны, которые доступны данному пользователю для Patch запроса
-        permission: PermissionForPatch = PermissionForPatch()
-        for i_custom_perm in permission_classes:
-            obj_custom_perm = i_custom_perm()
-            permission += obj_custom_perm.patch_permission(*args, user_permission=self, **kwargs)
-        # Теперь если среди доступных полей есть поля являющиеся ссылками на другие модели, то нужно получить из других
-        # моделей доступные поля
+            permission += getattr(obj_custom_perm, permission_func)(*args, user_permission=self, many=many, **kwargs)
         return permission
 
     def permission_for_get(self, model) -> PermissionForGet:
@@ -247,7 +221,8 @@ class PermissionUser:
             if model_name in getattr(PermissionToMapper, type_):
                 permission_classes = getattr(PermissionToMapper, type_)[model_name]["permission"]
                 if permission_classes:
-                    permission = self._join_permission_get(many=self.many, permission_classes=permission_classes)
+                    permission = self._join_permissions(permission_type=PermissionForGet, permission_func='get',
+                                                        many=self.many, permission_classes=permission_classes)
                     self._cache_get[model_name] = permission
                     return self._cache_get[model_name]
             # Если у данной схемы нет ограничений знчит доступны все поля в маппере
@@ -271,7 +246,9 @@ class PermissionUser:
             if model_name in PermissionToMapper.post:
                 permission_classes = PermissionToMapper.post[model_name]["permission"]
                 if permission_classes:
-                    permission = self._join_permission_post(permission_classes=permission_classes)
+                    permission = self._join_permissions(permission_type=PermissionForPost,
+                                                        permission_func='post_permission',
+                                                        permission_classes=permission_classes)
                     self._cache_post[model_name] = permission
                     return self._cache_post[model_name]
             # Если у данной схемы нет ограничений знчит доступны все поля в маппере
@@ -293,7 +270,9 @@ class PermissionUser:
             if model_name in PermissionToMapper.patch:
                 permission_classes: List = PermissionToMapper.patch[model_name]["permission"]
                 if permission_classes:
-                    permission = self._join_permission_patch(permission_classes=permission_classes)
+                    permission = self._join_permissions(permission_type=PermissionForPatch,
+                                                        permission_func='patch_permission',
+                                                        permission_classes=permission_classes)
                     self._cache_patch[model_name] = permission
                     return self._cache_patch[model_name]
             # Если у данной схемы нет ограничений знчит доступны все поля в маппере
@@ -343,7 +322,7 @@ class PermissionUser:
         :return:
         """
         model_name = model.__name__
-        if model_name in PermissionToMapper.patch:
+        if model_name in PermissionToMapper.delete:
             permission_classes = PermissionToMapper.delete[model_name]["permission"]
             for i_custom_perm in permission_classes:
                 obj_custom_perm = i_custom_perm()

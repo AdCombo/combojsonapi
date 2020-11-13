@@ -1,9 +1,7 @@
 from sqlalchemy import Column, Integer
-from sqlalchemy.ext.declarative import declarative_base
 
 from combojsonapi.permission.permission_plugin import get_columns_for_query
-
-Base = declarative_base()
+from tests.test_permission import Base
 
 
 class MyModel(Base):
