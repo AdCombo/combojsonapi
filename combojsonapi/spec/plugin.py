@@ -7,7 +7,7 @@ from apispec.ext.marshmallow import MarshmallowPlugin, OpenAPIConverter, make_sc
 from marshmallow import fields, Schema
 from flask_combo_jsonapi import Api
 from flask_combo_jsonapi.plugin import BasePlugin
-from flask_combo_jsonapi.resource import ResourceList, ResourceDetail
+from flask_combo_jsonapi.resource import ResourceList, ResourceDetail, Resource
 from flask_combo_jsonapi.utils import SPLIT_REL
 
 from combojsonapi.spec.apispec import DocBlueprintMixin
@@ -34,7 +34,6 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
         self.app = None
         self._fields = []
         # Use lists to enforce order
-        self._definitions = []
         self._fields = []
         self._converters = []
 
@@ -69,12 +68,6 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
         # Register custom fields in spec
         for args in self._fields:
             self.spec.register_field(*args)
-        # Register schema definitions in spec
-        for name, schema_cls, kwargs in self._definitions:
-            if APISPEC_VERSION_MAJOR < 1:
-                self.spec.definition(create_schema_name(schema=schema_cls), schema=schema_cls, **kwargs)
-            else:
-                self.spec.components.schema(create_schema_name(schema=schema_cls), schema=schema_cls, **kwargs)
         # Register custom converters in spec
         for args in self._converters:
             self.spec.register_converter(*args)
@@ -143,7 +136,8 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
             "format": "int32",
         }
 
-    def _get_operations_for_all(self, tag_name, default_parameters) -> Dict[str, Any]:
+    @classmethod
+    def _get_operations_for_all(cls, tag_name: str, default_parameters: list) -> Dict[str, Any]:
         """
         Creating base dict
 
@@ -153,11 +147,12 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
         """
         return {
             "tags": [tag_name],
-            "produces": ["application/json",],
+            "produces": ["application/json"],
             "parameters": default_parameters if default_parameters else [],
         }
 
-    def __get_parameters_for_include_models(self, resource) -> dict:
+    @classmethod
+    def __get_parameters_for_include_models(cls, resource: Resource) -> dict:
         fields_names = [
             i_field_name
             for i_field_name, i_field in resource.schema._declared_fields.items()
@@ -174,7 +169,8 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
             "description": f"Related relationships to include.\nAvailable:\n{example_models_for_include}",
         }
 
-    def __get_parameters_for_sparse_fieldsets(self, resource, description) -> dict:
+    @classmethod
+    def __get_parameters_for_sparse_fieldsets(cls, resource: Resource, description: str) -> dict:
         # Sparse Fieldsets
         return {
             "name": f"fields[{resource.schema.Meta.type_}]",
@@ -182,7 +178,7 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
             "type": "array",
             "required": False,
             "description": description.format(resource.schema.Meta.type_),
-            "items": {"type": "string", "enum": list(resource.schema._declared_fields.keys()),},
+            "items": {"type": "string", "enum": list(resource.schema._declared_fields.keys())},
         }
 
     def __get_parameters_for_declared_fields(self, resource, description) -> Generator[dict, None, None]:
@@ -234,7 +230,8 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
             },
         )
 
-    def __update_parameter_for_field_spec(self, new_param: dict, fld_sped: dict) -> None:
+    @classmethod
+    def _update_parameter_for_field_spec(cls, new_param: dict, fld_sped: dict) -> None:
         """
         :param new_param:
         :param fld_sped:
@@ -256,7 +253,7 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
             "required": False,
             "description": f"{field_name} attribute filter",
         }
-        self.__update_parameter_for_field_spec(new_parameter, field_spec)
+        self._update_parameter_for_field_spec(new_parameter, field_spec)
         return new_parameter
 
     def __get_parameter_for_nested_with_filtering(self, field_name, field_jsonb_name, field_jsonb_spec):
@@ -267,7 +264,7 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
             "required": False,
             "description": f"{field_name}{SPLIT_REL}{field_jsonb_name} attribute filter",
         }
-        self.__update_parameter_for_field_spec(new_parameter, field_jsonb_spec)
+        self._update_parameter_for_field_spec(new_parameter, field_jsonb_spec)
         return new_parameter
 
     def __get_parameters_for_nested_with_filtering(self, field, field_name) -> Generator[dict, None, None]:
@@ -326,6 +323,60 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
 
         return operations_get
 
+    def _get_operations_for_post(self, schema: dict, tag_name: str, default_parameters: list) -> dict:
+        operations = self._get_operations_for_all(tag_name, default_parameters)
+        operations["responses"] = {
+            "201": {"description": "Created"},
+            "202": {"description": "Accepted"},
+            "403": {"description": "This implementation does not accept client-generated IDs"},
+            "404": {"description": "Not Found"},
+            "409": {"description": "Conflict"},
+        }
+        operations["parameters"].append(
+            {
+                "name": "POST body",
+                "in": "body",
+                "schema": schema,
+                "required": True,
+                "description": f"{tag_name} attributes",
+            }
+        )
+        return operations
+
+    def _get_operations_for_patch(self, schema: dict, tag_name: str, default_parameters: list) -> dict:
+        operations = self._get_operations_for_all(tag_name, default_parameters)
+        operations["responses"] = {
+            "200": {"description": "Success"},
+            "201": {"description": "Created"},
+            "204": {"description": "No Content"},
+            "403": {"description": "Forbidden"},
+            "404": {"description": "Not Found"},
+            "409": {"description": "Conflict"},
+        }
+        operations["parameters"].append(self.param_id)
+        operations["parameters"].append(
+            {
+                "name": "POST body",
+                "in": "body",
+                "schema": schema,
+                "required": True,
+                "description": f"{tag_name} attributes",
+            }
+        )
+        return operations
+
+    def _get_operations_for_delete(self, tag_name: str, default_parameters: list) -> dict:
+        operations = self._get_operations_for_all(tag_name, default_parameters)
+        operations["parameters"].append(self.param_id)
+        operations["responses"] = {
+            "200": {"description": "Success"},
+            "202": {"description": "Accepted"},
+            "204": {"description": "No Content"},
+            "403": {"description": "Forbidden"},
+            "404": {"description": "Not Found"},
+        }
+        return operations
+
     def _add_paths_in_spec(
         self,
         path: str = "",
@@ -372,53 +423,11 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
         if "get" in methods:
             operations["get"] = self._get_operations_for_get(resource, tag_name, default_parameters)
         if "post" in methods:
-            operations["post"] = self._get_operations_for_all(tag_name, default_parameters)
-            operations["post"]["responses"] = {
-                "201": {"description": "Created"},
-                "202": {"description": "Accepted"},
-                "403": {"description": "This implementation does not accept client-generated IDs"},
-                "404": {"description": "Not Found"},
-                "409": {"description": "Conflict"},
-            }
-            operations["post"]["parameters"].append(
-                {
-                    "name": "POST body",
-                    "in": "body",
-                    "schema": schema,
-                    "required": True,
-                    "description": f"{tag_name} attributes",
-                }
-            )
+            operations["post"] = self._get_operations_for_post(schema, tag_name, default_parameters)
         if "patch" in methods:
-            operations["patch"] = self._get_operations_for_all(tag_name, default_parameters)
-            operations["patch"]["responses"] = {
-                "200": {"description": "Success"},
-                "201": {"description": "Created"},
-                "204": {"description": "No Content"},
-                "403": {"description": "Forbidden"},
-                "404": {"description": "Not Found"},
-                "409": {"description": "Conflict"},
-            }
-            operations["patch"]["parameters"].append(self.param_id)
-            operations["patch"]["parameters"].append(
-                {
-                    "name": "POST body",
-                    "in": "body",
-                    "schema": schema,
-                    "required": True,
-                    "description": f"{tag_name} attributes",
-                }
-            )
+            operations["patch"] = self._get_operations_for_patch(schema, tag_name, default_parameters)
         if "delete" in methods:
-            operations["delete"] = self._get_operations_for_all(tag_name, default_parameters)
-            operations["delete"]["parameters"].append(self.param_id)
-            operations["delete"]["responses"] = {
-                "200": {"description": "Success"},
-                "202": {"description": "Accepted"},
-                "204": {"description": "No Content"},
-                "403": {"description": "Forbidden"},
-                "404": {"description": "Not Found"},
-            }
+            operations["delete"] = self._get_operations_for_delete(tag_name, default_parameters)
         rule = None
         for i_rule in self.app.url_map._rules:
             if i_rule.rule == path:
