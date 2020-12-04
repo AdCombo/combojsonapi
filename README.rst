@@ -21,7 +21,7 @@ ComboJSONAPI is a set of plugins made for `Flask-JSONAPI <https://github.com/AdC
 Installation
 ============
 
-:code:`pip install https://github.com/AdCombo/combojsonapi.git`
+:code:`pip install combojsonapi`
 
 
 Contributing
