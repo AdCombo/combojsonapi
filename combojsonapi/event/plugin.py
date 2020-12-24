@@ -1,6 +1,7 @@
 import urllib.parse
-from typing import Generator, Tuple, Any
+from typing import Generator, Tuple, Any, Type, Callable, Iterable
 
+from flask_combo_jsonapi import Api
 from marshmallow import Schema
 
 from flask_combo_jsonapi.plugin import BasePlugin
@@ -8,6 +9,7 @@ from flask_combo_jsonapi.resource import Resource
 from flask_combo_jsonapi.utils import SPLIT_REL
 from flask_combo_jsonapi.exceptions import PluginMethodNotImplementedError
 
+from combojsonapi.event.resource import EventsResource
 from combojsonapi.utils import get_decorators_for_resource
 
 
@@ -26,7 +28,7 @@ class EventPlugin(BasePlugin):
     """Plugin for events routes in json_api"""
 
     @classmethod
-    def _events_with_methods(cls, cls_events) -> Generator[Tuple[Any, str], None, None]:
+    def _events_with_methods(cls, cls_events: Type[EventsResource]) -> Generator[Tuple[Any, str], None, None]:
         """
         Separates events by methods and returns them in pairs
         Like (event_get_enum, 'GET"), (event_post_data, 'POST'), ... etc
@@ -43,7 +45,8 @@ class EventPlugin(BasePlugin):
             if method is not None:
                 yield getattr(cls_events, attr_name), method
 
-    def _create_event_resource(self, base_resource, event, method, view, urls, self_json_api, **kwargs):
+    def _create_event_resource(self, base_resource: Type[Resource], event: Callable, method: str, view: str,
+                               urls: Iterable[str], self_json_api: Api, **kwargs) -> None:
         # noinspection PyTypeChecker
         new_resource: Resource = type(
             event.__name__,
@@ -103,7 +106,8 @@ class EventPlugin(BasePlugin):
             except PluginMethodNotImplementedError:
                 pass
 
-    def before_route(self, resource=None, view=None, urls=None, self_json_api=None, **kwargs):
+    def before_route(self, resource: Type[Resource] = None, view: str = None, urls: Iterable[str] = None,
+                     self_json_api: Api = None, **kwargs) -> None:
         """
         :param resource:
         :param view:
