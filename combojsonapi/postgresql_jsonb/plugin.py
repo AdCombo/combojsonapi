@@ -4,7 +4,6 @@ from typing import Any, Optional, Union, Dict, Type
 
 import sqlalchemy
 from sqlalchemy import cast, String, Integer, Boolean, DECIMAL, not_
-from sqlalchemy.sql.elements import or_
 from sqlalchemy.sql.operators import desc_op, asc_op
 from marshmallow import Schema, fields as ma_fields
 
@@ -22,7 +21,7 @@ TYPE_MARSHMALLOW_FIELDS = Type[Union[
     ma_fields.Email, ma_fields.Dict, ma_fields.List,
     ma_fields.Decimal, ma_fields.Url, ma_fields.DateTime, Any
 ]]
-TYPE_PYTHON = Type[Union[str, dict, list, Decimal, datetime.datetime]]
+TYPE_PYTHON = Type[Union[int, bool, str, bytes, dict, list, Decimal, datetime.datetime]]
 
 
 def is_seq_collection(obj):
@@ -42,6 +41,13 @@ class PostgreSqlJSONB(BasePlugin):
         ma_fields.Decimal: Decimal,
         ma_fields.Url: str,
         ma_fields.DateTime: datetime.datetime,
+    }
+    mapping_type_to_sql_type: Dict[TYPE_PYTHON, Any] = {
+        str: String,
+        bytes: String,
+        Decimal: DECIMAL,
+        int: Integer,
+        bool: Boolean
     }
 
     def get_property_type(
@@ -95,7 +101,7 @@ class PostgreSqlJSONB(BasePlugin):
                     return filter, joins
 
     @classmethod
-    def _isinstance_jsonb(cls, schema: Schema, filter_name):
+    def _isinstance_jsonb(cls, schema: Schema, filter_name: str) -> bool:
         """
         Определяем относится ли фильтр к relationship или к полю JSONB
         :param schema:
@@ -112,7 +118,6 @@ class PostgreSqlJSONB(BasePlugin):
                 schema = schema._declared_fields[i_field].schema
             else:
                 return False
-        return False
 
     def _create_sort(self, self_nested: Any, marshmallow_field, model_column, order):
         """
@@ -123,26 +128,28 @@ class PostgreSqlJSONB(BasePlugin):
         :param str order: asc | desc
         :return:
         """
-
+        fields = self_nested.sort_["field"].split(SPLIT_REL)
+        schema = getattr(marshmallow_field, "schema", None)
         if isinstance(marshmallow_field, Relationship):
             # If sorting by JSONB field of another model is in progress
-            fields = self_nested.sort_["field"].split(SPLIT_REL)
-            schema = getattr(marshmallow_field, "schema", None)
             mapper = model_column.mapper.class_
             sqlalchemy_relationship_name = get_model_field(schema, fields[1])
             self_nested.sort_["field"] = SPLIT_REL.join(fields[1:])
             marshmallow_field = marshmallow_field.schema._declared_fields[fields[1]]
             model_column = getattr(mapper, sqlalchemy_relationship_name)
             return self._create_sort(self_nested, marshmallow_field, model_column, order)
-        elif not isinstance(getattr(marshmallow_field, "schema", None), SchemaJSONB):
+        elif not isinstance(schema, SchemaJSONB):
             raise InvalidFilters(f"Invalid JSONB sort: {SPLIT_REL.join(self_nested.fields)}")
-        fields = self_nested.sort_["field"].split(SPLIT_REL)
         self_nested.sort_["field"] = SPLIT_REL.join(fields[:-1])
         field_in_jsonb = fields[-1]
 
-        for field in fields[1:]:
-            marshmallow_field = marshmallow_field.schema._declared_fields[field]
-        if hasattr(marshmallow_field, f"_{order}_sql_filter_"):
+        try:
+            for field in fields[1:]:
+                marshmallow_field = marshmallow_field.schema._declared_fields[field]
+        except KeyError as e:
+            raise InvalidFilters(f'There is no "{e}" attribute in the "{fields[0]}" field.')
+
+        if hasattr(marshmallow_field, f"_{order}_sql_sort_"):
             """
             У marshmallow field может быть реализована своя логика создания сортировки для sqlalchemy
             для определённого типа ('asc', 'desc'). Чтобы реализовать свою логику создания сортировка для
@@ -156,23 +163,22 @@ class PostgreSqlJSONB(BasePlugin):
             for field in fields[1:-1]:
                 model_column = model_column.op("->")(field)
             model_column = model_column.op("->>")(field_in_jsonb)
-            return getattr(marshmallow_field, f"_{order}_sql_filter_")(
+            return getattr(marshmallow_field, f"_{order}_sql_sort_")(
                 marshmallow_field=marshmallow_field, model_column=model_column
             )
 
         property_type = self.get_property_type(marshmallow_field=marshmallow_field, schema=self_nested.schema)
-        mapping_type_to_sql_type = {str: String, bytes: String, Decimal: DECIMAL, int: Integer, bool: Boolean}
 
         for field in fields[1:-1]:
             model_column = model_column.op("->")(field)
         extra_field = model_column.op("->>")(field_in_jsonb)
         sort = ""
         order_op = desc_op if order == "desc" else asc_op
-        if property_type in mapping_type_to_sql_type:
+        if property_type in self.mapping_type_to_sql_type:
             if sqlalchemy.__version__ >= "1.1":
-                sort = order_op(extra_field.astext.cast(mapping_type_to_sql_type[property_type]))
+                sort = order_op(extra_field.astext.cast(self.mapping_type_to_sql_type[property_type]))
             else:
-                sort = order_op(extra_field.cast(mapping_type_to_sql_type[property_type]))
+                sort = order_op(extra_field.cast(self.mapping_type_to_sql_type[property_type]))
         return sort
 
     def _create_filter(self, self_nested: Any, marshmallow_field, model_column, operator, value):
@@ -187,9 +193,9 @@ class PostgreSqlJSONB(BasePlugin):
         """
         fields = self_nested.filter_["name"].split(SPLIT_REL)
         field_in_jsonb = fields[-1]
+        schema = getattr(marshmallow_field, "schema", None)
         if isinstance(marshmallow_field, Relationship):
             # If filtering by JSONB field of another model is in progress
-            schema = getattr(marshmallow_field, "schema", None)
             mapper = model_column.mapper.class_
             sqlalchemy_relationship_name = get_model_field(schema, fields[1])
             self_nested.filter_["name"] = SPLIT_REL.join(fields[1:])
@@ -199,14 +205,14 @@ class PostgreSqlJSONB(BasePlugin):
             filter, joins = self._create_filter(self_nested, marshmallow_field, model_column, operator, value)
             join_list += joins
             return filter, join_list
-        elif not isinstance(getattr(marshmallow_field, "schema", None), SchemaJSONB):
+        elif not isinstance(schema, SchemaJSONB):
             raise InvalidFilters(f"Invalid JSONB filter: {SPLIT_REL.join(field_in_jsonb)}")
         self_nested.filter_["name"] = SPLIT_REL.join(fields[:-1])
         try:
             for field in fields[1:]:
                 marshmallow_field = marshmallow_field.schema._declared_fields[field]
-        except KeyError:
-            raise InvalidFilters(f'There is no "{field_in_jsonb}" attribute in the "{fields[-2]}" field.')
+        except KeyError as e:
+            raise InvalidFilters(f'There is no "{e}" attribute in the "{fields[0]}" field.')
         if hasattr(marshmallow_field, f"_{operator}_sql_filter_"):
             """
             У marshmallow field может быть реализована своя логика создания фильтра для sqlalchemy
@@ -240,23 +246,15 @@ class PostgreSqlJSONB(BasePlugin):
             model_column = model_column.op("->")(field)
         extra_field = model_column.op("->>")(field_in_jsonb)
         filter_ = ""
-        if property_type == Decimal:
-            filter_ = getattr(cast(extra_field, DECIMAL), self_nested.operator)(value)
 
-        if property_type in {str, bytes}:
-            filter_ = getattr(cast(extra_field, String), self_nested.operator)(value)
-
-        if property_type == int:
-            field = cast(extra_field, Integer)
-            if value:
-                filter_ = getattr(field, self_nested.operator)(value)
+        if property_type in {bool, int, str, bytes, Decimal}:
+            field = cast(extra_field, self.mapping_type_to_sql_type[property_type])
+            if value is None:
+                filter_ = field.is_(None)
             else:
-                filter_ = or_(getattr(field, self_nested.operator)(value), field.is_(None))
+                filter_ = getattr(field, self_nested.operator)(value)
 
-        if property_type == bool:
-            filter_ = cast(extra_field, Boolean) == value
-
-        if property_type == list:
+        elif property_type == list:
             filter_ = model_column.op("->")(field_in_jsonb).op("?")(value[0] if is_seq_collection(value) else value)
             if operator in ["notin", "notin_"]:
                 filter_ = not_(filter_)
