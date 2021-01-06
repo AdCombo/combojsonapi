@@ -2,6 +2,15 @@ Changelog
 *********
 
 
+**1.0.5**
+=========
+
+Bug Fixes
+=========
+
+* Distribute apispec templates #- `@mahenzon`_
+
+
 **1.0.3**
 =========
 

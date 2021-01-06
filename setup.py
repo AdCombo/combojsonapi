@@ -2,7 +2,7 @@ import os
 
 from setuptools import setup, find_packages
 
-__version__ = "1.0.4"
+__version__ = "1.0.5"
 
 
 requirements_filepath = os.path.join(os.path.dirname(__name__), "requirements.txt")
@@ -25,11 +25,14 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "License :: OSI Approved :: MIT License",
         "Topic :: Internet",
     ],
     keywords="web api rest rpc swagger jsonapi flask sqlalchemy marshmallow plugin",
     packages=find_packages(exclude=["tests"]),
+    package_data={"": ["apispec/templates/*.html"]},
+    include_package_data=True,
     zip_safe=False,
     platforms="any",
     install_requires=install_requires,
