@@ -5,7 +5,7 @@
 
 ComboJSONAPI
 ============
-ComboJSONAPI is a set of plugins made for `Flask-JSONAPI <https://github.com/AdCombo/flask-jsonapi>`_ module.
+ComboJSONAPI is a set of plugins made for `Flask-COMBO-JSONAPI <https://github.com/AdCombo/flask-combo-jsonapi>`_ module.
 
 1. **Permission** plugin enables access control to models and their fields in GET, POST,
    PATCH and DELETE methods. (`Permission plugin docs <https://github.com/AdCombo/combojsonapi/blob/master/docs/en/permission_plugin.rst>`_)
