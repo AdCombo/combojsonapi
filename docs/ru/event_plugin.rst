@@ -174,13 +174,14 @@ EventPlugin (`EN`_ | `RU`_)
     """Инициализация API"""
 
     app.config['OPENAPI_URL_PREFIX'] = '/api/swagger'
+    app.config['OPENAPI_VERSION'] = '3.0.0'
     app.config['OPENAPI_SWAGGER_UI_PATH'] = '/'
-    app.config['OPENAPI_SWAGGER_UI_VERSION'] = '3.22.0'
+    app.config['OPENAPI_SWAGGER_UI_VERSION'] = '3.45.0'
 
     api_spec_plugin = ApiSpecPlugin(
         app=app,
         # Объявляем список тегов и описаний для группировки api в группы (api можно не группировать в группы,
-        # в этом случае они будут группирваться автоматически по названию типов схем (type_))
+        # в этом случае они будут группироваться автоматически по названию типов схем (type_))
         tags={
             'User': 'API для user'
         }

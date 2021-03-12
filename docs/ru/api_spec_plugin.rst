@@ -28,7 +28,7 @@
 4. Если добавляем view RPC API использую плагин `EventPlugin <https://github.com/AdCombo/combojsonapi/blob/master/docs/ru/event_plugin.rst>`_, то в начале view
    описываем API используя yaml `структура описания API <https://swagger.io/docs/specification/data-models/>`_.
 
-Пример работы с плагином можно посмотреть в примере у плагина EventPlugin `тут <https://github.com/AdCombo/combojsonapi/blob/master/docs/ru/event_plugin.rst>`_.
+Пример работы с плагином можно посмотреть в `примере у плагина EventPlugin <https://github.com/AdCombo/combojsonapi/blob/master/docs/ru/event_plugin.rst>`_.
 
 .. _`EN`: https://github.com/AdCombo/combojsonapi/blob/master/docs/en/api_spec_plugin.rst
 .. _`RU`: https://github.com/AdCombo/combojsonapi/blob/master/docs/ru/api_spec_plugin.rst
