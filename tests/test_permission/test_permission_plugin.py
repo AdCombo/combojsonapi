@@ -12,8 +12,13 @@ from marshmallow_jsonapi.fields import Relationship
 from sqlalchemy import Column, Integer, String, create_engine
 from sqlalchemy.orm import sessionmaker
 
-from combojsonapi.permission import PermissionPlugin, PermissionMixin, PermissionToMapper, PermissionUser, \
-    PermissionForGet
+from combojsonapi.permission import (
+    PermissionPlugin,
+    PermissionMixin,
+    PermissionToMapper,
+    PermissionUser,
+    PermissionForGet,
+)
 from combojsonapi.permission.exceptions import PermissionException
 from combojsonapi.permission.permission_plugin import get_columns_for_query, get_required_fields, permission
 from tests.test_permission import Base
@@ -582,7 +587,7 @@ class TestPermissionPlugin:
             PermissionPlugin._get_joinedload_object_for_include('wrong_field', qs, permission_user,
                                                                 ModelWithMetaSchema(), ModelWithMeta)
 
-    @mock.patch('flask_combo_jsonapi.querystring.current_app')
+    @mock.patch('flask_combo_jsonapi.querystring.current_app', spec=['config'])
     def test__eagerload_includes__no_includes(self, mock_current_app, session, permission_user, sqlalchemy_data_layer):
         mock_current_app.config.get.return_value = None
         query = session.query(ModelWithMeta)
@@ -592,7 +597,7 @@ class TestPermissionPlugin:
 
     @mock.patch.object(PermissionPlugin, '_is_access_foreign_key', return_value=False)
     @mock.patch.object(PermissionPlugin, '_get_joinedload_object_for_include')
-    @mock.patch('flask_combo_jsonapi.querystring.current_app')
+    @mock.patch('flask_combo_jsonapi.querystring.current_app', spec=['config'])
     def test__eagerload_includes__with_not_allowed_includes(
             self, mock_current_app, mock_get_joinedload_object_for_include, mock_is_access_foreign_key, session,
             permission_user, sqlalchemy_data_layer
@@ -607,7 +612,7 @@ class TestPermissionPlugin:
 
     @mock.patch.object(PermissionPlugin, '_is_access_foreign_key', return_value=True)
     @mock.patch.object(PermissionPlugin, '_get_joinedload_object_for_include')
-    @mock.patch('flask_combo_jsonapi.querystring.current_app')
+    @mock.patch('flask_combo_jsonapi.querystring.current_app', spec=['config'])
     def test__eagerload_includes__with_includes(
             self, mock_current_app, mock_get_joinedload_object_for_include, mock_is_access_foreign_key,
             permission_user, sqlalchemy_data_layer
@@ -624,7 +629,7 @@ class TestPermissionPlugin:
         assert result == query.options.return_value
 
     @mock.patch.object(PermissionPlugin, '_get_joinedload_object_for_splitted_include')
-    @mock.patch('flask_combo_jsonapi.querystring.current_app')
+    @mock.patch('flask_combo_jsonapi.querystring.current_app', spec=['config'])
     def test_eagerload_includes__with_splitted_includes(
             self, mock_current_app, mock_get_joinedload_object_for_splitted_include, permission_user,
             sqlalchemy_data_layer

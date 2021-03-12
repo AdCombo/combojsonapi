@@ -32,10 +32,10 @@ class SomeModel(Base):
     related_model_id = Column(Integer)
 
 
-class RelatedModelSchema(Schema):
+class AnotherRelatedModelSchema(Schema):
     class Meta:
         model = RelatedModel
-        type_ = 'related_model'
+        type_ = 'another_related_model'
         filtering = True
 
     id = fields.Integer()
@@ -52,7 +52,7 @@ class SomeSchema(Schema):
     type = fields.Integer()
     flags = fields.Integer()
     description = fields.Integer()
-    related_model_id = Relationship(nested=RelatedModelSchema, schema=RelatedModelSchema)
+    related_model_id = Relationship(nested=AnotherRelatedModelSchema, schema=AnotherRelatedModelSchema)
 
 
 class SchemaReversedName(Schema):
