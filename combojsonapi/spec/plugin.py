@@ -3,7 +3,13 @@ from typing import Dict, Any, Set, List, Union, Tuple, Generator
 
 from apispec import APISpec
 from apispec.exceptions import APISpecError
-from apispec.ext.marshmallow import MarshmallowPlugin, OpenAPIConverter, make_schema_key, resolve_schema_instance
+from apispec.ext.marshmallow import (
+    MarshmallowPlugin,
+    OpenAPIConverter,
+    make_schema_key,
+    resolve_schema_cls,
+    resolve_schema_instance,
+)
 from marshmallow import fields, Schema
 from flask_combo_jsonapi import Api
 from flask_combo_jsonapi.plugin import BasePlugin
@@ -195,7 +201,7 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
                 "description": description.format(i_field.schema.Meta.type_),
                 "items": {
                     "type": "string",
-                    "enum": list(self.spec.components._schemas[schema_name]["properties"].keys()),
+                    "enum": list(self.spec.components.schemas[schema_name]["properties"].keys()),
                 },
             }
             type_schemas.add(i_field.schema.Meta.type_)
@@ -270,7 +276,7 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
     def __get_parameters_for_nested_with_filtering(self, field, field_name) -> Generator[dict, None, None]:
         # Allow JSONB filtering
         field_schema_name = create_schema_name(schema=field.schema)
-        component_schema = self.spec.components._schemas[field_schema_name]
+        component_schema = self.spec.components.schemas[field_schema_name]
         for i_field_jsonb_name, i_field_jsonb in field.schema._declared_fields.items():
             i_field_jsonb_spec = component_schema["properties"][i_field_jsonb_name]
             if i_field_jsonb_spec.get("type") == "object":
@@ -285,7 +291,7 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
     def __get_list_resource_fields_filters(self, resource) -> Generator[dict, None, None]:
         schema_name = create_schema_name(schema=resource.schema)
         for i_field_name, i_field in resource.schema._declared_fields.items():
-            i_field_spec = self.spec.components._schemas[schema_name]["properties"][i_field_name]
+            i_field_spec = self.spec.components.schemas[schema_name]["properties"][i_field_name]
             if not isinstance(i_field, fields.Nested):
                 if i_field_spec.get("type") == "object":
                     # Skip filtering by dicts
@@ -445,7 +451,7 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
         :return:
         """
         name_schema = create_schema_name(schema)
-        if name_schema not in self.spec_schemas and name_schema not in self.spec.components._schemas:
+        if name_schema not in self.spec_schemas and name_schema not in self.spec.components.schemas:
             self.spec_schemas[name_schema] = schema
             if APISPEC_VERSION_MAJOR < 1:
                 self.spec.definition(name_schema, schema=schema)
@@ -484,7 +490,7 @@ def resolve_nested_schema(self, schema):
     schema_instance = resolve_schema_instance(schema)
     schema_key = make_schema_key(schema_instance)
     if schema_key not in self.refs:
-        schema_cls = self.resolve_schema_class(schema)
+        schema_cls = resolve_schema_cls(schema)
         name = self.schema_name_resolver(schema_cls)
         if not name:
             try:
@@ -501,7 +507,7 @@ def resolve_nested_schema(self, schema):
                 return {"type": "array", "items": json_schema}
             return json_schema
         name = create_schema_name(schema=schema_instance)
-        if name not in self.spec.components._schemas:
+        if name not in self.spec.components.schemas:
             self.spec.components.schema(name, schema=schema)
     return self.get_ref_dict(schema_instance)
 

@@ -19,6 +19,7 @@ def flaskpath2swagger(path):
 
 
 class RestfulPlugin(BasePlugin):
+
     def init_spec(self, spec):
         super().init_spec(spec)
         self.spec = spec
@@ -43,7 +44,7 @@ class RestfulPlugin(BasePlugin):
                     name_schema = v.split("/")[-1]
                     schema = class_registry.get_class(name_schema)
                     name_schema = create_schema_name(schema=schema)
-                    if name_schema not in self.spec.components._schemas:
+                    if name_schema not in self.spec.components.schemas:
                         self.spec.components.schema(name_schema, schema=schema)
                     data[k] = "/".join(v.split("/")[:-1] + [name_schema])
 
@@ -64,8 +65,8 @@ class RestfulPlugin(BasePlugin):
                     name_schema = parametr["schema"]["$ref"].split("/")[-1]
                     new_parameters = []
                     name_schema = create_schema_name(name_schema=name_schema)
-                    if name_schema in self.spec.components._schemas:
-                        for i_name, i_value in self.spec.components._schemas[name_schema]["properties"].items():
+                    if name_schema in self.spec.components.schemas:
+                        for i_name, i_value in self.spec.components.schemas[name_schema]["properties"].items():
                             new_parameter = {
                                 "name": i_name,
                                 "in": "query",

@@ -65,7 +65,7 @@ class TestRestfulPlugin:
 
     def test__ref_to_spec__with_ref_data(self):
         mock_self = Mock()
-        mock_self.spec.components._schemas = []
+        mock_self.spec.components.schemas = {}
         schema = SomeSchema
         schema_name = create_schema_name(schema)
         data = {'$ref': f'#/definitions/{schema.__name__}'}

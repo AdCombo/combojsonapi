@@ -341,7 +341,7 @@ class TestApiSpecPlugin:
 def test_resolve_nested_schema():
     mock_self = Mock()
     mock_self.refs = []
-    mock_self.spec.components._schemas = []
+    mock_self.spec.components.schemas = {}
 
     schema = SomeSchema()
 
@@ -358,7 +358,7 @@ def test_resolve_nested_schema__schema_name_in_spec():
     name = create_schema_name(schema)
     mock_self = Mock()
     mock_self.refs = []
-    mock_self.spec.components._schemas = [name]
+    mock_self.spec.components._schemas = {name: SomeSchema}
 
     result = resolve_nested_schema(mock_self, schema)
 
