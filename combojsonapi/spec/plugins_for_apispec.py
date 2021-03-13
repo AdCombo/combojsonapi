@@ -65,6 +65,8 @@ class RestfulPlugin(BasePlugin):
                     "type": i_value.get("type"),
                     "description": i_value.get("description", ""),
                 }
+                if "example" in i_value:
+                    new_parameter["example"] = i_value["example"]
                 if "items" in i_value:
                     new_items = {
                         "type": i_value["items"].get("type"),
