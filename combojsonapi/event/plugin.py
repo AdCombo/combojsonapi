@@ -18,14 +18,14 @@ class EventSchema(Schema):
 
 
 class EventPlugin(BasePlugin):
+    """Plugin for events routes in json_api"""
+
     def __init__(self, trailing_slash: bool = True):
         """
 
-        :param trailing_slash: ставить ли закрывающий слеш у событийного API
+        :param trailing_slash: add trailing slash when creating events API
         """
         self.trailing_slash = trailing_slash
-
-    """Plugin for events routes in json_api"""
 
     @classmethod
     def _events_with_methods(cls, cls_events: Type[EventsResource]) -> Generator[Tuple[Any, str], None, None]:
@@ -43,7 +43,12 @@ class EventPlugin(BasePlugin):
                 # Processing all other events. May be event_post_smth or just event_smth
                 method = "POST"
             if method is not None:
-                yield getattr(cls_events, attr_name), method
+                event_method = getattr(cls_events, attr_name)
+                event_extra: dict = getattr(event_method, "extra", {})
+                custom_method = event_extra.get("method")
+                if custom_method:
+                    method = custom_method
+                yield event_method, method
 
     def _create_event_urls(self, urls: Iterable[str], event: Callable) -> Tuple[str]:
         """
