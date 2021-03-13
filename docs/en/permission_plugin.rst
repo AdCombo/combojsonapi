@@ -257,7 +257,7 @@ Example of loading various object attributes depending on the address at which t
 
     class PermissionListUser(PermissionMixin):
         SHORT_INFO_USER = ['id', 'name']
-	EXTENDED_USER_INFO = ['id', 'name', 'fullname', 'email', 'role']
+        EXTENDED_USER_INFO = ['id', 'name', 'fullname', 'email', 'role']
 	ENDPOINTS_FOR_EXTENDED_INFO = ['computer_list', 'phone_list']
 
         def get(self, *args, many=True, user_permission: PermissionUser = None, **kwargs) -> PermissionForGet:
