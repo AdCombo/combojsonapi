@@ -286,5 +286,32 @@ API класса PermissionMixin
         ]
     )
 
+Пример выгрузки различных атрибутов объекта в зависимости от адреса, по которому был запрошен объект
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+:code:`permission`
+
+.. code:: python
+
+    from combojsonapi.permission.permission_system import PermissionMixin, PermissionForGet, \
+        PermissionUser
+
+
+    class PermissionListUser(PermissionMixin):
+        SHORT_INFO_USER = ['id', 'name']
+        EXTENDED_USER_INFO = ['id', 'name', 'fullname', 'email', 'role']
+        ENDPOINTS_FOR_EXTENDED_INFO = ['computer_list', 'phone_list']
+
+        def get(self, *args, many=True, user_permission: PermissionUser = None, **kwargs) -> PermissionForGet:
+            if request.endpoint in self.ENDPOINTS_FOR_EXTENDED_INFO:
+                self.permission_for_get.allow_columns = (self.EXTENDED_USER_INFO, 10)
+            else:
+                self.permission_for_get.allow_columns = (self.SHORT_INFO_USER, 0)
+            return self.permission_for_get
+
+:code:`computer_list, phone_list` - endpoint'ы схемы системы маршрутизации:
+
+:code:`api_json.route(<Resource manager>, <endpoint name>, <url_1>, <url_2>, ...)`
+
 .. _`EN`: https://github.com/AdCombo/combojsonapi/blob/master/docs/en/permission_plugin.rst
 .. _`RU`: https://github.com/AdCombo/combojsonapi/blob/master/docs/ru/permission_plugin.rst
