@@ -52,11 +52,14 @@ class EventPlugin(BasePlugin):
 
     def _create_event_urls(self, urls: Iterable[str], event: Callable) -> Tuple[str]:
         """
-        Creates event urls
+        Create events with optional custom suffix
         """
+        event_extra: dict = getattr(event, "extra", {})
+        event_url_suffix = event_extra.get("url_suffix", event.__name__)
+
         event_urls = []
         for i_url in urls:
-            i_new_url = urllib.parse.urljoin(i_url, event.__name__)
+            i_new_url = urllib.parse.urljoin(i_url, event_url_suffix)
             i_new_url = i_new_url[:-1] if i_new_url[-1] == "/" else i_new_url
             i_new_url = i_new_url + "/" if self.trailing_slash else i_new_url
             event_urls.append(i_new_url)
