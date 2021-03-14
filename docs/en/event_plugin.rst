@@ -163,8 +163,9 @@ We want to upload a user avatar. We'll also load **ApiSpecPlugin**, so we watch 
     """Initializing the API"""
 
     app.config['OPENAPI_URL_PREFIX'] = '/api/swagger'
+    app.config['OPENAPI_VERSION'] = '3.0.0'
     app.config['OPENAPI_SWAGGER_UI_PATH'] = '/'
-    app.config['OPENAPI_SWAGGER_UI_VERSION'] = '3.22.0'
+    app.config['OPENAPI_SWAGGER_UI_VERSION'] = '3.45.0'
 
     api_spec_plugin = ApiSpecPlugin(
         app=app,

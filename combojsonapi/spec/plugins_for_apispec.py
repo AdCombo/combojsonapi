@@ -5,7 +5,7 @@ from apispec import BasePlugin
 from apispec.yaml_utils import load_yaml_from_docstring
 from marshmallow import class_registry
 
-from combojsonapi.utils import create_schema_name
+from combojsonapi.utils import schema_not_in_registry, create_schema_name
 
 RE_URL = re.compile(r"<(?:[^:<>]+:)?([^<>]+)>")
 
@@ -19,13 +19,15 @@ def flaskpath2swagger(path):
 
 
 class RestfulPlugin(BasePlugin):
+
     def init_spec(self, spec):
         super().init_spec(spec)
         self.spec = spec
 
     def _ref_to_spec(self, data):
         """
-        Вытаскиваем из описания
+        Get spec from description
+
         :param data:
         :return:
         """
@@ -43,13 +45,43 @@ class RestfulPlugin(BasePlugin):
                     name_schema = v.split("/")[-1]
                     schema = class_registry.get_class(name_schema)
                     name_schema = create_schema_name(schema=schema)
-                    if name_schema not in self.spec.components._schemas:
+                    if name_schema not in self.spec.components.schemas:
                         self.spec.components.schema(name_schema, schema=schema)
                     data[k] = "/".join(v.split("/")[:-1] + [name_schema])
 
+    def process_query_params_spec(self, schema_ref_name: str):
+        if schema_not_in_registry(schema_ref_name):
+            # probably schema name was updated from e.g. `UserSchema` to `User` by `_ref_to_spec`
+            # try to recover its name if first option was not found
+            schema_ref_name = f"{schema_ref_name}Schema"
+
+        new_parameters = []
+        name_schema = create_schema_name(name_schema=schema_ref_name)
+        if name_schema in self.spec.components.schemas:
+            for i_name, i_value in self.spec.components.schemas[name_schema]["properties"].items():
+                new_parameter = {
+                    "name": i_name,
+                    "in": "query",
+                    "type": i_value.get("type"),
+                    "description": i_value.get("description", ""),
+                }
+                if "example" in i_value:
+                    new_parameter["example"] = i_value["example"]
+                if "items" in i_value:
+                    new_items = {
+                        "type": i_value["items"].get("type"),
+                    }
+                    if "enum" in i_value["items"]:
+                        new_items["enum"] = i_value["items"]["enum"]
+                    new_parameter.update({"items": new_items})
+                new_parameters.append(new_parameter)
+        return new_parameters
+
     def operation_helper(self, path=None, operations=None, **kwargs):
-        """Если для query параметров указали схему marshmallow, то раскрываем её и вытаскиваем параметры первого уровня,
-            без Nested"""
+        """
+        If query params have a marshmallow schema reference,
+        get params from the schema from the top level (no Nested)
+        """
         resource = kwargs.get("resource", None)
         for m in getattr(resource, "methods", []):
             m = m.lower()
@@ -60,26 +92,12 @@ class RestfulPlugin(BasePlugin):
             self._ref_to_spec(m_ops)
         for method, val in operations.items():
             for index, parametr in enumerate(val["parameters"] if "parameters" in val else []):
-                if "in" in parametr and parametr["in"] == "query" and "schema" in parametr:
+                if (
+                    "in" in parametr and parametr["in"] == "query"
+                    and "schema" in parametr and "$ref" in parametr["schema"]
+                ):
                     name_schema = parametr["schema"]["$ref"].split("/")[-1]
-                    new_parameters = []
-                    name_schema = create_schema_name(name_schema=name_schema)
-                    if name_schema in self.spec.components._schemas:
-                        for i_name, i_value in self.spec.components._schemas[name_schema]["properties"].items():
-                            new_parameter = {
-                                "name": i_name,
-                                "in": "query",
-                                "type": i_value.get("type"),
-                                "description": i_value.get("description", ""),
-                            }
-                            if "items" in i_value:
-                                new_items = {
-                                    "type": i_value["items"].get("type"),
-                                }
-                                if "enum" in i_value["items"]:
-                                    new_items["enum"] = i_value["items"]["enum"]
-                                new_parameter.update({"items": new_items})
-                            new_parameters.append(new_parameter)
+                    new_parameters = self.process_query_params_spec(name_schema)
                     del val["parameters"][index]
                     val["parameters"].extend(new_parameters)
 

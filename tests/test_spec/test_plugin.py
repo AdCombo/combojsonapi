@@ -9,7 +9,7 @@ from combojsonapi.spec import ApiSpecPlugin
 from combojsonapi.spec.plugin import resolve_nested_schema
 from combojsonapi.spec.plugins_for_apispec import RestfulPlugin
 from combojsonapi.utils import create_schema_name
-from tests.test_spec import SomeSchema, SomeModel, RelatedModelSchema, app, SomeResourceList, SomeResourceDetail
+from tests.test_spec import SomeSchema, SomeModel, AnotherRelatedModelSchema, app, SomeResourceList, SomeResourceDetail
 
 module_path = 'combojsonapi.spec.plugin'
 
@@ -58,7 +58,7 @@ class TestApiSpecPlugin:
         schema_name = create_schema_name(SomeResourceDetail.schema)
 
         assert plugin.spec_schemas[schema_name] == SomeResourceDetail.schema
-        assert plugin.spec.components._schemas[schema_name]
+        assert plugin.spec.components.schemas[schema_name]
 
         assert plugin.spec_tag[tag]
 
@@ -96,7 +96,7 @@ class TestApiSpecPlugin:
 
     def test__get_operations_for_get__list(self, plugin):
         plugin._add_definitions_in_spec(SomeSchema)
-        plugin._add_definitions_in_spec(RelatedModelSchema)
+        plugin._add_definitions_in_spec(AnotherRelatedModelSchema)
         tag = 'SomeName'
         default_parameter = 'default_parameter'
         result = plugin._get_operations_for_get(SomeResourceList, tag, [default_parameter])
@@ -119,8 +119,8 @@ class TestApiSpecPlugin:
         enum3 = set(result['parameters'][3]['items'].pop('enum'))
         assert enum3 == {'id', 'name'}
         assert result['parameters'][3] == {
-            'name': 'fields[related_model]', 'in': 'query', 'type': 'array', 'required': False,
-            'description': 'List that refers to the name(s) of the fields to be returned `related_model`',
+            'name': 'fields[another_related_model]', 'in': 'query', 'type': 'array', 'required': False,
+            'description': 'List that refers to the name(s) of the fields to be returned `another_related_model`',
             'items': {'type': 'string'}
         }
         assert result['parameters'][4:8] == list(plugin._ApiSpecPlugin__list_filters_data)
@@ -143,7 +143,7 @@ class TestApiSpecPlugin:
 
     def test__get_operations_for_get__detail(self, plugin):
         plugin._add_definitions_in_spec(SomeSchema)
-        plugin._add_definitions_in_spec(RelatedModelSchema)
+        plugin._add_definitions_in_spec(AnotherRelatedModelSchema)
         tag = 'SomeName'
         default_parameter = 'default_parameter'
         result = plugin._get_operations_for_get(SomeResourceDetail, tag, [default_parameter])
@@ -167,8 +167,8 @@ class TestApiSpecPlugin:
         enum4 = set(result['parameters'][4]['items'].pop('enum'))
         assert enum4 == {'id', 'name'}
         assert result['parameters'][4] == {
-            'name': 'fields[related_model]', 'in': 'query', 'type': 'array', 'required': False,
-            'description': 'List that refers to the name(s) of the fields to be returned `related_model`',
+            'name': 'fields[another_related_model]', 'in': 'query', 'type': 'array', 'required': False,
+            'description': 'List that refers to the name(s) of the fields to be returned `another_related_model`',
             'items': {'type': 'string'}
         }
 
@@ -341,7 +341,7 @@ class TestApiSpecPlugin:
 def test_resolve_nested_schema():
     mock_self = Mock()
     mock_self.refs = []
-    mock_self.spec.components._schemas = []
+    mock_self.spec.components.schemas = {}
 
     schema = SomeSchema()
 
@@ -358,7 +358,7 @@ def test_resolve_nested_schema__schema_name_in_spec():
     name = create_schema_name(schema)
     mock_self = Mock()
     mock_self.refs = []
-    mock_self.spec.components._schemas = [name]
+    mock_self.spec.components.schemas = {name: SomeSchema}
 
     result = resolve_nested_schema(mock_self, schema)
 

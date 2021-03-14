@@ -1,7 +1,7 @@
 from unittest.mock import Mock, patch
 
 import pytest
-from flask import Blueprint
+from flask import Blueprint, Flask
 
 from combojsonapi.spec.apispec import _add_leading_slash, DocBlueprintMixin
 
@@ -118,7 +118,7 @@ class TestDocBlueprintMixin:
         mock_blueprint.add_url_rule.assert_not_called()
 
     @patch(f'{module_path}.json.dumps', autospec=True)
-    @patch(f'{module_path}.current_app')
+    @patch(f'{module_path}.current_app', spec=Flask)  # https://github.com/pallets/flask/issues/3637
     def test__openapi_json(self, mock_current_app, mock_dumps):
         mock_self = Mock()
         DocBlueprintMixin._openapi_json(mock_self)

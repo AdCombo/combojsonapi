@@ -65,9 +65,10 @@ class TestRestfulPlugin:
 
     def test__ref_to_spec__with_ref_data(self):
         mock_self = Mock()
-        mock_self.spec.components._schemas = []
+        mock_self.spec.components.schemas = {}
         schema = SomeSchema
         schema_name = create_schema_name(schema)
+        # todo: update later to use spec.get_ref, check for openapi v3
         data = {'$ref': f'#/definitions/{schema.__name__}'}
         RestfulPlugin._ref_to_spec(mock_self, data)
         mock_self.spec.components.schema.assert_called_once_with(schema_name, schema=schema)
