@@ -397,7 +397,7 @@ class ApiSpecPlugin(BasePlugin, DocBlueprintMixin):
 
         attributes = {}
         if resource.schema:
-            attributes = {"$ref": f"#/definitions/{create_schema_name(resource.schema)}"}
+            attributes = self.spec.get_ref("schema", create_schema_name(resource.schema))
         schema = (
             default_schema
             if default_schema
