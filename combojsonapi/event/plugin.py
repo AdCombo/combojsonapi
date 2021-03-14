@@ -45,6 +45,18 @@ class EventPlugin(BasePlugin):
             if method is not None:
                 yield getattr(cls_events, attr_name), method
 
+    def _create_event_urls(self, urls: Iterable[str], event: Callable) -> Tuple[str]:
+        """
+        Creates event urls
+        """
+        event_urls = []
+        for i_url in urls:
+            i_new_url = urllib.parse.urljoin(i_url, event.__name__)
+            i_new_url = i_new_url[:-1] if i_new_url[-1] == "/" else i_new_url
+            i_new_url = i_new_url + "/" if self.trailing_slash else i_new_url
+            event_urls.append(i_new_url)
+        return tuple(event_urls)
+
     def _create_event_resource(self, base_resource: Type[Resource], event: Callable, method: str, view: str,
                                urls: Iterable[str], self_json_api: Api, **kwargs) -> None:
         # noinspection PyTypeChecker
@@ -66,13 +78,7 @@ class EventPlugin(BasePlugin):
 
         url_rule_options = kwargs.get("url_rule_options") or {}
 
-        event_urls = []
-        for i_url in urls:
-            i_new_url = urllib.parse.urljoin(i_url, event.__name__)
-            i_new_url = i_new_url[:-1] if i_new_url[-1] == "/" else i_new_url
-            i_new_url = i_new_url + "/" if self.trailing_slash else i_new_url
-            event_urls.append(i_new_url)
-        event_urls = tuple(event_urls)
+        event_urls = self._create_event_urls(urls, event)
 
         if self_json_api.blueprint is not None:
             new_resource.view = SPLIT_REL.join([self_json_api.blueprint.name, new_resource.view])
