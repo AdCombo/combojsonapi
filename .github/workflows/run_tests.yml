@@ -65,7 +65,7 @@ jobs:
         pip install -U setuptools
         pip install pytest --upgrade
     - name: Test with pytest with coverage
-      run: coverage run --source flask_combo_jsonapi -m pytest
+      run: coverage run --source combojsonapi -m pytest
     - name: Trigger Coveralls
       run: coveralls --service=github
       env:
