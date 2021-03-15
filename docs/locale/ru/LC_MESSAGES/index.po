@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: combojsonapi 1.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-15 19:51+0300\n"
+"POT-Creation-Date: 2021-03-15 22:29+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,8 +18,8 @@ msgstr ""
 "Generated-By: Babel 2.9.0\n"
 
 #: ../../index.rst:3
-msgid "combojsonapi: Plugins to improve functionality of the Flask-COMBO-JSONAPI"
-msgstr "combojsonapi: Плагины для улучшения Flask-COMBO-JSONAPI"
+msgid "ComboJSONAPI: Plugins to improve functionality of the Flask-COMBO-JSONAPI"
+msgstr "ComboJSONAPI: Плагины для улучшения Flask-COMBO-JSONAPI"
 
 #: ../../index.rst:20
 msgid "``ComboJSONAPI`` is a set of plugins made for Flask-COMBO-JSONAPI_."
@@ -43,54 +43,55 @@ msgid ""
 "**RestfulPlugin** for apispec_ library in the **ApiSpecPlugin** enables "
 "documenting GET parameters with Marshmallow schemas."
 msgstr ""
-"Плагин **RestfulPlugin** для библиотеки apispec_ используется в"
-" плагине **ApiSpecPlugin** и добавляет документацию"
-" GET параметров при помощи схем Marshmallow."
+"Плагин **RestfulPlugin** для библиотеки apispec_ используется в плагине "
+"**ApiSpecPlugin** и добавляет документацию GET параметров при помощи схем"
+" Marshmallow."
 
-#: ../../index.rst:29
+#: ../../index.rst:28
 msgid ""
 "**EventPlugin** enables RPC creation for those cases when you can't make "
 "it with pure JSON:API."
 msgstr ""
-"Плагин **EventPlugin** добавляет создание RPC"
-" на тот случай, когда недостаточно JSON:API."
+"Плагин **EventPlugin** добавляет создание RPC на тот случай, когда "
+"недостаточно JSON:API."
 
-#: ../../index.rst:30
+#: ../../index.rst:29
 msgid ""
 "**PostgreSqlJSONB** features filtering and sorting data by first-level "
 "key values of JSONB values in PostgreSQL."
 msgstr ""
-"Плагин **PostgreSqlJSONB** добавляет фильтрацию и сортировку данных"
-" на первом уровне JSONB ключей-значений в PostgreSQL."
+"Плагин **PostgreSqlJSONB** добавляет фильтрацию и сортировку данных на "
+"первом уровне JSONB ключей-значений в PostgreSQL."
 
-#: ../../index.rst:35 ../../index.rst:61
-msgid "Documentation"
-msgstr "Документация"
-
-#: ../../index.rst:37
-msgid "https://combojsonapi.readthedocs.io/"
-msgstr ""
-
-#: ../../index.rst:41
+#: ../../index.rst:35
 msgid "Contents"
 msgstr "Содержание"
 
-#: ../../index.rst:63
+#: ../../index.rst:54
+msgid "Documentation"
+msgstr "Документация"
+
+#: ../../index.rst:56
+msgid "https://combojsonapi.readthedocs.io/"
+msgstr ""
+
+#: ../../index.rst:58
 msgid "To update docs:"
 msgstr "Чтобы обновить документацию:"
 
-#: ../../index.rst:76
+#: ../../index.rst:70
 msgid "add new langs via additional flag \"-l es\""
 msgstr "добавьте новые языки при помощи флага \"-l es\""
 
-#: ../../index.rst:77
+#: ../../index.rst:71
 msgid "add translations to :code:`docs/locale/<lang>/LC_MESSAGES`"
 msgstr "добавьте перевод в :code:`docs/locale/<lang>/LC_MESSAGES`"
 
-#: ../../index.rst:78
+#: ../../index.rst:72
 msgid ""
 "to check your translations run :code:`sphinx-build -b html -D language=ru"
 " . _build/html/ru` and check generated HTML files"
 msgstr ""
-"чтобы проверить ваш перевод выполните :code:`sphinx-build -b html -D language=ru"
-" . _build/html/ru` и проверьте сгенерированные HTML файлы"
+"чтобы проверить ваш перевод выполните :code:`sphinx-build -b html -D "
+"language=ru . _build/html/ru` и проверьте сгенерированные HTML файлы"
+

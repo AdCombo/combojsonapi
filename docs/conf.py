@@ -132,7 +132,6 @@ html_theme_options = {
     "github_user": "AdCombo",
     "github_repo": "combojsonapi",
     "github_banner": True,
-    "travis_button": True,
     "show_related": True,
     "page_width": "1080px",
     "fixed_sidebar": True,

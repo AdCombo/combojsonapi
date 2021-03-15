@@ -1,7 +1,10 @@
-.. image:: https://travis-ci.org/AdCombo/combojsonapi.svg?branch=develop
-    :target: https://travis-ci.org/AdCombo/combojsonapi
-.. image:: https://coveralls.io/repos/github/AdCombo/combojsonapi/badge.svg?branch=develop
-    :target: https://coveralls.io/github/AdCombo/combojsonapi?branch=develop
+.. image:: https://github.com/AdCombo/combojsonapi/workflows/Python%20tests%20and%20coverage/badge.svg
+   :alt: ComboJSONAPI actions
+   :target: https://github.com/AdCombo/combojsonapi/actions
+
+.. image:: https://coveralls.io/repos/github/AdCombo/combojsonapi/badge.svg?branch=master
+   :alt: ComboJSONAPI coverage
+   :target: https://coveralls.io/github/AdCombo/combojsonapi?branch=master
 
 ComboJSONAPI
 ============
