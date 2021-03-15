@@ -6,9 +6,9 @@ combojsonapi: Plugins to improve functionality of the Flask-COMBO-JSONAPI
    :alt: combojsonapi actions
    :target: https://github.com/AdCombo/combojsonapi/actions
 
-.. image:: https://coveralls.io/repos/github/AdCombo/combojsonapi/badge.svg
+.. image:: https://coveralls.io/repos/github/AdCombo/combojsonapi/badge.svg?branch=master
    :alt: combojsonapi coverage
-   :target: https://coveralls.io/github/AdCombo/combojsonapi
+   :target: https://coveralls.io/github/AdCombo/combojsonapi?branch=master
 
 .. image:: https://img.shields.io/pypi/v/combojsonapi.svg
    :alt: PyPI
