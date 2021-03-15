@@ -2,6 +2,18 @@ Changelog
 *********
 
 
+**1.1.0**
+=========
+
+Enhancements
+============
+
+* Upgrade apispec, fix tests `#33`_ #- `@mahenzon`_
+* provide custom event params via `extra` attribute `#34`_ #- `@mahenzon`_
+* build and localize docs for RTD `#36`_ #- `@mahenzon`_
+* Add case for permission methods in docs `#30`_ #- `@Bykov25`_
+
+
 **1.0.5**
 =========
 
@@ -82,3 +94,9 @@ Enhancements
 .. _`@Znbiz`: https://github.com/znbiz
 .. _`@Yakov Shapovalov`: https://github.com/photovirus
 .. _`@tarasovdg1`: https://github.com/tarasovdg1
+.. _`@Bykov25`: https://github.com/Bykov25
+
+.. _`#30`: https://github.com/AdCombo/combojsonapi/pull/30
+.. _`#33`: https://github.com/AdCombo/combojsonapi/pull/33
+.. _`#34`: https://github.com/AdCombo/combojsonapi/pull/34
+.. _`#36`: https://github.com/AdCombo/combojsonapi/pull/36
