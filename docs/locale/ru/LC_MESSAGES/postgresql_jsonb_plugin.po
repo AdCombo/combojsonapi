@@ -1,0 +1,149 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, AdCombo
+# This file is distributed under the same license as the combojsonapi
+# package.
+# Suren Khorenyan <surenkhorenyan@gmail.com>, 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: combojsonapi 1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-03-15 20:58+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.0\n"
+
+#: ../../postgresql_jsonb_plugin.rst:4
+msgid "PostgreSqlJSONB plugin"
+msgstr "Плагин PostgreSqlJSONB"
+
+#: ../../postgresql_jsonb_plugin.rst:6
+msgid "**PostgreSqlJSONB** plugins features:"
+msgstr "Плагин **PostgreSqlJSONB** позволяет:"
+
+#: ../../postgresql_jsonb_plugin.rst:8
+msgid ""
+"Allows working with **JSONB** PostgreSql fields similarly to a regular "
+"model on the client side. **get** requests are filtered and ordered by "
+"first-level JSONB fields."
+msgstr ""
+"Работать с типом полей **JSONB** в PostgreSql как с обычной моделью в "
+"плане выгрузки на клиент. Работает это для **get** запросов в фильтрации "
+"и сортировке. Работать можно с полями первого уровня."
+
+#: ../../postgresql_jsonb_plugin.rst:9
+msgid ""
+"Integrates with **ApiSpecPlugin** in swagger for **get** requests (for "
+"ResourceList views). New fields are added:"
+msgstr ""
+"Интегрируется с плагином **ApiSpecPlugin** в swagger в **get** запросах "
+"(когда выгружается ResourceList). Появились доп. поля:"
+
+#: ../../postgresql_jsonb_plugin.rst:11
+msgid ""
+":code:`filter[<JSONB field name in the model>.<upper level JSONB field>]`"
+" - simple filter;"
+msgstr ""
+":code:`filter[<название JSONB поля в модели>.<название поля верхнего "
+"уровня в JSONB>]` - обычные фильтры"
+
+#: ../../postgresql_jsonb_plugin.rst:12
+msgid ""
+":code:`filter = [{\"name\": \"<JSONB field name in the model>.<upper "
+"level JSONB field>\", \"op\": \"eq\", \"val\": \"<значение>\"}]` - in "
+"complex filters, we can request JSONB fields similarly to regular fields "
+"in the model."
+msgstr ""
+":code:`filter = [{\"name\": \"<название JSONB поля в "
+"модели>__<название\\поля верхнего уровня в JSONB>\", \"op\": \"eq\", "
+"\"val\": \"<значение>\"}]` - в составных фильтрах также обращаемся к "
+"полям внутри JSONB поля, как к полям другой модели."
+
+#: ../../postgresql_jsonb_plugin.rst:13
+msgid ""
+":code:`sort=<JSONB field name in the model>.<upper level JSONB field>` - "
+"used as deep sort."
+msgstr ""
+":code:`sort=<название JSONB поля в модели>.<название поля верхнего уровня"
+" в JSONB>` - в сортировке используется как глубокая сортировка."
+
+#: ../../postgresql_jsonb_plugin.rst:14
+msgid ""
+"Integrates with **PermissionPlugin**, so you can use upper level JSONB "
+"fields in permission cases."
+msgstr ""
+"Интегрируется с плагином **PermissionPlugin**, можно в пермишен кейсах "
+"описать ограничения на поля верхнего уровня в поле модели JSONB."
+
+#: ../../postgresql_jsonb_plugin.rst:17
+msgid "How to use"
+msgstr "Работа с плагином"
+
+#: ../../postgresql_jsonb_plugin.rst:18
+msgid "To use the plugin in your schemas with JSONB fields do the following:"
+msgstr ""
+"Чтобы интегрировать плагин в свои схемы, в которых описаны модели с "
+"полями JSONB, нужно сделать следующее:"
+
+#: ../../postgresql_jsonb_plugin.rst:20
+msgid ""
+"In schema, describe JSONB field (from model) as Nested, linking to a "
+"schema with upper level fields in model JSONB field."
+msgstr ""
+"В схеме описываем поле JSONB (из модели) как Nested, на схему со "
+"структурой того, что планируется хранить в JSONB"
+
+#: ../../postgresql_jsonb_plugin.rst:21
+msgid ""
+"JSONB schema with upper-level fields must be inherited from "
+":code:`combojsonapi.postgresql_jsonb.schema.SchemaJSONB` class."
+msgstr ""
+"Схема созданная в первом пункте для хранения структуры из поля модели "
+"JSONB должно наследоваться от класса "
+":code:`combojsonapi.postgresql_jsonb.schema.SchemaJSONB`"
+
+#: ../../postgresql_jsonb_plugin.rst:23
+msgid "And you're done."
+msgstr "И всё :)"
+
+#: ../../postgresql_jsonb_plugin.rst:26
+msgid "Plugin usage example"
+msgstr "Пример подключения плагина"
+
+#: ../../postgresql_jsonb_plugin.rst:28
+msgid ""
+"Let's take a look at sample implementation of a plugin, where we store "
+"user settings in JSONB field. This sample requires a postgresql database "
+"connection."
+msgstr ""
+"Рассмотрим пример, когда в поле JSONB будем хранить настройки "
+"пользователя. Пример будет работать только с подключение к базе данных "
+"postgresql"
+
+#: ../../postgresql_jsonb_plugin.rst:141
+msgid "Requests example"
+msgstr "Пример использования в запросах"
+
+#: ../../postgresql_jsonb_plugin.rst:143
+msgid ""
+"With views described in example above, we can use new filtering and "
+"ordering features."
+msgstr ""
+"С views, описанными в примере выше, мы можем пользоваться новыми "
+"фильтрами и сортировкой."
+
+#: ../../postgresql_jsonb_plugin.rst:145
+msgid "Request all active users with a simple filter:"
+msgstr "Запрос всех активных пользователей простым фильтром:"
+
+#: ../../postgresql_jsonb_plugin.rst:151
+msgid ""
+"Request all users aged 18 and up with a complex filter, ordered by age "
+"desc, then name:"
+msgstr ""
+"Запрос всех совершеннолетних пользователей (сложный фильтр), "
+"сортированных по возрасту по убыванию, затем по имени по возрастанию:"

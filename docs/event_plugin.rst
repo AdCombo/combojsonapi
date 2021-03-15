@@ -1,18 +1,23 @@
-EventPlugin (`EN`_ | `RU`_)
----------------------------
+.. _event_plugin:
 
-**EventPlugin** makes possible to create an event API (RPC).
+Event Plugin
+------------
 
-It integrates with **ApiSpecPlugin** to make RPC documentation which is displayed along with non-RPC documentation. Views are described in **yaml**.
+**EventPlugin**:
 
-Also it integrates with **PermissionPlugin**, and view can access restrictions for every model. View is restricted with general decorators, which are set up when API gets initialized.
+1. Allows to create Event-driven API (RPC api - custom views on top of general views)
+2. Integrates with **ApiSpecPlugin** to make RPC documentation which is displayed
+   along-side with non-RPC documentation. Views are described in **yaml**.
+3. integrates with **PermissionPlugin**, and view can access restrictions for every model.
+   View is restricted with general decorators, which are set up when API gets initialized.
 
 How to use
 ~~~~~~~~~~
 To create an RPC API for a model, do the following:
 
 1. Create a class from :code:`combojsonapi.event.resource.EventsResource`. We'll detail this later.
-2. Resource manager gets an :code:`events` attribute. There, specify a class you've just created. If you use a :code:`ResourceDetail` manager, every RPC API will receive model id specified in the resource manager.
+2. Resource manager gets an :code:`events` attribute. There, specify a class you've just created.
+   If you use a :code:`ResourceDetail` manager, every RPC API will receive model id specified in the resource manager.
 
 How plugin works
 """"""""""""""""
@@ -21,7 +26,14 @@ After you create a class inherited from :code:`combojsonapi.event.resource.Event
 any method with name starting with :code:`event_` will be considered as a separate view.
 Its URL view will be: :code:`.../<url of the resource manager, which RPC API method class is attached to>/<method name: event_...`.
 
-POST resources are created by default. You can make a GET resource, if you start the method's name with :code:`event_get_`. :code:`event_post_` is supported too, which would make a POST resource, again.
+There's a way to override url suffix, see :ref:`Event Plugin extra params<Event-Plugin-extra-params>`.
+
+
+POST resources are created by default. You can make a GET resource,
+if you start the method's name with :code:`event_get_`. :code:`event_post_` is supported too, which would make a POST resource, again.
+
+There's a way to override method, see :ref:`Event Plugin extra params<Event-Plugin-extra-params>`.
+
 
 **Other methods and attributes of the Event class won't be visible in a view.**
 
@@ -37,10 +49,58 @@ How to describe a view
 3. Document the view in yaml in the method beginning, so **ApiSpecPlugin** could automatically populate the swagger page with event method description.
 
 
+.. _Event-Plugin-extra-params:
+
+Plugin extra params
+~~~~~~~~~~~~~~~~~~~
+
+Event resource can be changed via extra params. Accepted params:
+
+* :code:`method` - view method - GET/POST/PUT/PATCH/DELETE
+* :code:`url_suffix` - custom url suffix to override using method name
+
+
+In this example a new view will be created. It will be :code:`PUT /user/{id}/update_online/`.
+Without event extra it will be :code:`POST /user/{id}/event_update_user_online_status/`.
+
+
+.. code:: python
+
+    from flask import request
+    from flask_combo_jsonapi import ResourceDetail
+    from combojsonapi.event.resource import EventsResource
+
+
+    class UserDetailEvents(EventsResource):
+        def event_update_user_online_status(self, *args, **kwargs):
+            # language=YAML
+            """
+            ---
+            # some swagger description
+            """
+            result = some_custom_stuff_to_do(kwargs, request.json)
+            return result
+
+        event_update_user_online_status.extra = {
+            "method": "PUT",
+            "url_suffix": "update_online",
+        }
+
+
+    class UserResourceDetail(ResourceDetail):
+        schema = UserSchema
+        events = UserDetailEvents
+        methods = []
+        data_layer = {
+            'session': db.session,
+            'model': User,
+        }
+
+
 Plugin usage sample
 ~~~~~~~~~~~~~~~~~~~
 
-We want to upload a user avatar. We'll also load **ApiSpecPlugin**, so we watch it in action.
+We want to upload a user avatar. We'll also load **ApiSpecPlugin**, so we can see it in action.
 
 .. code:: python
 
@@ -193,6 +253,3 @@ We want to upload a user avatar. We'll also load **ApiSpecPlugin**, so we watch 
             db.session.add(u)
         db.session.commit()
         app.run(port='9999')
-
-.. _`EN`: https://github.com/AdCombo/combojsonapi/blob/master/docs/en/event_plugin.rst
-.. _`RU`: https://github.com/AdCombo/combojsonapi/blob/master/docs/ru/event_plugin.rst

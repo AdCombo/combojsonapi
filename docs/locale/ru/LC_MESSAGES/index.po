@@ -1,0 +1,96 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, AdCombo
+# This file is distributed under the same license as the combojsonapi
+# package.
+# Suren Khorenyan <surenkhorenyan@gmail.com>, 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: combojsonapi 1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-03-15 19:51+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.0\n"
+
+#: ../../index.rst:3
+msgid "combojsonapi: Plugins to improve functionality of the Flask-COMBO-JSONAPI"
+msgstr "combojsonapi: Плагины для улучшения Flask-COMBO-JSONAPI"
+
+#: ../../index.rst:20
+msgid "``ComboJSONAPI`` is a set of plugins made for Flask-COMBO-JSONAPI_."
+msgstr "``ComboJSONAPI`` это набор плагинов для Flask-COMBO-JSONAPI_."
+
+#: ../../index.rst:24
+msgid ""
+"**Permission** plugin enables access control to models and their fields "
+"in GET, POST, PATCH and DELETE methods."
+msgstr ""
+"Плагин **Permission** добавляет возможность управления доступом к моделям"
+" и отдельным полям моделей при обращении методами GET, POST, PATCH и "
+"DELETE."
+
+#: ../../index.rst:26
+msgid "**ApiSpecPlugin** simplifies automated JSONAPI documentation."
+msgstr "Плагин **ApiSpecPlugin** упрощает автоматическое создание документации"
+
+#: ../../index.rst:27
+msgid ""
+"**RestfulPlugin** for apispec_ library in the **ApiSpecPlugin** enables "
+"documenting GET parameters with Marshmallow schemas."
+msgstr ""
+"Плагин **RestfulPlugin** для библиотеки apispec_ используется в"
+" плагине **ApiSpecPlugin** и добавляет документацию"
+" GET параметров при помощи схем Marshmallow."
+
+#: ../../index.rst:29
+msgid ""
+"**EventPlugin** enables RPC creation for those cases when you can't make "
+"it with pure JSON:API."
+msgstr ""
+"Плагин **EventPlugin** добавляет создание RPC"
+" на тот случай, когда недостаточно JSON:API."
+
+#: ../../index.rst:30
+msgid ""
+"**PostgreSqlJSONB** features filtering and sorting data by first-level "
+"key values of JSONB values in PostgreSQL."
+msgstr ""
+"Плагин **PostgreSqlJSONB** добавляет фильтрацию и сортировку данных"
+" на первом уровне JSONB ключей-значений в PostgreSQL."
+
+#: ../../index.rst:35 ../../index.rst:61
+msgid "Documentation"
+msgstr "Документация"
+
+#: ../../index.rst:37
+msgid "https://combojsonapi.readthedocs.io/"
+msgstr ""
+
+#: ../../index.rst:41
+msgid "Contents"
+msgstr "Содержание"
+
+#: ../../index.rst:63
+msgid "To update docs:"
+msgstr "Чтобы обновить документацию:"
+
+#: ../../index.rst:76
+msgid "add new langs via additional flag \"-l es\""
+msgstr "добавьте новые языки при помощи флага \"-l es\""
+
+#: ../../index.rst:77
+msgid "add translations to :code:`docs/locale/<lang>/LC_MESSAGES`"
+msgstr "добавьте перевод в :code:`docs/locale/<lang>/LC_MESSAGES`"
+
+#: ../../index.rst:78
+msgid ""
+"to check your translations run :code:`sphinx-build -b html -D language=ru"
+" . _build/html/ru` and check generated HTML files"
+msgstr ""
+"чтобы проверить ваш перевод выполните :code:`sphinx-build -b html -D language=ru"
+" . _build/html/ru` и проверьте сгенерированные HTML файлы"

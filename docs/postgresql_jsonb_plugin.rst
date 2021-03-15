@@ -1,5 +1,7 @@
-Плагинам PostgreSqlJSONB (`EN`_ | `RU`_)
-----------------------------------------
+.. _postgresql_jsonb_plugin:
+
+PostgreSqlJSONB plugin
+----------------------
 
 **PostgreSqlJSONB** plugins features:
 
@@ -20,8 +22,8 @@ To use the plugin in your schemas with JSONB fields do the following:
 
 And you're done.
 
-Plugin usage sample
-~~~~~~~~~~~~~~~~~~~
+Plugin usage example
+~~~~~~~~~~~~~~~~~~~~
 
 Let's take a look at sample implementation of a plugin, where we store user settings in JSONB field. This sample requires a postgresql database connection.
 
@@ -135,22 +137,19 @@ Let's take a look at sample implementation of a plugin, where we store user sett
         app.run(port='9999')
 
 
-Requests sample
-~~~~~~~~~~~~~~~
+Requests example
+~~~~~~~~~~~~~~~~
 
 With views described in example above, we can use new filtering and ordering features.
-
-request all active users ordered by name ascending, then by age descending, like this:
 
 Request all active users with a simple filter:
 
 .. code::
+
     /api/user/?filter[settings.active]=True
 
 Request all users aged 18 and up with a complex filter, ordered by age desc, then name:
 
 .. code::
-    /api/user/?filter=[{"name":"settings.age","op": "gt","val": "18"}]&sort=-settings.age,name
 
-.. _`EN`: https://github.com/AdCombo/combojsonapi/blob/master/docs/en/postgresql_jsonb.rst
-.. _`RU`: https://github.com/AdCombo/combojsonapi/blob/master/docs/ru/postgresql_jsonb.rst
+    /api/user/?filter=[{"name":"settings.age","op": "gt","val": "18"}]&sort=-settings.age,name

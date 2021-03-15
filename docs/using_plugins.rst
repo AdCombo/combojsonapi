@@ -1,5 +1,8 @@
-Using Plugins (`EN`_ | `RU`_)
------------------------------
+.. _using_plugins:
+
+
+Using Plugins
+-------------
 
 Attaching Plugins
 ~~~~~~~~~~~~~~~~~
@@ -26,13 +29,13 @@ Plugins API
 
 :code:`before_init_plugin(self, *args, app=None, **kwargs) -> None`
 
-    Fires before json_api initializes
+    Fired before json_api initializes
 
     - :code:`app` - link to Flask instance object
 
 :code:`after_init_plugin(self, *args, app=None, **kwargs) -> None`
 
-    Fires after json_api initializes
+    Fired after json_api initializes
 
     - :code:`app` - link to Flask instance object
 
@@ -271,7 +274,3 @@ in a short or detailed view based on pre-set parameter :code:`format=short|full`
             db.session.add(u)
         db.session.commit()
         app.run(use_reloader=True)
-
-
-.. _`EN`: https://github.com/AdCombo/combojsonapi/blob/master/docs/en/create_plugins.rst
-.. _`RU`: https://github.com/AdCombo/combojsonapi/blob/master/docs/ru/create_plugins.rst

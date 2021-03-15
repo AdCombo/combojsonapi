@@ -1,0 +1,171 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, AdCombo
+# This file is distributed under the same license as the combojsonapi
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: combojsonapi 1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-03-15 15:45+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.0\n"
+
+#: ../../../CHANGELOG.rst:2
+msgid "Changelog"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:6
+msgid "**1.0.5**"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:9 ../../../CHANGELOG.rst:45
+msgid "Bug Fixes"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:11
+msgid "Distribute apispec templates #- `@mahenzon`_"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:15
+msgid "**1.0.3**"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:18 ../../../CHANGELOG.rst:37
+#: ../../../CHANGELOG.rst:66
+msgid "Enhancements"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:20
+msgid ""
+"Add custom marshmallow fields for PostgreSQL filtering (PostgreSqlJSONB "
+"plugin) #- `@Znbiz`_"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:21
+msgid ""
+"Filtering and sorting nested JSONB fields (PostgreSqlJSONB plugin) #- "
+"`@tarasovdg1`_"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:25
+msgid "**1.0.0**"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:28
+msgid "Changes"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:30
+msgid "Rename Flask-REST-JSONAPI to Flask-COMBO-JSONAPI #- `@mahenzon`_"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:34
+msgid "**0.1.1**"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:39
+msgid "Added parameter **strict** in PermissionPlugin #- `@Znbiz`_"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:40
+msgid "Added parameter **trailing_slash** in EventPlugin #- `@Znbiz`_"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:41
+msgid "English docs #- `@Yakov Shapovalov`_"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:42
+msgid "Update marshmallow -> 3.0.1 #- `@Znbiz`_"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:47
+msgid "update Relationship #- `@Znbiz`_"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:48
+msgid ""
+"Constant splitter for filters, sorts and includes in plugin "
+"`PostgreSqlJSONB`_ #- `@Znbiz`_"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:49
+msgid "Fix resource.schema == None in plugin `ApiSpecPlugin`_ #- `@Znbiz`_"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:50
+msgid "Fix sorting in plugin `PostgreSqlJSONB`_ #- `@Znbiz`_"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:51
+msgid ""
+"Improved model fields check for options(load_only) in `Permission`_ #- "
+"`@Znbiz`_"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:52
+msgid ""
+"Implement disable_global_decorators, minor refactor and upgrade events, "
+"update docs in plugin `EventPlugin`_  #- `@mahenzon`_"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:54
+msgid ""
+"typo permission_for_path -> permission_for_patch and create "
+"get_decorators_for_resource in plugin `Permission`_ #- `@mahenzon`_"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:56
+msgid "Create status util #- `@mahenzon`_"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:57
+msgid ""
+"Refactor api spec params for get in plugin `ApiSpecPlugin`_ #- "
+"`@mahenzon`_"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:58
+msgid "Fix permission plugin initialization #- `@mahenzon`_"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:59
+msgid "Constant splitter for filters, sorts and includes #- `@mahenzon`_"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:60
+msgid "Configure setup, update .gitignore #- `@mahenzon`_"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:63
+msgid "**0.1.0**"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:68
+msgid "Created plugin `Permission`_ for flask-rest-jsonapi #- `@Znbiz`_"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:69
+msgid "Created plugin `ApiSpecPlugin`_ for flask-rest-jsonapi #- `@Znbiz`_"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:70
+msgid "Created plugin `EventPlugin`_ for flask-rest-jsonapi #- `@Znbiz`_"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:71
+msgid "Created plugin `PostgreSqlJSONB`_ for flask-rest-jsonapi #- `@Znbiz`_"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:72
+msgid "Created plugin `RestfulPlugin`_ for ApiSpec #- `@Znbiz`_"
+msgstr ""
+
