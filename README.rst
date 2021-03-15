@@ -57,7 +57,7 @@ To update docs:
     sphinx-intl update -p _build/locale -l ru
 
 
-- add new langs via additional flag "-l es"
+- add new langs via additional flag :code:`-l es`
 - add translations to :code:`docs/locale/<lang>/LC_MESSAGES`
 - to check your translations run :code:`sphinx-build -b html -D language=ru . _build/html/ru` and check generated HTML files
 
@@ -70,7 +70,7 @@ License
 .. _`MIT`: https://github.com/AdCombo/combojsonapi/blob/master/LICENSE
 
 .. _`Event Plugin docs`: https://combojsonapi.readthedocs.io/en/latest/event_plugin.html
-.. _`ApiSpec Plugin docs`: https://combojsonapi.readthedocs.io/en/latest/event_plugin.html
-.. _`Restful Plugin docs`: https://combojsonapi.readthedocs.io/en/latest/event_plugin.html
-.. _`Permission Plugin docs`: https://combojsonapi.readthedocs.io/en/latest/event_plugin.html
-.. _`PostgreSqlJSONB Plugin docs`: https://combojsonapi.readthedocs.io/en/latest/event_plugin.html
+.. _`ApiSpec Plugin docs`: https://combojsonapi.readthedocs.io/en/latest/api_spec_plugin.html
+.. _`Restful Plugin docs`: https://combojsonapi.readthedocs.io/en/latest/restful_plugin.html
+.. _`Permission Plugin docs`: https://combojsonapi.readthedocs.io/en/latest/permission_plugin.html
+.. _`PostgreSqlJSONB Plugin docs`: https://combojsonapi.readthedocs.io/en/latest/postgresql_jsonb_plugin.html
