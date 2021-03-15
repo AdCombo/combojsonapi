@@ -40,3 +40,8 @@ test_results/
 
 # ## macos temp files
 /**/.DS_Store
+
+
+# docs
+/docs/_build
+/docs/**/*.mo

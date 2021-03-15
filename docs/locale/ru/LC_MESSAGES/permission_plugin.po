@@ -1,0 +1,418 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, AdCombo
+# This file is distributed under the same license as the combojsonapi
+# package.
+# Suren Khorenyan <surenkhorenyan@gmail.com>, 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: combojsonapi 1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-03-15 20:45+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.0\n"
+
+#: ../../permission_plugin.rst:4
+msgid "Permission plugin"
+msgstr "Плагин Permission"
+
+#: ../../permission_plugin.rst:6
+msgid "**Permission** plugin enables features:"
+msgstr "Плагин **Permission** позволяет:"
+
+#: ../../permission_plugin.rst:8
+msgid "Attach decorators to routers."
+msgstr "Повесить декораторы на роутеры"
+
+#: ../../permission_plugin.rst:11
+msgid "Restrict what data is returned on objects (GET method):"
+msgstr "Добавить ограничительную логику при выгрузке объектов (GET запрос):"
+
+#: ../../permission_plugin.rst:10
+msgid ""
+"by attribute (they won't be requested from database unless mentioned "
+"specifically);"
+msgstr ""
+"ограничить выгрузку по атрибутам (они не будут даже выгружаться из БД, "
+"если только специально к ним не обратиться);"
+
+#: ../../permission_plugin.rst:11
+msgid "by rows;"
+msgstr "ограничить выгрузку по строкам;"
+
+#: ../../permission_plugin.rst:12
+msgid ""
+"by rows based on complex filters, e. g. accessible for users in a "
+"specific group, or group owner."
+msgstr ""
+"ограничить выгрузку по строкам в зависимости от результатов сложных "
+"фильтров, например доступны только те пользователи, которые состоят в "
+"группе, в которой данный пользователь является владельцем"
+
+#: ../../permission_plugin.rst:13
+msgid ""
+"Pre-parsing (sanitizing) input data for patching (PATCH method) and "
+"creating objects (POST method)."
+msgstr ""
+"Предобработка данных для обновления объекта (PATCH запрос) и создания "
+"(POST запрос)."
+
+#: ../../permission_plugin.rst:14
+msgid "Check if user can delete an object."
+msgstr "Выполнить проверку на возможность удаления объекта данным пользователем."
+
+#: ../../permission_plugin.rst:18
+msgid "How to use"
+msgstr "Работа с плагином"
+
+#: ../../permission_plugin.rst:19
+msgid "To create a permission system:"
+msgstr "Чтобы создать систему пермишенов для какой-либо модели, нужно:"
+
+#: ../../permission_plugin.rst:21
+msgid ""
+"Inherit a class from "
+":code:`combojsonapi.permission.permission_system.PermissionMixin` "
+"(detailed  below)."
+msgstr ""
+"Создать класс от "
+":code:`combojsonapi.permission.permission_system.PermissionMixin`, ниже "
+"будет более подробно сказано об этом"
+
+#: ../../permission_plugin.rst:22
+msgid ""
+"In resource manager, specify which methods use this permissions class in "
+":code:`data_layer`."
+msgstr ""
+"В ресурс менеджере в :code:`data_layer` указать, какие методы должны "
+"использовать данный класс с пермишенами"
+
+#: ../../permission_plugin.rst:23
+msgid ""
+"If you need to disable permission decorators for the resource, set the "
+"following attribute: :code:`disable_global_decorators`."
+msgstr ""
+"Если нам нужно, чтобы на конкретный ресурс не накручивались пермишн "
+"декораторы, необходимо в ресурсе указать атрибут "
+":code:`disable_global_decorators`"
+
+#: ../../permission_plugin.rst:24
+msgid ""
+"Shared permissions are applied automatically by "
+":code:`permission_manager` https://flask-combo-"
+"jsonapi.readthedocs.io/en/latest/permission.html. To disable it, set "
+":code:`disable_permission` attribute. Example:"
+msgstr ""
+"Общие пермишены можно применять даже не накручивая на каждый ресурс "
+"отдельно, для этого есть:code:`permission_manager` https://flask-combo-"
+"jsonapi.readthedocs.io/en/latest/permission.html.Для того, чтобы "
+"отключить его, нужно у класса назначить :code:`disable_permission`. "
+"Например:"
+
+#: ../../permission_plugin.rst:35
+msgid ""
+"By default only required fields and allowed by permission fields are "
+"fetched from database. If your model uses property which refers to a "
+"property which was not fetched (was not requested in your query), you "
+"need to declare required fields in the model's :code:`Meta` class in "
+"attribute :code:`required_fields`. Otherwise sqlalchemy will fetch these "
+"fields using additional db requests which will slow down your request. "
+"For example:"
+msgstr ""
+"По умолчанию из БД выгружаются только поля, указанные в запросеи "
+"разрешенные в пермишенах. Если в вашей модели есть property, который "
+"обращается к незапрошенному полю модели (но при этом это поле не нужно "
+"возвращать в запросе), то такие зависимости необходимо указать у модели в"
+" классе :code:`Meta`в атрибуте :code:`required_fields`. Например:"
+
+#: ../../permission_plugin.rst:59
+msgid "PermissionMixin class API"
+msgstr "API класса PermissionMixin"
+
+#: ../../permission_plugin.rst:61
+msgid "**Properties:**"
+msgstr "**Свойства:**"
+
+#: ../../permission_plugin.rst:63
+msgid ":code:`permission_for_get: PermissionForGet`"
+msgstr ""
+
+#: ../../permission_plugin.rst:65
+msgid "User permissions for GET method. Contains properties:"
+msgstr "Разрешения для пользователя в методе get. Содержит свойства:"
+
+#: ../../permission_plugin.rst:67
+msgid ""
+":code:`filters: List` - filters list to apply when requesting objects. E."
+" g., it's possible to allow user to view his profile only, not anyone "
+"else's."
+msgstr ""
+":code:`filters: List` - список фильтров, которые нужно применить при "
+"выгрузке объектов. Например можем задать, чтобы пользователь при выгрузке"
+" видел только себя"
+
+#: ../../permission_plugin.rst:68
+msgid ""
+":code:`joins: List` - models list to join when requesting objects. E. g. "
+"allow a user to view users of group he is part of."
+msgstr ""
+":code:`joins: List` - список джойнов, которые нужно присоединить к "
+"данному запросу на выгрузку. Например пользователь может увидеть только "
+"тех пользователей, которые входят в некую группу, в которую он входит."
+
+#: ../../permission_plugin.rst:69 ../../permission_plugin.rst:77
+#: ../../permission_plugin.rst:85
+msgid ""
+":code:`allow_columns: Dict[str, int]` - allowed model attributes and "
+"permission weight (more is higher priority), which is useful for managing"
+" more and less restrictive permissions."
+msgstr ""
+":code:`allow_columns: Dict[str, int]` - атрибуты модели, которые доступны"
+" и вес доступа, влияет на то что пермишены могут быть разрешающими, а "
+"могут быть запрещающими"
+
+#: ../../permission_plugin.rst:70 ../../permission_plugin.rst:78
+#: ../../permission_plugin.rst:86
+msgid ""
+":code:`forbidden_columns: Dict[str, int]` - forbidden model attributes "
+"and permission weight."
+msgstr ""
+":code:`forbidden_columns: Dict[str, int]` - атрибуты модели, которые "
+"запрещены и вес доступа, влияет на то что пермишены могут быть "
+"разрешающими, а могут быть запрещающими"
+
+#: ../../permission_plugin.rst:71 ../../permission_plugin.rst:79
+#: ../../permission_plugin.rst:87
+msgid ""
+":code:`columns: Set[str]` - accessible model attributes after applying "
+"all permissions by weight in ascending order."
+msgstr ""
+":code:`columns: Set[str]` - атрибуты модели, доступны пользователю, после"
+" сложения разрешающий и запрещающих массивов по весу"
+
+#: ../../permission_plugin.rst:73
+msgid ":code:`permission_for_patch: PermissionForPatch`"
+msgstr ""
+
+#: ../../permission_plugin.rst:75
+msgid "User permissions for PATCH method. Contains properties:"
+msgstr "Разрешения для пользователя в методе patch. Содержит свойства:"
+
+#: ../../permission_plugin.rst:81
+msgid ":code:`permission_for_post: PermissionForPost`"
+msgstr ""
+
+#: ../../permission_plugin.rst:83
+msgid "User permissions for POST method. Contains properties:"
+msgstr "Разрешения для пользователя в методе post. Содержит свойства:"
+
+#: ../../permission_plugin.rst:90
+msgid "**Methods:**"
+msgstr "**Методы:**"
+
+#: ../../permission_plugin.rst:92
+msgid ""
+":code:`get(self, *args, many=True, user_permission: PermissionUser = "
+"None, **kwargs) -> PermissionForGet`"
+msgstr ""
+
+#: ../../permission_plugin.rst:94
+msgid "GET method permissions for current user, described in PermissionForGet"
+msgstr ""
+"Ограничения на элементы описанные в PermissionForGet для данного "
+"пользователя в GET запросах"
+
+#: ../../permission_plugin.rst:96
+msgid ""
+":code:`bool many` - if model is requested via ResourceList (True) or "
+"ResourceDetail (False);"
+msgstr ":code:`bool many` - запрашивают через ResourceList или ResourceDetail"
+
+#: ../../permission_plugin.rst:97 ../../permission_plugin.rst:104
+#: ../../permission_plugin.rst:110 ../../permission_plugin.rst:118
+#: ../../permission_plugin.rst:124 ../../permission_plugin.rst:131
+msgid ""
+":code:`PermissionUser user_permission` - permissions for current logged "
+"in user; all permissions are available, including other models and "
+"methods (GET, POST, PATCH)."
+msgstr ""
+":code:`PermissionUser user_permission` - ограничения для данного "
+"пользователя, можно получить доступ к ограничениям по другим моделям для "
+"данного пользователя для разных методов (GET, POST, PATCH)."
+
+#: ../../permission_plugin.rst:99
+msgid ""
+":code:`post_data(self, *args, data=None, user_permission: PermissionUser "
+"= None, **kwargs) -> Dict`"
+msgstr ""
+
+#: ../../permission_plugin.rst:101
+msgid ""
+"Pre-parses input data according to permissions. Returns parsed data for "
+"the object being created."
+msgstr ""
+"Предобработка данных в соответствие с ограничениями перед создание "
+"объекта. Должен вернуть обработанные данные для нового объекта"
+
+#: ../../permission_plugin.rst:103
+msgid ":code:`Dict data` - unparsed data for the object being created;"
+msgstr ":code:`Dict data` - данные для создания объекта;"
+
+#: ../../permission_plugin.rst:106
+msgid ""
+":code:`post_permission(self, *args, user_permission: PermissionUser = "
+"None, **kwargs) -> PermissionForPost`"
+msgstr ""
+
+#: ../../permission_plugin.rst:108
+msgid "POST method permissions for current user, described in PermissionForGet"
+msgstr ""
+"Ограничения на элементы описанные в PermissionForPost для данного "
+"пользователя в POST запросах"
+
+#: ../../permission_plugin.rst:112
+msgid ""
+":code:`patch_data(self, *args, data=None, obj=None, user_permission: "
+"PermissionUser = None, **kwargs) -> Dict`"
+msgstr ""
+
+#: ../../permission_plugin.rst:114
+msgid ""
+"Pre-parses input data according to permissions. Returns parsed data for "
+"the object being updated."
+msgstr ""
+"Предобработка данных в соответствие с ограничениями перед обновлением "
+"объекта. Должен вернуть обработанные данные для обновления объекта"
+
+#: ../../permission_plugin.rst:116
+msgid ":code:`Dict data` - input data validated according to marshmallow schema;"
+msgstr ""
+":code:`Dict data` - входные данные, прошедшие валидацию через схему "
+"marshmallow;"
+
+#: ../../permission_plugin.rst:117
+msgid ":code:`obj` - object being updated;"
+msgstr ":code:`obj` - обновляемый объект из БД;"
+
+#: ../../permission_plugin.rst:120
+msgid ""
+":code:`patch_permission(self, *args, user_permission: PermissionUser = "
+"None, **kwargs) -> PermissionForPatch`"
+msgstr ""
+
+#: ../../permission_plugin.rst:122
+msgid "PATCH method permissions for current user, described in PermissionForGet"
+msgstr ""
+"Ограничения на элементы описанные в PermissionForPatch для данного "
+"пользователя в PATCH запросах"
+
+#: ../../permission_plugin.rst:126
+msgid ""
+":code:`delete(self, *args, obj=None, user_permission: PermissionUser = "
+"None, **kwargs) -> bool`"
+msgstr ""
+
+#: ../../permission_plugin.rst:128
+msgid ""
+"Permissions check if user is allowed to delete the :code:`obj` object. "
+"Object won't be deleted if any :code:`delete` method returns False."
+msgstr ""
+
+#: ../../permission_plugin.rst:130
+msgid ":code:`obj` - object being deleted"
+msgstr ""
+"Проверка пермишеннов на возможность удалить данный объект (obj). Если "
+"хотя бы одна из функций, вернёт False, то удаление не произойдёт"
+
+#: ../../permission_plugin.rst:135
+msgid "Resource Manager Descriptions"
+msgstr "Описания в ресурс менеджерах"
+
+#: ../../permission_plugin.rst:137
+msgid "In :code:`data_layer` section you can specify following permission types:"
+msgstr "В разделе :code:`data_layer` можно указать следующие типы пермишенов:"
+
+#: ../../permission_plugin.rst:139
+msgid ""
+":code:`permission_get: List` - list of classes, which :code:`get` method "
+"will be requested from;"
+msgstr ""
+":code:`permission_get: List` - список классов, из которых будет "
+"запрашиваться метод :code:`get`"
+
+#: ../../permission_plugin.rst:140
+msgid ""
+":code:`permission_post: List` - list of classes, which "
+":code:`post_permission` and :code:`post_data` methods will be requested "
+"from;"
+msgstr ""
+":code:`permission_post: List` - список классов, из которых будет "
+"запрашиваться метод :code:`post_permission` и :code:`post_data`"
+
+#: ../../permission_plugin.rst:141
+msgid ""
+":code:`permission_patch: List` - list of classes, which "
+":code:`patch_permission` and :code:`patch_data` methods will be requested"
+" from;"
+msgstr ""
+":code:`permission_patch: List` - список классов, из которых будет "
+"запрашиваться метод :code:`patch_permission` и :code:`patch_data`"
+
+#: ../../permission_plugin.rst:142
+msgid ""
+":code:`permission_delete: List` - list of classes, which :code:`delete` "
+"method will be requested from;"
+msgstr ""
+":code:`permission_delete: List` - список классов, из которых будет "
+"запрашиваться метод :code:`delete`"
+
+#: ../../permission_plugin.rst:146
+msgid "Usage example"
+msgstr "Пример подключения плагина"
+
+#: ../../permission_plugin.rst:148
+msgid ":code:`model`"
+msgstr ""
+
+#: ../../permission_plugin.rst:170 ../../permission_plugin.rst:274
+msgid ":code:`permission`"
+msgstr ""
+
+#: ../../permission_plugin.rst:233
+msgid ":code:`views`"
+msgstr ""
+
+#: ../../permission_plugin.rst:259
+msgid ":code:`__init__`"
+msgstr ""
+
+#: ../../permission_plugin.rst:272
+msgid ""
+"Example of loading various object attributes depending on the address at "
+"which the object was requested"
+msgstr ""
+"Пример выгрузки различных атрибутов объекта в зависимости от адреса, по "
+"которому был запрошен объект"
+
+#: ../../permission_plugin.rst:294
+msgid ""
+":code:`computer_list, phone_list` - endpoints in pattern of the routing "
+"system:"
+msgstr ""
+":code:`computer_list, phone_list` - endpoint'ы схемы системы "
+"маршрутизации:"
+
+#: ../../permission_plugin.rst:296
+msgid ""
+":code:`api_json.route(<Resource manager>, <endpoint name>, <url_1>, "
+"<url_2>, ...)`"
+msgstr ""
+
+#~ msgid "Usage Sample"
+#~ msgstr ""
+

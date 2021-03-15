@@ -1,0 +1,57 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, AdCombo
+# This file is distributed under the same license as the combojsonapi
+# package.
+# Suren Khorenyan <surenkhorenyan@gmail.com>, 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: combojsonapi 1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-03-15 21:03+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.0\n"
+
+#: ../../restful_plugin.rst:4
+msgid "Restful plugin"
+msgstr "Плагин Restful"
+
+#: ../../restful_plugin.rst:6
+msgid ""
+"**RestfulPlugin** is designed to work with **apispec**, which is used in "
+"**ApiSpecPlugin**."
+msgstr ""
+"Плагин **RestfulPlugin** разработан для **apispec**, который в свою "
+"очередь используется в плагине **ApiSpecPlugin**."
+
+#: ../../restful_plugin.rst:8
+msgid "Plugin **RestfulPlugin**:"
+msgstr "Плагин **RestfulPlugin**:"
+
+#: ../../restful_plugin.rst:10
+msgid "it generates views documentation based on API yaml description"
+msgstr ""
+"генерирует документацию к views на основе документации к view на yaml"
+
+#: ../../restful_plugin.rst:11
+msgid "its main purpose is to describe RPC API made with **EventPlugin**."
+msgstr ""
+"разработан для описания RPC API реализованного с помощью плагина **EventPlugin**."
+
+#: ../../restful_plugin.rst:13
+msgid ""
+"Plugin usage example is available :ref:`in EventPlugin description "
+"<event_plugin>`. In that example a RPC API view documentation is being "
+"parsed via RestfulPlugin and passed to **apispec** for export into "
+"**swagger**."
+msgstr ""
+"Пример работы с плагином можно посмотреть в :ref:`примере плагина "
+"EventPlugin <event_plugin>` В примере view RPC API документация описана, "
+"которая дальше парсится данным плагином и отдаётся в **apispec** для "
+"выгрузки в swagger."
+

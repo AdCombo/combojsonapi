@@ -1,0 +1,220 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, AdCombo
+# This file is distributed under the same license as the combojsonapi
+# package.
+# Suren Khorenyan <surenkhorenyan@gmail.com>, 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: combojsonapi 1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-03-15 19:43+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.0\n"
+
+#: ../../event_plugin.rst:4
+msgid "Event Plugin"
+msgstr "Плагин Event (событийный плагин / RPC плагин)"
+
+#: ../../event_plugin.rst:6
+msgid "**EventPlugin**:"
+msgstr ""
+
+#: ../../event_plugin.rst:8
+msgid ""
+"Allows to create Event-driven API (RPC api - custom views on top of "
+"general views)"
+msgstr "Позволяет создавать событийное API (RPC)"
+
+#: ../../event_plugin.rst:9
+msgid ""
+"Integrates with **ApiSpecPlugin** to make RPC documentation which is "
+"displayed along-side with non-RPC documentation. Views are described in "
+"**yaml**."
+msgstr ""
+"Интегрируется с плагином **ApiSpecPlugin** позволяя создавать "
+"документацию для RPC views и отображать вместе с общей документацией. "
+"Описание view производится при помощи **yaml**."
+
+#: ../../event_plugin.rst:11
+msgid ""
+"integrates with **PermissionPlugin**, and view can access restrictions "
+"for every model. View is restricted with general decorators, which are "
+"set up when API gets initialized."
+msgstr ""
+"Интегрируется с плагином **PermissionPlugin**, можно из view получить "
+"доступ к ограничения по любой модели. Также доступ к view ограничивается "
+"общими декораторами, которые задаются при инициализации API."
+
+#: ../../event_plugin.rst:15
+msgid "How to use"
+msgstr "Работа с плагином"
+
+#: ../../event_plugin.rst:16
+msgid "To create an RPC API for a model, do the following:"
+msgstr "Чтобы создать RPC API связанного с какой-либо моделью, нужно:"
+
+#: ../../event_plugin.rst:18
+msgid ""
+"Create a class from :code:`combojsonapi.event.resource.EventsResource`. "
+"We'll detail this later."
+msgstr ""
+"Создать класс от :code:`combojsonapi.event.resource.EventsResource`, ниже"
+" будет более подробно сказано об этом."
+
+#: ../../event_plugin.rst:19
+msgid ""
+"Resource manager gets an :code:`events` attribute. There, specify a class"
+" you've just created. If you use a :code:`ResourceDetail` manager, every "
+"RPC API will receive model id specified in the resource manager."
+msgstr ""
+"В ресурс менеджере используется атрибут :code:`events`, там нужно указать"
+" класс, созданный в первом пункте. Если использовать в ресурс менеджере "
+":code:`ResourceDetail`, то в каждую view RPC API будет приходить также id"
+" модели (которая указана в ресурс менеджере)."
+
+#: ../../event_plugin.rst:23
+msgid "How plugin works"
+msgstr "Описание работы плагина"
+
+#: ../../event_plugin.rst:25
+msgid ""
+"After you create a class inherited from "
+":code:`combojsonapi.event.resource.EventsResource`, any method with name "
+"starting with :code:`event_` will be considered as a separate view. Its "
+"URL view will be: :code:`.../<url of the resource manager, which RPC API "
+"method class is attached to>/<method name: event_...`."
+msgstr ""
+"После того как создали класс, унаследованный от "
+":code:`combojsonapi.event.resource.EventsResource`,любой метод в этом "
+"классе, который начинается с :code:`event_` будет считаться "
+"самостоятельным view.Адрес нового view будет формироваться в формате "
+":code:`.../<url ресурс менеджера, к которому привязанданный класс с "
+"методами RPC API>/event_<название нашего метода, после event_>`."
+
+#: ../../event_plugin.rst:29
+msgid ""
+"There's a way to override url suffix, see :ref:`Event Plugin extra params"
+"<Event-Plugin-extra-params>`."
+msgstr ""
+"Есть возможность переопределить суффикс url, для этогоиспользуйте see "
+":ref:`extra параметры Event плагина <Event-Plugin-extra-params>`."
+
+#: ../../event_plugin.rst:32
+msgid ""
+"POST resources are created by default. You can make a GET resource, if "
+"you start the method's name with :code:`event_get_`. :code:`event_post_` "
+"is supported too, which would make a POST resource, again."
+msgstr ""
+"По умолчанию создаются POST ресурсы. Но можно создать GET ресурс, назвав "
+"метод :code:`event_get_something`. Также поддерживается "
+":code:`event_post_something` - создастся POST ресурс."
+
+#: ../../event_plugin.rst:35
+msgid ""
+"There's a way to override method, see :ref:`Event Plugin extra params"
+"<Event-Plugin-extra-params>`."
+msgstr ""
+"Есть возможность переопределить метод, для этогоиспользуйте see "
+":ref:`extra параметры Event плагина <Event-Plugin-extra-params>`."
+
+#: ../../event_plugin.rst:38
+msgid ""
+"**Other methods and attributes of the Event class won't be visible in a "
+"view.**"
+msgstr "**Другие методы и атрибуты Event класса не будут видны внутри view.**"
+
+#: ../../event_plugin.rst:41
+msgid "How to describe a view"
+msgstr "Описания view"
+
+#: ../../event_plugin.rst:46
+msgid ""
+"Method :code:`event[_post|get]_<method name>` accepts the following "
+"params:"
+msgstr ""
+"Метод :code:`event[_опционально тип запроса]_<название метода>` должен "
+"принимать следующие параметры:"
+
+#: ../../event_plugin.rst:44
+msgid ""
+":code:`id: int` [optional] - model instance id, if this view's class is "
+"specified in :code:`ResourceDetail` resource manager."
+msgstr ""
+":code:`id: int` [опционально] - id сущности модели. Если класс с данным "
+"view указан в ресурс менеджере :code:`ResourceDetail`."
+
+#: ../../event_plugin.rst:45
+msgid ""
+":code:`_permission_user: PermissionUser = None` - permissions for logged "
+"in user (if **PermissionPlugin** is used)"
+msgstr ""
+":code:`_permission_user: PermissionUser = None` - пермишены для данного "
+"авторизованного пользователя (при условии, что подключен плагин "
+"**PermissionPlugin**)"
+
+#: ../../event_plugin.rst:46
+msgid ":code:`*args`"
+msgstr ""
+
+#: ../../event_plugin.rst:47
+msgid ":code:`**kwargs`"
+msgstr ""
+
+#: ../../event_plugin.rst:48
+msgid "Describe answers in JSON API format."
+msgstr "При описании ответов view используйте формат JSONAPI"
+
+#: ../../event_plugin.rst:49
+msgid ""
+"Document the view in yaml in the method beginning, so **ApiSpecPlugin** "
+"could automatically populate the swagger page with event method "
+"description."
+msgstr ""
+"В начале метода нужно описать документацию к view на yaml "
+"(swagger/openapi), чтобы выполнить интеграцию с плагином автодокументации"
+" **ApiSpecPlugin**"
+
+#: ../../event_plugin.rst:55
+msgid "Plugin extra params"
+msgstr "Extra параметры плагина"
+
+#: ../../event_plugin.rst:57
+msgid "Event resource can be changed via extra params. Accepted params:"
+msgstr "Event ресурс может быть модифицирован при помощи extra параметров:"
+
+#: ../../event_plugin.rst:59
+msgid ":code:`method` - view method - GET/POST/PUT/PATCH/DELETE"
+msgstr ":code:`method` - метод view - GET/POST/PUT/PATCH/DELETE"
+
+#: ../../event_plugin.rst:60
+msgid ":code:`url_suffix` - custom url suffix to override using method name"
+msgstr ":code:`url_suffix` - кастомный суффикс url вместо имени метода (функции)"
+
+#: ../../event_plugin.rst:63
+msgid ""
+"In this example a new view will be created. It will be :code:`PUT "
+"/user/{id}/update_online/`. Without event extra it will be :code:`POST "
+"/user/{id}/event_update_user_online_status/`."
+msgstr ""
+"В этом примере новый view будет создан: :code:`PUT /user/{id}/update_online/`"
+". Без extra параметров для event результат был бы такой:"
+" :code:`POST /user/{id}/event_update_user_online_status/`."
+
+#: ../../event_plugin.rst:101
+msgid "Plugin usage sample"
+msgstr "Пример подключения плагина"
+
+#: ../../event_plugin.rst:103
+msgid ""
+"We want to upload a user avatar. We'll also load **ApiSpecPlugin**, so we"
+" can see it in action."
+msgstr ""
+"Мы хотим загрузить аватарку пользователя. Здесь мы также "
+"используем плагин **ApiSpecPlugin**, чтобы посмотреть на его работу."
+

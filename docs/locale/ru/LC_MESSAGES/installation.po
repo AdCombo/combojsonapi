@@ -1,0 +1,42 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, AdCombo
+# This file is distributed under the same license as the combojsonapi
+# package.
+# Suren Khorenyan <surenkhorenyan@gmail.com>, 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: combojsonapi 1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-03-15 19:59+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.0\n"
+
+#: ../../installation.rst:4
+msgid "Installation"
+msgstr "Установка"
+
+#: ../../installation.rst:8
+msgid "Install ComboJSONAPI via ``pip`` :"
+msgstr "Установить ComboJSONAPI при помощи ``pip`` :"
+
+#: ../../installation.rst:15
+msgid ""
+"Development version can be downloaded from `its page at GitHub "
+"<https://github.com/AdCombo/combojsonapi>`_. :"
+msgstr ""
+"Последняя версия исходного кода доступна `на странице проекта на GitHub "
+"<https://github.com/AdCombo/combojsonapi>`_. :"
+
+#: ../../installation.rst:30
+msgid "If you don't have virtualenv please install it before"
+msgstr "Если у вас не установлен virtualenv, установите его командой"
+
+#: ../../installation.rst:32
+msgid "$ pip install virtualenv"
+msgstr ""

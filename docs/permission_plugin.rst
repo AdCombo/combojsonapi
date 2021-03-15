@@ -1,5 +1,7 @@
-Permission (`EN`_ | `RU`_)
---------------------------
+.. _permission_plugin:
+
+Permission plugin
+-----------------
 
 **Permission** plugin enables features:
 
@@ -19,9 +21,9 @@ To create a permission system:
 1. Inherit a class from :code:`combojsonapi.permission.permission_system.PermissionMixin` (detailed  below).
 2. In resource manager, specify which methods use this permissions class in :code:`data_layer`.
 3. If you need to disable permission decorators for the resource, set the following attribute: :code:`disable_global_decorators`.
-4. Shared permissions are applied automatically by
-   :code:`permission_manager` https://flask-rest-jsonapi.readthedocs.io/en/latest/permission.html. To disable it, set :code:`disable_permission` attribute. Example:
-
+4. Shared permissions are applied automatically
+   by :code:`permission_manager` https://flask-combo-jsonapi.readthedocs.io/en/latest/permission.html.
+   To disable it, set :code:`disable_permission` attribute. Example:
 
 .. code:: python
 
@@ -30,6 +32,28 @@ To create a permission system:
         disable_global_decorators = True
         ...
 
+5. By default only required fields and allowed by permission fields are fetched from database.
+   If your model uses property which refers to a property which was not fetched
+   (was not requested in your query), you need to declare required fields in the
+   model's :code:`Meta` class in attribute :code:`required_fields`.
+   Otherwise sqlalchemy will fetch these fields using additional db requests
+   which will slow down your request. For example:
+
+.. code:: python
+
+    class User:
+        class Meta:
+            required_fields = {
+                'full_name': ['first_name', 'second_name'],
+            }
+
+        first_name = Column()
+        second_name = Column()
+
+        @property
+        def full_name(self):
+            return ' '.join([self.first_name, self.second_name])
+        ...
 
 PermissionMixin class API
 """""""""""""""""""""""""
@@ -118,8 +142,8 @@ In :code:`data_layer` section you can specify following permission types:
 * :code:`permission_delete: List` - list of classes, which :code:`delete` method will be requested from;
 
 
-Usage Sample
-~~~~~~~~~~~~
+Usage example
+~~~~~~~~~~~~~
 
 :code:`model`
 
@@ -270,6 +294,3 @@ Example of loading various object attributes depending on the address at which t
 :code:`computer_list, phone_list` - endpoints in pattern of the routing system:
 
 :code:`api_json.route(<Resource manager>, <endpoint name>, <url_1>, <url_2>, ...)`
-
-.. _`EN`: https://github.com/AdCombo/combojsonapi/blob/master/docs/en/permission_plugin.rst
-.. _`RU`: https://github.com/AdCombo/combojsonapi/blob/master/docs/ru/permission_plugin.rst

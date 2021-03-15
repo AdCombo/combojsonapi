@@ -1,0 +1,118 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, AdCombo
+# This file is distributed under the same license as the combojsonapi
+# package.
+# Suren Khorenyan <surenkhorenyan@gmail.com>, 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: combojsonapi 1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-03-15 19:06+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.0\n"
+
+#: ../../api_spec_plugin.rst:4
+msgid "ApiSpec plugin"
+msgstr "Плагин ApiSpec"
+
+#: ../../api_spec_plugin.rst:6
+msgid "Plugin **ApiSpecPlugin** adds the following features:"
+msgstr "Плагин **ApiSpecPlugin** добавляет:"
+
+#: ../../api_spec_plugin.rst:8
+msgid ""
+"Auto-generated documentation for JSON API, **ResourceList** and "
+"**ResourceDetail** resource managers."
+msgstr ""
+"Автоматически генерирующуюся документацию для JSONAPI, для ресурс "
+"менеджеров **ResourceList** и **ResourceDetail**"
+
+#: ../../api_spec_plugin.rst:9
+msgid ""
+"Support for auto-generating documentation of RPC API made with "
+":ref:`EventPlugin <event_plugin>`"
+msgstr ""
+"Поддержка генерации документации для RPC API созданного с помощью плагина"
+" :ref:`EventPlugin <event_plugin>`"
+
+#: ../../api_spec_plugin.rst:10
+msgid "Tag-based API grouping in **swagger**."
+msgstr "Группировка созданного API по тегам (в **swagger**)."
+
+#: ../../api_spec_plugin.rst:12
+msgid ""
+"Plugin is based on **apispec** using :ref:`RestfulPlugin "
+"<restful_plugin>`."
+msgstr ""
+"Плагин построен поверх **apispec** с подключением плагина :ref:`RestfulPlugin <restful_plugin>`."
+
+#: ../../api_spec_plugin.rst:15
+msgid "How to use"
+msgstr "Работа с плагином"
+
+#: ../../api_spec_plugin.rst:16
+msgid "To start, do the following:"
+msgstr "Чтобы начать работать с плагином, нужно:"
+
+#: ../../api_spec_plugin.rst:18
+msgid "Add a plugin instance at application initialization."
+msgstr "При инициализации приложения добавляем экземпляр плагина."
+
+#: ../../api_spec_plugin.rst:19
+msgid "Plugin supports the following parameters:"
+msgstr "При инициализации плагина, принимаются следующие параметры:"
+
+#: ../../api_spec_plugin.rst:21
+msgid ":code:`app: Flask` - application instance"
+msgstr ":code:`app: Flask` - экземпляр приложения"
+
+#: ../../api_spec_plugin.rst:22
+msgid ""
+":code:`decorators: Tuple = None` - tuple with decorators which will get "
+"attached to **swagger**"
+msgstr ""
+":code:`decorators: Tuple = None` - кортеж с декораторами, которые "
+"повесятся на роутер **swagger**"
+
+#: ../../api_spec_plugin.rst:23
+msgid ""
+":code:`tags: Dict[str, str] = None` - list of tags with descriptions; "
+"routers can be grouped by these tags."
+msgstr ""
+":code:`tags: Dict[str, str] = None` - список тегов с их описанием, они "
+"потом применяются при группировании роутеров в группы по тегам."
+
+#: ../../api_spec_plugin.rst:25
+msgid ""
+"When declaring routers, you can specify a tag :code:`tag: str`. Tag "
+"should be listed at plugin initialization, or you'll get an error."
+msgstr ""
+"При объявлении роутеров, добавляется параметр :code:`tag: str` если здесь"
+" указать тег, который не описан при инициализации плагина, то выскочит "
+"ошибка."
+
+#: ../../api_spec_plugin.rst:26
+msgid ""
+"When adding a RPC API view made with :ref:`EventPlugin <event_plugin>`, "
+"describe the API using yaml in the view beginning `API description "
+"structure <https://swagger.io/docs/specification/data-models/>`_."
+msgstr ""
+"Если добавляем RPC API view с использованием плагина :ref:`EventPlugin <event_plugin>`"
+", то в начале view описываем API используя "
+"yaml(`структура описания API <https://swagger.io/docs/specification/data-"
+"models/>`_)."
+
+#: ../../api_spec_plugin.rst:29
+msgid ""
+"Plugin usage example is available :ref:`in EventPlugin description "
+"<event_plugin>`."
+msgstr ""
+"Пример работы с плагином можно посмотреть в :ref:`примере у плагина "
+"EventPlugin <event_plugin>`."
+
