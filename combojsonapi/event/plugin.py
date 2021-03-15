@@ -18,14 +18,14 @@ class EventSchema(Schema):
 
 
 class EventPlugin(BasePlugin):
+    """Plugin for events routes in json_api"""
+
     def __init__(self, trailing_slash: bool = True):
         """
 
-        :param trailing_slash: ставить ли закрывающий слеш у событийного API
+        :param trailing_slash: add trailing slash when creating events API
         """
         self.trailing_slash = trailing_slash
-
-    """Plugin for events routes in json_api"""
 
     @classmethod
     def _events_with_methods(cls, cls_events: Type[EventsResource]) -> Generator[Tuple[Any, str], None, None]:
@@ -43,15 +43,23 @@ class EventPlugin(BasePlugin):
                 # Processing all other events. May be event_post_smth or just event_smth
                 method = "POST"
             if method is not None:
-                yield getattr(cls_events, attr_name), method
+                event_method = getattr(cls_events, attr_name)
+                event_extra: dict = getattr(event_method, "extra", {})
+                custom_method = event_extra.get("method")
+                if custom_method:
+                    method = custom_method
+                yield event_method, method
 
     def _create_event_urls(self, urls: Iterable[str], event: Callable) -> Tuple[str]:
         """
-        Creates event urls
+        Create events with optional custom suffix
         """
+        event_extra: dict = getattr(event, "extra", {})
+        event_url_suffix = event_extra.get("url_suffix", event.__name__)
+
         event_urls = []
         for i_url in urls:
-            i_new_url = urllib.parse.urljoin(i_url, event.__name__)
+            i_new_url = urllib.parse.urljoin(i_url, event_url_suffix)
             i_new_url = i_new_url[:-1] if i_new_url[-1] == "/" else i_new_url
             i_new_url = i_new_url + "/" if self.trailing_slash else i_new_url
             event_urls.append(i_new_url)
