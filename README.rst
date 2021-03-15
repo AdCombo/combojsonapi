@@ -6,24 +6,33 @@
    :alt: ComboJSONAPI coverage
    :target: https://coveralls.io/github/AdCombo/combojsonapi?branch=master
 
+.. image:: https://img.shields.io/pypi/v/combojsonapi.svg
+   :alt: PyPI
+   :target: http://pypi.org/p/combojsonapi
+
 ComboJSONAPI
 ============
 ComboJSONAPI is a set of plugins made for `Flask-COMBO-JSONAPI <https://github.com/AdCombo/flask-combo-jsonapi>`_ module.
 
 1. **Permission** plugin enables access control to models and their fields in GET, POST,
-   PATCH and DELETE methods. (`Permission plugin docs <https://github.com/AdCombo/combojsonapi/blob/master/docs/en/permission_plugin.rst>`_)
-2. **ApiSpecPlugin** simplifies automated JSONAPI documentation. (`ApiSpecPlugin docs <https://github.com/AdCombo/combojsonapi/blob/master/docs/en/api_spec_plugin.rst>`_)
+   PATCH and DELETE methods. (`Permission Plugin docs`_)
+2. **ApiSpecPlugin** simplifies automated JSONAPI documentation. (`ApiSpec Plugin docs`_)
 3. **RestfulPlugin** for apispec library in the **ApiSpecPlugin** enables documenting GET parameters
-   with Marshmallow schemas. (`RestfulPlugin docs <https://github.com/AdCombo/combojsonapi/blob/master/docs/en/restful_plugin.rst>`_)
+   with Marshmallow schemas. (`Restful Plugin docs`_)
 4. **EventPlugin** enables RPC creation for those cases when you can't make it with pure JSON:API
-   (`EventPlugin docs <https://github.com/AdCombo/combojsonapi/blob/master/docs/en/event_plugin.rst>`_).
+   (`Event Plugin docs`_).
 5. **PostgreSqlJSONB** features filtering and sorting data by first-level key values of JSONB values in
-   PostgreSQL (`PostgreSqlJSONB docs <https://github.com/AdCombo/combojsonapi/blob/master/docs/en/postgresql_jsonb.rst>`_).
+   PostgreSQL (`PostgreSqlJSONB Plugin docs`_).
 
 Installation
 ============
 
 :code:`pip install combojsonapi`
+
+Documentation
+=============
+
+- https://combojsonapi.readthedocs.io/
 
 
 Contributing
@@ -59,3 +68,9 @@ License
 
 .. _`Contributing guide is the best place to start`: https://github.com/AdCombo/combojsonapi/blob/master/CONTRIBUTING.rst
 .. _`MIT`: https://github.com/AdCombo/combojsonapi/blob/master/LICENSE
+
+.. _`Event Plugin docs`: https://combojsonapi.readthedocs.io/en/latest/event_plugin.html
+.. _`ApiSpec Plugin docs`: https://combojsonapi.readthedocs.io/en/latest/event_plugin.html
+.. _`Restful Plugin docs`: https://combojsonapi.readthedocs.io/en/latest/event_plugin.html
+.. _`Permission Plugin docs`: https://combojsonapi.readthedocs.io/en/latest/event_plugin.html
+.. _`PostgreSqlJSONB Plugin docs`: https://combojsonapi.readthedocs.io/en/latest/event_plugin.html
