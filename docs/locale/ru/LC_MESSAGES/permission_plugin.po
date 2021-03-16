@@ -412,7 +412,3 @@ msgid ""
 ":code:`api_json.route(<Resource manager>, <endpoint name>, <url_1>, "
 "<url_2>, ...)`"
 msgstr ""
-
-#~ msgid "Usage Sample"
-#~ msgstr ""
-

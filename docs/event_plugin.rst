@@ -97,8 +97,8 @@ Without event extra it will be :code:`POST /user/{id}/event_update_user_online_s
         }
 
 
-Plugin usage sample
-~~~~~~~~~~~~~~~~~~~
+Plugin usage example
+~~~~~~~~~~~~~~~~~~~~
 
 We want to upload a user avatar. We'll also load **ApiSpecPlugin**, so we can see it in action.
 

@@ -32,7 +32,7 @@ Did you find a bug?
 
 * If you're unable to find an open issue addressing the problem,
   `open a new one`_. Be sure to include a **title and clear
-  description**, as much relevant information as possible, and a **code sample**
+  description**, as much relevant information as possible, and a **code example**
   or an **executable test case** demonstrating the expected behavior that is not
   occurring.
 

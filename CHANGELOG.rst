@@ -77,18 +77,18 @@ Bug Fixes
 Enhancements
 ============
 
-* Created plugin `Permission`_ for flask-rest-jsonapi #- `@Znbiz`_
+* Created plugin `PermissionPlugin`_ for flask-rest-jsonapi #- `@Znbiz`_
 * Created plugin `ApiSpecPlugin`_ for flask-rest-jsonapi #- `@Znbiz`_
 * Created plugin `EventPlugin`_ for flask-rest-jsonapi #- `@Znbiz`_
 * Created plugin `PostgreSqlJSONB`_ for flask-rest-jsonapi #- `@Znbiz`_
 * Created plugin `RestfulPlugin`_ for ApiSpec #- `@Znbiz`_
 
 
-.. _`RestfulPlugin`: https://github.com/AdCombo/ComboJSONAPI/docs/restful_plugin.rst
-.. _`PostgreSqlJSONB`: https://github.com/AdCombo/ComboJSONAPI/docs/postgresql_jsonb.rst
-.. _`EventPlugin`: https://github.com/AdCombo/ComboJSONAPI/docs/event_plugin.rst
-.. _`ApiSpecPlugin`: https://github.com/AdCombo/ComboJSONAPI/docs/api_spec_plugin.rst
-.. _`Permission`: https://github.com/AdCombo/ComboJSONAPI/docs/permission_plugin.rst
+.. _`RestfulPlugin`: https://combojsonapi.readthedocs.io/en/latest/restful_plugin.html
+.. _`PostgreSqlJSONB`: https://combojsonapi.readthedocs.io/en/latest/postgresql_jsonb_plugin.html
+.. _`EventPlugin`: https://combojsonapi.readthedocs.io/en/latest/event_plugin.html
+.. _`ApiSpecPlugin`: https://combojsonapi.readthedocs.io/en/latest/api_spec_plugin.html
+.. _`PermissionPlugin`: https://combojsonapi.readthedocs.io/en/latest/permission_plugin.html
 
 .. _`@mahenzon`: https://github.com/mahenzon
 .. _`@Znbiz`: https://github.com/znbiz

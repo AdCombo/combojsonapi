@@ -6,7 +6,7 @@ Using Plugins
 
 Attaching Plugins
 ~~~~~~~~~~~~~~~~~
-Plugins are attached with JSON API initialization. Here's a sample of **EventPlugin** usage:
+Plugins are attached with JSON API initialization. Here's a example of **EventPlugin** usage:
 
 
 .. code:: python
@@ -161,9 +161,9 @@ Plugins API
 
     - :code:`self_nested` - :code:`Nested` instance.
 
-Making a New Plugin Sample
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-Let's take a look at sample implementation of a plugin that will return data from get requests to :code:`ResourceList`, :code:`ResourceDetail`
+Making a New Plugin Example
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Let's take a look at example implementation of a plugin that will return data from get requests to :code:`ResourceList`, :code:`ResourceDetail`
 in a short or detailed view based on pre-set parameter :code:`format=short|full`
 
 .. code:: python

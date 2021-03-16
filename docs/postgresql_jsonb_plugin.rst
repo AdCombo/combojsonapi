@@ -25,7 +25,8 @@ And you're done.
 Plugin usage example
 ~~~~~~~~~~~~~~~~~~~~
 
-Let's take a look at sample implementation of a plugin, where we store user settings in JSONB field. This sample requires a postgresql database connection.
+Let's take a look at example implementation of a plugin, where we store user settings in JSONB field.
+This example requires a postgresql database connection.
 
 .. code:: python
 

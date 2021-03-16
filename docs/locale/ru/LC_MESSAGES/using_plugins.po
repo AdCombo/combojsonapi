@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: combojsonapi 1.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-15 21:21+0300\n"
+"POT-Creation-Date: 2021-03-16 16:21+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,7 +27,7 @@ msgstr "Подключение плагинов"
 
 #: ../../using_plugins.rst:9
 msgid ""
-"Plugins are attached with JSON API initialization. Here's a sample of "
+"Plugins are attached with JSON API initialization. Here's a example of "
 "**EventPlugin** usage:"
 msgstr ""
 "Плагины подключаются в момент инициализации JSON API. Рассмотрим пример "
@@ -343,12 +343,12 @@ msgid ""
 msgstr ""
 
 #: ../../using_plugins.rst:165
-msgid "Making a New Plugin Sample"
+msgid "Making a New Plugin Example"
 msgstr "Пример создания плагинов"
 
 #: ../../using_plugins.rst:166
 msgid ""
-"Let's take a look at sample implementation of a plugin that will return "
+"Let's take a look at example implementation of a plugin that will return "
 "data from get requests to :code:`ResourceList`, :code:`ResourceDetail` in"
 " a short or detailed view based on pre-set parameter "
 ":code:`format=short|full`"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: combojsonapi 1.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-15 20:58+0300\n"
+"POT-Creation-Date: 2021-03-16 16:22+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -116,19 +116,19 @@ msgstr "Пример подключения плагина"
 
 #: ../../postgresql_jsonb_plugin.rst:28
 msgid ""
-"Let's take a look at sample implementation of a plugin, where we store "
-"user settings in JSONB field. This sample requires a postgresql database "
-"connection."
+"Let's take a look at example implementation of a plugin, where we store "
+"user settings in JSONB field. This example requires a postgresql database"
+" connection."
 msgstr ""
 "Рассмотрим пример, когда в поле JSONB будем хранить настройки "
 "пользователя. Пример будет работать только с подключение к базе данных "
 "postgresql"
 
-#: ../../postgresql_jsonb_plugin.rst:141
+#: ../../postgresql_jsonb_plugin.rst:142
 msgid "Requests example"
 msgstr "Пример использования в запросах"
 
-#: ../../postgresql_jsonb_plugin.rst:143
+#: ../../postgresql_jsonb_plugin.rst:144
 msgid ""
 "With views described in example above, we can use new filtering and "
 "ordering features."
@@ -136,11 +136,11 @@ msgstr ""
 "С views, описанными в примере выше, мы можем пользоваться новыми "
 "фильтрами и сортировкой."
 
-#: ../../postgresql_jsonb_plugin.rst:145
+#: ../../postgresql_jsonb_plugin.rst:146
 msgid "Request all active users with a simple filter:"
 msgstr "Запрос всех активных пользователей простым фильтром:"
 
-#: ../../postgresql_jsonb_plugin.rst:151
+#: ../../postgresql_jsonb_plugin.rst:152
 msgid ""
 "Request all users aged 18 and up with a complex filter, ordered by age "
 "desc, then name:"
