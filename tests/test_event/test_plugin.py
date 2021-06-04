@@ -130,3 +130,35 @@ class TestEventPlugin:
         assert mock__create_event_resource.call_count == 2
         for i, (args, _) in enumerate(mock__create_event_resource.call_args_list):
             assert args == (SomeResourceList, *expected_events_and_methods[i], view, urls, json_api)
+
+    @pytest.mark.parametrize("url, suffix, expected, use_trailing_slash", [
+        pytest.param(
+            "/users/<int:id>", "my-custom-suffix", "/users/<int:id>/my-custom-suffix", False,
+            id="wo_trailing_slash",
+        ),
+        pytest.param(
+            "/users/<int:id>/", "my-custom-suffix", "/users/<int:id>/my-custom-suffix/", True,
+            id="with_trailing_slash",
+        ),
+        pytest.param(
+            "/accounts", "", "/accounts", False,
+            id="wo_trailing_slash_and_empty_suffix",
+        ),
+        pytest.param(
+            "/accounts/", "", "/accounts/", True,
+            id="with_trailing_slash_and_empty_suffix",
+        ),
+    ])
+    def test__create_event_urls(self, url, suffix, expected, use_trailing_slash):
+        event_plugin = EventPlugin(trailing_slash=use_trailing_slash)
+
+        def event_view(*args, **kwargs):
+            return "ok"
+
+        event_view.extra = {
+            "url_suffix": suffix,
+        }
+
+        urls = event_plugin._create_event_urls([url], event_view)
+        assert len(urls) == 1
+        assert urls[0] == expected

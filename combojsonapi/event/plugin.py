@@ -1,4 +1,4 @@
-import urllib.parse
+import os
 from typing import Generator, Tuple, Any, Type, Callable, Iterable
 
 from flask_combo_jsonapi import Api
@@ -59,7 +59,7 @@ class EventPlugin(BasePlugin):
 
         event_urls = []
         for i_url in urls:
-            i_new_url = urllib.parse.urljoin(i_url, event_url_suffix)
+            i_new_url = os.path.join(i_url, event_url_suffix)
             i_new_url = i_new_url[:-1] if i_new_url[-1] == "/" else i_new_url
             i_new_url = i_new_url + "/" if self.trailing_slash else i_new_url
             event_urls.append(i_new_url)
