@@ -10,10 +10,20 @@ with open(requirements_filepath) as fp:
     install_requires = fp.read()
 
 
+def get_description():
+    """
+    Read full description from 'README.rst'
+    """
+    with open('README.rst', 'r', encoding='utf-8') as f:
+        return f.read()
+
+
 setup(
     name="ComboJSONAPI",
     version=__version__,
     description="4 plugins for Flask-COMBO-JSONAPI package.",
+    long_description=get_description(),
+    long_description_content_type='text/x-rst',
     url="https://github.com/AdCombo/combojsonapi",
     author="AdCombo Team",
     author_email="roman@adcombo.com",
