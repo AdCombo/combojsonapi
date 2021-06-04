@@ -2,6 +2,15 @@ Changelog
 *********
 
 
+**1.1.1**
+=========
+
+Bug Fixes
+=========
+
+* fix event plugin build urls when there's no trailing slash #- `@mahenzon`_
+
+
 **1.1.0**
 =========
 
@@ -60,11 +69,11 @@ Bug Fixes
 * Constant splitter for filters, sorts and includes in plugin `PostgreSqlJSONB`_ #- `@Znbiz`_
 * Fix resource.schema == None in plugin `ApiSpecPlugin`_ #- `@Znbiz`_
 * Fix sorting in plugin `PostgreSqlJSONB`_ #- `@Znbiz`_
-* Improved model fields check for options(load_only) in `Permission`_ #- `@Znbiz`_
+* Improved model fields check for options(load_only) in `PermissionPlugin`_ #- `@Znbiz`_
 * Implement disable_global_decorators, minor refactor and upgrade events, update docs in plugin
   `EventPlugin`_  #- `@mahenzon`_
 * typo permission_for_path -> permission_for_patch and create get_decorators_for_resource
-  in plugin `Permission`_ #- `@mahenzon`_
+  in plugin `PermissionPlugin`_ #- `@mahenzon`_
 * Create status util #- `@mahenzon`_
 * Refactor api spec params for get in plugin `ApiSpecPlugin`_ #- `@mahenzon`_
 * Fix permission plugin initialization #- `@mahenzon`_
