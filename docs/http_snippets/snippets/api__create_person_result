@@ -1,0 +1,23 @@
+HTTP/1.1 201 Created
+Content-Type: application/vnd.api+json
+
+{
+  "data": {
+    "attributes": {
+      "email": "john.smith@example.com",
+      "first_name": "John",
+      "last_name": "Smith"
+    },
+    "id": "1",
+    "links": {
+      "self": "/persons/1"
+    },
+    "type": "person"
+  },
+  "jsonapi": {
+    "version": "1.0"
+  },
+  "links": {
+    "self": "/persons/1"
+  }
+}

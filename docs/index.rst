@@ -37,6 +37,7 @@ Contents
 .. toctree::
 
    installation
+   quickstart
    event_plugin
    permission_plugin
    api_spec_plugin
