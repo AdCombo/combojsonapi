@@ -3,7 +3,7 @@
 Example
 -------
 
-An example of Flask-COMBO-JSONAPI API looks like this:
+An example of Flask-COMBO-JSONAPI API with ComboJSONAPI looks like this:
 
 .. literalinclude:: ../examples/api.py
     :language: python
@@ -74,11 +74,12 @@ Response:
 Sparse fields
 ~~~~~~~~~~~~~
 
-Note that we tell SQLAlchemy that `full_name` requires `first_name` and `first_name` fields.
-If we don't declare this dependency in model's `Meta.required_fields`,
+Note that we tell SQLAlchemy that :code:`full_name` requires :code:`first_name` and :code:`first_name` fields.
+If we don't declare this dependency in model's :code:`Meta.required_fields`,
 when serialising each model will fire two queries to DB to get these fields.
+
 It happens because PermissionPlugin removes not requested fields from
-the SQL query for the sake of performance. And `Meta.required_fields`
+the SQL query for the sake of performance. And :code:`Meta.required_fields`
 will tell PermissionPlugin which fields have to be loaded
 even if not requested directly.
 
