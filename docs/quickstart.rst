@@ -93,3 +93,34 @@ Response:
 .. literalinclude:: ./http_snippets/snippets/api__get_persons__sparse_fields_result
   :language: HTTP
 
+
+
+Relationships
+-------------
+
+Create computer
+~~~~~~~~~~~~~~~
+
+Request:
+
+.. literalinclude:: ./http_snippets/snippets/api__create_computer
+  :language: HTTP
+
+Response:
+
+.. literalinclude:: ./http_snippets/snippets/api__create_computer_result
+  :language: HTTP
+
+
+Update person's attributes and relationships in one request
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Request:
+
+.. literalinclude:: ./http_snippets/snippets/api__update_person_with_computer_relationship
+  :language: HTTP
+
+Response:
+
+.. literalinclude:: ./http_snippets/snippets/api__update_person_with_computer_relationship_result
+  :language: HTTP

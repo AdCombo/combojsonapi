@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Combo JSONAPI 1.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-06 21:56+0300\n"
+"POT-Creation-Date: 2021-06-06 22:14+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,8 +30,9 @@ msgstr "Пример использования Flask-COMBO-JSONAPI API с Combo
 msgid ""
 "In this example Flask-SQLAlchemy is used, so you'll need to install it "
 "before running this example."
-msgstr "В этом примере используется Flask-SQLAlchemy."
-"Так что для запуска примера будет необходимо установить эту библиотеку"
+msgstr ""
+"В этом примере используется Flask-SQLAlchemy.Так что для запуска примера "
+"будет необходимо установить эту библиотеку"
 
 #: ../../quickstart.rst:15
 msgid "$ pip install flask_sqlalchemy"
@@ -48,10 +49,9 @@ msgid ""
 msgstr ""
 "Сохраните `этот файл "
 "<https://github.com/AdCombo/combojsonapi/blob/master/examples/api.py>`_ "
-"как api.py и запустите. В примере активен "
-"дебаг режим `Flask debugging "
-"<https://flask.palletsprojects.com/en/2.0.x/quickstart/#debug-mode>`_ "
-"для авторестарта и более подробных ошибок. ::"
+"как api.py и запустите. В примере активен дебаг режим `Flask debugging "
+"<https://flask.palletsprojects.com/en/2.0.x/quickstart/#debug-mode>`_ для"
+" авторестарта и более подробных ошибок. ::"
 
 #: ../../quickstart.rst:27
 msgid "Debug mode should never be used in a production environment!"
@@ -66,12 +66,12 @@ msgid "Create object"
 msgstr "Создание объекта"
 
 #: ../../quickstart.rst:35 ../../quickstart.rst:49 ../../quickstart.rst:63
-#: ../../quickstart.rst:86
+#: ../../quickstart.rst:86 ../../quickstart.rst:104 ../../quickstart.rst:118
 msgid "Request:"
 msgstr "Запрос:"
 
 #: ../../quickstart.rst:40 ../../quickstart.rst:54 ../../quickstart.rst:68
-#: ../../quickstart.rst:91
+#: ../../quickstart.rst:91 ../../quickstart.rst:109 ../../quickstart.rst:123
 msgid "Response:"
 msgstr "Ответ:"
 
@@ -94,10 +94,11 @@ msgid ""
 "this dependency in model's :code:`Meta.required_fields`, when serialising"
 " each model will fire two queries to DB to get these fields."
 msgstr ""
-"Необходимо отметить, что мы указали SQLAlchemy что поля :code:`full_name` "
-"использует поля :code:`first_name` и :code:`first_name`. Если мы не объявим "
-"эту зависимость в :code:`Meta.required_fields` модели, то во время сериализации"
-" каждая модель выполнит по два запроса в БД чтобы получить эти поля."
+"Необходимо отметить, что мы указали SQLAlchemy что поля :code:`full_name`"
+" использует поля :code:`first_name` и :code:`first_name`. Если мы не "
+"объявим эту зависимость в :code:`Meta.required_fields` модели, то во "
+"время сериализации каждая модель выполнит по два запроса в БД чтобы "
+"получить эти поля."
 
 #: ../../quickstart.rst:81
 msgid ""
@@ -107,6 +108,19 @@ msgid ""
 "requested directly."
 msgstr ""
 "Это происходит потому, что PermissionPlugin убирает невостребованные поля"
-" из SQL запроса в пользу производительности. А :code:`Meta.required_fields` "
-"подскажет плагину PermissionPlugin какие поля необходимо загрузить"
-" даже если они не были запрошены напрямую."
+" из SQL запроса в пользу производительности. А "
+":code:`Meta.required_fields` подскажет плагину PermissionPlugin какие "
+"поля необходимо загрузить даже если они не были запрошены напрямую."
+
+#: ../../quickstart.rst:99
+msgid "Relationships"
+msgstr "Связи"
+
+#: ../../quickstart.rst:102
+msgid "Create computer"
+msgstr "Создать компьютер"
+
+#: ../../quickstart.rst:116
+msgid "Update person's attributes and relationships in one request"
+msgstr "Обновить атрибуты и связи персоны в одном запросе"
+
