@@ -82,7 +82,7 @@ class PersonSchema(Schema):
     first_name = fields.String(required=True)
     last_name = fields.String(required=True)
     full_name = fields.String(required=True, dump_only=True)
-    email = fields.Email(load_only=True)
+    email = fields.Email()
     computers = Relationship(
         nested="ComputerSchema",
         schema="ComputerSchema",
@@ -113,6 +113,7 @@ class ComputerSchema(Schema):
         type_ = "computer"
         self_view = "computer_detail"
         self_view_kwargs = {"id": "<id>"}
+        self_view_many = "computer_list"
 
     id = fields.Integer(as_string=True, dump_only=True)
     serial = fields.String(required=True)
@@ -151,6 +152,7 @@ class PersonsPermission(PermissionMixin):
         "last_name",
         "full_name",
         "email",
+        "computers",
     ]
 
     def get(self, *args, many=True, user_permission: PermissionUser = None, **kwargs) -> PermissionForGet:

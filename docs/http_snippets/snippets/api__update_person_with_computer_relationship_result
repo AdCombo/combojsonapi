@@ -13,8 +13,30 @@ Content-Type: application/vnd.api+json
     "links": {
       "self": "/persons/1"
     },
+    "relationships": {
+      "computers": {
+        "data": [
+          {
+            "id": "1",
+            "type": "computer"
+          }
+        ]
+      }
+    },
     "type": "person"
   },
+  "included": [
+    {
+      "attributes": {
+        "serial": "Amstrad"
+      },
+      "id": "1",
+      "links": {
+        "self": "/computers/1"
+      },
+      "type": "computer"
+    }
+  ],
   "jsonapi": {
     "version": "1.0"
   },
