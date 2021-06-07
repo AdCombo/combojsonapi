@@ -1,0 +1,27 @@
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
+
+{
+  "data": [
+    {
+      "attributes": {
+        "email": "john.smith@example.com",
+        "full_name": "John Smith"
+      },
+      "id": "1",
+      "links": {
+        "self": "/persons/1"
+      },
+      "type": "person"
+    }
+  ],
+  "jsonapi": {
+    "version": "1.0"
+  },
+  "links": {
+    "self": "http://localhost:5000/persons?fields%5Bperson%5D=full_name%2Cemail"
+  },
+  "meta": {
+    "count": 1
+  }
+}

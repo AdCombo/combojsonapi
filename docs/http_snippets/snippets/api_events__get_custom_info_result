@@ -1,0 +1,9 @@
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
+
+{
+  "jsonapi": {
+    "version": "1.0"
+  },
+  "message": "some info"
+}

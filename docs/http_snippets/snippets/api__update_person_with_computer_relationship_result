@@ -1,0 +1,46 @@
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
+
+{
+  "data": {
+    "attributes": {
+      "email": "john@example.com",
+      "first_name": "John",
+      "full_name": "John Smith",
+      "last_name": "Smith"
+    },
+    "id": "1",
+    "links": {
+      "self": "/persons/1"
+    },
+    "relationships": {
+      "computers": {
+        "data": [
+          {
+            "id": "1",
+            "type": "computer"
+          }
+        ]
+      }
+    },
+    "type": "person"
+  },
+  "included": [
+    {
+      "attributes": {
+        "serial": "Amstrad"
+      },
+      "id": "1",
+      "links": {
+        "self": "/computers/1"
+      },
+      "type": "computer"
+    }
+  ],
+  "jsonapi": {
+    "version": "1.0"
+  },
+  "links": {
+    "self": "/persons/1"
+  }
+}

@@ -1,0 +1,4 @@
+GET /persons?fields[person]=full_name,email HTTP/1.1
+Content-Type: application/vnd.api+json
+
+

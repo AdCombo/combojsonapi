@@ -1,0 +1,7 @@
+POST /users/event_post_info HTTP/1.1
+Content-Type: application/vnd.api+json
+
+{
+  "spam": "eggs",
+  "foo": "bar"
+}

@@ -1,0 +1,11 @@
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
+
+{
+  "foo": "bar",
+  "jsonapi": {
+    "version": "1.0"
+  },
+  "message": "POST request info",
+  "spam": "eggs"
+}
