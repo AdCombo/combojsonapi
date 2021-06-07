@@ -1,0 +1,9 @@
+HTTP/1.1 201
+Content-Type: application/json, application/vnd.api+json
+
+{
+  "avatar_url": "uploads/my-avatar.gif",
+  "jsonapi": {
+    "version": "1.0"
+  }
+}

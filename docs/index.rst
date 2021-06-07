@@ -38,6 +38,7 @@ Contents
 
    installation
    quickstart
+   quickstart_events
    event_plugin
    permission_plugin
    api_spec_plugin

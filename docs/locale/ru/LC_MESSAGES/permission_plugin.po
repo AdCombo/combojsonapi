@@ -19,7 +19,7 @@ msgstr ""
 
 #: ../../permission_plugin.rst:4
 msgid "Permission plugin"
-msgstr "Плагин Permission"
+msgstr "Плагин PermissionPlugin"
 
 #: ../../permission_plugin.rst:6
 msgid "**Permission** plugin enables features:"

@@ -1,7 +1,6 @@
 from flask import Flask
 from marshmallow import pre_load
 
-from combojsonapi.event import EventPlugin
 from combojsonapi.utils import Relationship
 from combojsonapi.spec import ApiSpecPlugin
 
@@ -9,7 +8,6 @@ from combojsonapi.permission.permission_system import (
     PermissionMixin,
     PermissionForGet,
     PermissionUser,
-    PermissionForPatch,
 )
 from combojsonapi.permission import PermissionPlugin
 from flask_combo_jsonapi import Api, ResourceDetail, ResourceList
@@ -20,11 +18,11 @@ from marshmallow_jsonapi import fields
 # Create the Flask application
 app = Flask(__name__)
 app.config["DEBUG"] = True
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # Initialize SQLAlchemy
 app.config["SQLALCHEMY_ECHO"] = True
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////tmp/api-example.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 # swagger / openapi config
@@ -85,10 +83,9 @@ class PersonSchema(Schema):
     computers = Relationship(
         nested="ComputerSchema",
         schema="ComputerSchema",
-        self_view="person_computers",
+        self_view="person_detail",
         self_view_kwargs={"id": "<id>"},
         related_view="computer_list",
-        related_view_kwargs={"id": "<id>"},
         many=True,
         type_="computer",
     )
@@ -120,10 +117,10 @@ class ComputerSchema(Schema):
         nested="PersonSchema",
         schema="PersonSchema",
         attribute="person",
-        self_view="computer_person",
+        self_view="computer_detail",
         self_view_kwargs={"id": "<id>"},
         related_view="person_detail",
-        related_view_kwargs={"computer_id": "<id>"},
+        related_view_kwargs={"int": "<id>"},
         type_="person",
     )
 
@@ -230,23 +227,12 @@ api = Api(
     plugins=[
         api_spec_plugin,
         PermissionPlugin(strict=False),
-        EventPlugin(trailing_slash=False),
     ],
 )
 
 api.route(PersonList, "person_list", "/persons", tag="Person")
-api.route(
-    PersonDetail,
-    "person_detail",
-    "/persons/<int:id>",
-    tag="Person",
-)
-api.route(
-    ComputerList,
-    "computer_list",
-    "/computers",
-    tag="Computer",
-)
+api.route(PersonDetail, "person_detail", "/persons/<int:id>", tag="Person")
+api.route(ComputerList, "computer_list", "/computers", tag="Computer")
 api.route(ComputerDetail, "computer_detail", "/computers/<int:id>", tag="Computer")
 
 

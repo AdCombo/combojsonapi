@@ -1,0 +1,11 @@
+POST /users/1/update_avatar HTTP/1.1
+Content-Type: multipart/form-data; boundary=---011000010111000001101001
+Host: localhost:5000
+Content-Length: 170
+
+-----011000010111000001101001
+Content-Disposition: form-data; name="new_avatar"; filename="my-avatar.gif"
+Content-Type: image/gif
+
+
+-----011000010111000001101001--
