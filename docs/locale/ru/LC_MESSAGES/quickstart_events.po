@@ -1,0 +1,94 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, AdCombo
+# This file is distributed under the same license as the Combo JSONAPI
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Combo JSONAPI 1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-06-07 13:33+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.0\n"
+
+#: ../../quickstart_events.rst:4
+msgid "Events Example"
+msgstr "Пример EventPlugin"
+
+#: ../../quickstart_events.rst:6
+msgid "EventPlugin example for Flask-COMBO-JSONAPI API with ComboJSONAPI:"
+msgstr "Пример использования плагина EventPlugin в Flask-COMBO-JSONAPI API из ComboJSONAPI"
+
+#: ../../quickstart_events.rst:13
+msgid ""
+"In this example Flask-SQLAlchemy is used, so you'll need to install it "
+"before running this example."
+msgstr ""
+"В этом примере используется Flask-SQLAlchemy.Так что для запуска примера "
+"будет необходимо установить эту библиотеку"
+
+
+#: ../../quickstart_events.rst:15
+msgid "$ pip install flask_sqlalchemy"
+msgstr ""
+
+#: ../../quickstart_events.rst:17
+msgid ""
+"Save `this file "
+"<https://github.com/AdCombo/combojsonapi/blob/master/examples/api.py>`_ "
+"as api.py and run it using your Python interpreter. Note that we've "
+"enabled `Flask debugging "
+"<https://flask.palletsprojects.com/en/2.0.x/quickstart/#debug-mode>`_ "
+"mode to provide code reloading and better error messages. ::"
+msgstr ""
+"Сохраните `этот файл "
+"<https://github.com/AdCombo/combojsonapi/blob/master/examples/api.py>`_ "
+"как api.py и запустите. В примере активен дебаг режим `Flask debugging "
+"<https://flask.palletsprojects.com/en/2.0.x/quickstart/#debug-mode>`_ для"
+" авторестарта и более подробных ошибок. ::"
+
+#: ../../quickstart_events.rst:27
+msgid "Debug mode should never be used in a production environment!"
+msgstr "Никогда не используйте дебаг режим в продакшене!"
+
+#: ../../quickstart_events.rst:30
+msgid "Classical CRUD operations"
+msgstr "Классические CRUD операции"
+
+#: ../../quickstart_events.rst:33
+msgid "Create user object"
+msgstr "Создание объекта пользователя"
+
+#: ../../quickstart_events.rst:35 ../../quickstart_events.rst:50
+#: ../../quickstart_events.rst:65 ../../quickstart_events.rst:83
+msgid "Request:"
+msgstr "Запрос:"
+
+#: ../../quickstart_events.rst:40 ../../quickstart_events.rst:55
+#: ../../quickstart_events.rst:70 ../../quickstart_events.rst:88
+msgid "Response:"
+msgstr "Ответ:"
+
+#: ../../quickstart_events.rst:48
+msgid "Get custom event info"
+msgstr "Выполнить GET запрос на кастомный event_get_"
+
+#: ../../quickstart_events.rst:63
+msgid "Post custom event info"
+msgstr "Выполнить POST запрос на кастомный event_post_"
+
+#: ../../quickstart_events.rst:79
+msgid "Update user's avatar"
+msgstr "Обновить аватар пользователя"
+
+#: ../../quickstart_events.rst:81
+msgid "Upload file using code:`multipart/form-data`"
+msgstr "Загрузить файл используя code:`multipart/form-data`"
+

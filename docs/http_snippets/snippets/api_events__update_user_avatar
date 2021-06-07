@@ -1,11 +1,10 @@
 POST /users/1/update_avatar HTTP/1.1
-Content-Type: multipart/form-data; boundary=---011000010111000001101001
-Host: localhost:5000
-Content-Length: 170
+Content-Type: multipart/form-data; boundary=WebKitFormBoundaryQwe
 
------011000010111000001101001
+------WebKitFormBoundaryQwe
 Content-Disposition: form-data; name="new_avatar"; filename="my-avatar.gif"
 Content-Type: image/gif
+GIF89a!
+,L;
 
-
------011000010111000001101001--
+------WebKitFormBoundaryQwe--

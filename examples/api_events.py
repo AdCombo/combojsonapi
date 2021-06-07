@@ -136,6 +136,10 @@ class UserResourceDetailEvents(EventsResource):
                       type: string
                       example: "uploads/avatar.gif"
         """
+        avatar = request.files.get("new_avatar")
+        if not avatar:
+            raise BadRequest("avatar file is required! please fill `new_avatar` form field")
+
         user = User.query.filter_by(id=id).one_or_none()
         if user is None:
             raise ObjectNotFound(
@@ -143,9 +147,6 @@ class UserResourceDetailEvents(EventsResource):
                 source={"parameter": "id"},
             )
 
-        avatar = request.files.get("new_avatar")
-        if not avatar:
-            raise BadRequest("avatar file is required! please fill `new_avatar` form field")
         filename = avatar.filename
         avatar_path = str(UPLOADS_DIR / filename)
         avatar.save(avatar_path)

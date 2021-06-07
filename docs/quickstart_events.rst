@@ -72,3 +72,20 @@ Response:
 .. literalinclude:: ./http_snippets/snippets/api_events__post_custom_info_result
   :language: HTTP
 
+
+
+Update user's avatar
+~~~~~~~~~~~~~~~~~~~~
+
+Upload file using code:`multipart/form-data`
+
+Request:
+
+.. literalinclude:: ./http_snippets/snippets/api_events__update_user_avatar
+  :language: HTTP
+
+Response:
+
+.. literalinclude:: ./http_snippets/snippets/api_events__update_user_avatar_result
+  :language: HTTP
+
