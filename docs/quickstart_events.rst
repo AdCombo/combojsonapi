@@ -77,7 +77,7 @@ Response:
 Update user's avatar
 ~~~~~~~~~~~~~~~~~~~~
 
-Upload file using code:`multipart/form-data`
+Upload file using :code:`multipart/form-data`
 
 Request:
 

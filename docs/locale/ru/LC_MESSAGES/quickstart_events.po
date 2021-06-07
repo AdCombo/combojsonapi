@@ -78,11 +78,11 @@ msgstr "Ответ:"
 
 #: ../../quickstart_events.rst:48
 msgid "Get custom event info"
-msgstr "Выполнить GET запрос на кастомный event_get_"
+msgstr "Выполнить GET запрос на кастомный :code:`event_get_`"
 
 #: ../../quickstart_events.rst:63
 msgid "Post custom event info"
-msgstr "Выполнить POST запрос на кастомный event_post_"
+msgstr "Выполнить POST запрос на кастомный :code:`event_post_`"
 
 #: ../../quickstart_events.rst:79
 msgid "Update user's avatar"
