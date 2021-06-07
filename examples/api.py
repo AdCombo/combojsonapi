@@ -36,7 +36,6 @@ app.config["OPENAPI_SWAGGER_UI_VERSION"] = "3.45.0"
 
 # Create models
 class Person(db.Model):
-
     class Meta:
         required_fields = {
             # OPTIONAL BUT RECOMMENDED
@@ -145,7 +144,18 @@ class ComputerSchema(Schema):
 # create Permissions
 
 
-class PersonsPermission(PermissionMixin):
+class BaseAllowAllFieldsPermission(PermissionMixin):
+    ALL_FIELDS = []
+
+    def get(
+        self, *args, many=True, user_permission: PermissionUser = None, **kwargs
+    ) -> PermissionForGet:
+        """Setting all available columns"""
+        self.permission_for_get.allow_columns = (self.ALL_FIELDS, 10)
+        return self.permission_for_get
+
+
+class PersonsPermission(BaseAllowAllFieldsPermission):
     ALL_FIELDS = [
         "id",
         "first_name",
@@ -155,10 +165,14 @@ class PersonsPermission(PermissionMixin):
         "computers",
     ]
 
-    def get(self, *args, many=True, user_permission: PermissionUser = None, **kwargs) -> PermissionForGet:
-        """Setting avatilable columns"""
-        self.permission_for_get.allow_columns = (self.ALL_FIELDS, 10)
-        return self.permission_for_get
+
+class ComputersPermission(BaseAllowAllFieldsPermission):
+    ALL_FIELDS = [
+        "id",
+        "serial",
+        "person",
+        "owner",
+    ]
 
 
 # Create resource managers
@@ -185,6 +199,7 @@ class ComputerList(ResourceList):
     data_layer = {
         "session": db.session,
         "model": Computer,
+        "permission_get": [ComputersPermission],
     }
 
 
@@ -193,6 +208,7 @@ class ComputerDetail(ResourceDetail):
     data_layer = {
         "session": db.session,
         "model": Computer,
+        "permission_get": [ComputersPermission],
     }
 
 
@@ -223,14 +239,12 @@ api.route(
     PersonDetail,
     "person_detail",
     "/persons/<int:id>",
-    "/computers/<int:computer_id>/owner",
     tag="Person",
 )
 api.route(
     ComputerList,
     "computer_list",
     "/computers",
-    "/persons/<int:id>/computers",
     tag="Computer",
 )
 api.route(ComputerDetail, "computer_detail", "/computers/<int:id>", tag="Computer")

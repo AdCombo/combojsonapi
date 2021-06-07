@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Combo JSONAPI 1.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-06 22:14+0300\n"
+"POT-Creation-Date: 2021-06-07 11:31+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -67,11 +67,13 @@ msgstr "Создание объекта"
 
 #: ../../quickstart.rst:35 ../../quickstart.rst:49 ../../quickstart.rst:63
 #: ../../quickstart.rst:86 ../../quickstart.rst:104 ../../quickstart.rst:118
+#: ../../quickstart.rst:132
 msgid "Request:"
 msgstr "Запрос:"
 
 #: ../../quickstart.rst:40 ../../quickstart.rst:54 ../../quickstart.rst:68
 #: ../../quickstart.rst:91 ../../quickstart.rst:109 ../../quickstart.rst:123
+#: ../../quickstart.rst:137
 msgid "Response:"
 msgstr "Ответ:"
 
@@ -123,4 +125,12 @@ msgstr "Создать компьютер"
 #: ../../quickstart.rst:116
 msgid "Update person's attributes and relationships in one request"
 msgstr "Обновить атрибуты и связи персоны в одном запросе"
+
+#: ../../quickstart.rst:130
+msgid ""
+"Get computers with owners (person relationship) and select fields at the "
+"same time"
+msgstr ""
+"Получить компьютеры вместе с владельцами (связь person), "
+"а также выбрать отдельные поля в том же запросе"
 

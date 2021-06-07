@@ -124,3 +124,17 @@ Response:
 
 .. literalinclude:: ./http_snippets/snippets/api__update_person_with_computer_relationship_result
   :language: HTTP
+
+
+Get computers with owners (person relationship) and select fields at the same time
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Request:
+
+.. literalinclude:: ./http_snippets/snippets/api__get_computers_with_person_relationship
+  :language: HTTP
+
+Response:
+
+.. literalinclude:: ./http_snippets/snippets/api__get_computers_with_person_relationship_result
+  :language: HTTP
