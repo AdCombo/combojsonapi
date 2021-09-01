@@ -2,5 +2,5 @@ sqlalchemy<1.4
 marshmallow==3.2.1
 marshmallow_jsonapi==0.24.0
 Flask>=1.0.1,<2
-apispec[yaml]>=4.3.0
+apispec[yaml]>=4.3.0,<5
 flask-combo-jsonapi
