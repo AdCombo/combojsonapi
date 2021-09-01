@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Combo JSONAPI 1.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-07 13:33+0300\n"
+"POT-Creation-Date: 2021-09-01 21:25+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,7 +24,9 @@ msgstr "Пример EventPlugin"
 
 #: ../../quickstart_events.rst:6
 msgid "EventPlugin example for Flask-COMBO-JSONAPI API with ComboJSONAPI:"
-msgstr "Пример использования плагина EventPlugin в Flask-COMBO-JSONAPI API из ComboJSONAPI"
+msgstr ""
+"Пример использования плагина EventPlugin в Flask-COMBO-JSONAPI API из "
+"ComboJSONAPI"
 
 #: ../../quickstart_events.rst:13
 msgid ""
@@ -33,7 +35,6 @@ msgid ""
 msgstr ""
 "В этом примере используется Flask-SQLAlchemy.Так что для запуска примера "
 "будет необходимо установить эту библиотеку"
-
 
 #: ../../quickstart_events.rst:15
 msgid "$ pip install flask_sqlalchemy"
@@ -67,12 +68,12 @@ msgid "Create user object"
 msgstr "Создание объекта пользователя"
 
 #: ../../quickstart_events.rst:35 ../../quickstart_events.rst:50
-#: ../../quickstart_events.rst:65 ../../quickstart_events.rst:83
+#: ../../quickstart_events.rst:65 ../../quickstart_events.rst:82
 msgid "Request:"
 msgstr "Запрос:"
 
 #: ../../quickstart_events.rst:40 ../../quickstart_events.rst:55
-#: ../../quickstart_events.rst:70 ../../quickstart_events.rst:88
+#: ../../quickstart_events.rst:70 ../../quickstart_events.rst:87
 msgid "Response:"
 msgstr "Ответ:"
 
@@ -84,11 +85,12 @@ msgstr "Выполнить GET запрос на кастомный :code:`event
 msgid "Post custom event info"
 msgstr "Выполнить POST запрос на кастомный :code:`event_post_`"
 
-#: ../../quickstart_events.rst:79
+#: ../../quickstart_events.rst:78
 msgid "Update user's avatar"
 msgstr "Обновить аватар пользователя"
 
-#: ../../quickstart_events.rst:81
-msgid "Upload file using code:`multipart/form-data`"
+#: ../../quickstart_events.rst:80
+#, fuzzy
+msgid "Upload file using :code:`multipart/form-data`"
 msgstr "Загрузить файл используя code:`multipart/form-data`"
 

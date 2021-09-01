@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: combojsonapi 1.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-04 09:55+0300\n"
+"POT-Creation-Date: 2021-09-01 21:25+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,176 +23,192 @@ msgid "Changelog"
 msgstr ""
 
 #: ../../../CHANGELOG.rst:6
-msgid "**1.1.1**"
+msgid "**1.1.2**"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:9 ../../../CHANGELOG.rst:30 ../../../CHANGELOG.rst:66
+#: ../../../CHANGELOG.rst:9 ../../../CHANGELOG.rst:19 ../../../CHANGELOG.rst:40
+#: ../../../CHANGELOG.rst:76
 msgid "Bug Fixes"
 msgstr ""
 
 #: ../../../CHANGELOG.rst:11
-msgid "fix event plugin build urls when there's no trailing slash #- `@mahenzon`_"
+msgid "fix freeze apispec<5 #- `@mahenzon`_"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:15
-msgid "**1.1.0**"
+#: ../../../CHANGELOG.rst:12
+msgid ""
+"fix permission plugin Meta.required_fields properly loads relationship "
+"fields #- `@mahenzon`_"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:18 ../../../CHANGELOG.rst:39
-#: ../../../CHANGELOG.rst:58 ../../../CHANGELOG.rst:87
-msgid "Enhancements"
-msgstr ""
-
-#: ../../../CHANGELOG.rst:20
-msgid "Upgrade apispec, fix tests `#33`_ #- `@mahenzon`_"
+#: ../../../CHANGELOG.rst:16
+msgid "**1.1.1**"
 msgstr ""
 
 #: ../../../CHANGELOG.rst:21
+msgid "fix event plugin build urls when there's no trailing slash #- `@mahenzon`_"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:25
+msgid "**1.1.0**"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:28 ../../../CHANGELOG.rst:49
+#: ../../../CHANGELOG.rst:68 ../../../CHANGELOG.rst:97
+msgid "Enhancements"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:30
+msgid "Upgrade apispec, fix tests `#33`_ #- `@mahenzon`_"
+msgstr ""
+
+#: ../../../CHANGELOG.rst:31
 msgid "provide custom event params via `extra` attribute `#34`_ #- `@mahenzon`_"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:22
+#: ../../../CHANGELOG.rst:32
 msgid "build and localize docs for RTD `#36`_ #- `@mahenzon`_"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:23
+#: ../../../CHANGELOG.rst:33
 msgid "Add case for permission methods in docs `#30`_ #- `@Bykov25`_"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:27
+#: ../../../CHANGELOG.rst:37
 msgid "**1.0.5**"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:32
+#: ../../../CHANGELOG.rst:42
 msgid "Distribute apispec templates #- `@mahenzon`_"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:36
+#: ../../../CHANGELOG.rst:46
 msgid "**1.0.3**"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:41
+#: ../../../CHANGELOG.rst:51
 msgid ""
 "Add custom marshmallow fields for PostgreSQL filtering (PostgreSqlJSONB "
 "plugin) #- `@Znbiz`_"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:42
+#: ../../../CHANGELOG.rst:52
 msgid ""
 "Filtering and sorting nested JSONB fields (PostgreSqlJSONB plugin) #- "
 "`@tarasovdg1`_"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:46
+#: ../../../CHANGELOG.rst:56
 msgid "**1.0.0**"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:49
+#: ../../../CHANGELOG.rst:59
 msgid "Changes"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:51
+#: ../../../CHANGELOG.rst:61
 msgid "Rename Flask-REST-JSONAPI to Flask-COMBO-JSONAPI #- `@mahenzon`_"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:55
+#: ../../../CHANGELOG.rst:65
 msgid "**0.1.1**"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:60
+#: ../../../CHANGELOG.rst:70
 msgid "Added parameter **strict** in PermissionPlugin #- `@Znbiz`_"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:61
+#: ../../../CHANGELOG.rst:71
 msgid "Added parameter **trailing_slash** in EventPlugin #- `@Znbiz`_"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:62
+#: ../../../CHANGELOG.rst:72
 msgid "English docs #- `@Yakov Shapovalov`_"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:63
+#: ../../../CHANGELOG.rst:73
 msgid "Update marshmallow -> 3.0.1 #- `@Znbiz`_"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:68
+#: ../../../CHANGELOG.rst:78
 msgid "update Relationship #- `@Znbiz`_"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:69
+#: ../../../CHANGELOG.rst:79
 msgid ""
 "Constant splitter for filters, sorts and includes in plugin "
 "`PostgreSqlJSONB`_ #- `@Znbiz`_"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:70
+#: ../../../CHANGELOG.rst:80
 msgid "Fix resource.schema == None in plugin `ApiSpecPlugin`_ #- `@Znbiz`_"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:71
+#: ../../../CHANGELOG.rst:81
 msgid "Fix sorting in plugin `PostgreSqlJSONB`_ #- `@Znbiz`_"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:72
+#: ../../../CHANGELOG.rst:82
 msgid ""
 "Improved model fields check for options(load_only) in `PermissionPlugin`_"
 " #- `@Znbiz`_"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:73
+#: ../../../CHANGELOG.rst:83
 msgid ""
 "Implement disable_global_decorators, minor refactor and upgrade events, "
 "update docs in plugin `EventPlugin`_  #- `@mahenzon`_"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:75
+#: ../../../CHANGELOG.rst:85
 msgid ""
 "typo permission_for_path -> permission_for_patch and create "
 "get_decorators_for_resource in plugin `PermissionPlugin`_ #- `@mahenzon`_"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:77
+#: ../../../CHANGELOG.rst:87
 msgid "Create status util #- `@mahenzon`_"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:78
+#: ../../../CHANGELOG.rst:88
 msgid ""
 "Refactor api spec params for get in plugin `ApiSpecPlugin`_ #- "
 "`@mahenzon`_"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:79
+#: ../../../CHANGELOG.rst:89
 msgid "Fix permission plugin initialization #- `@mahenzon`_"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:80
+#: ../../../CHANGELOG.rst:90
 msgid "Constant splitter for filters, sorts and includes #- `@mahenzon`_"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:81
+#: ../../../CHANGELOG.rst:91
 msgid "Configure setup, update .gitignore #- `@mahenzon`_"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:84
+#: ../../../CHANGELOG.rst:94
 msgid "**0.1.0**"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:89
+#: ../../../CHANGELOG.rst:99
 msgid "Created plugin `PermissionPlugin`_ for flask-rest-jsonapi #- `@Znbiz`_"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:90
+#: ../../../CHANGELOG.rst:100
 msgid "Created plugin `ApiSpecPlugin`_ for flask-rest-jsonapi #- `@Znbiz`_"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:91
+#: ../../../CHANGELOG.rst:101
 msgid "Created plugin `EventPlugin`_ for flask-rest-jsonapi #- `@Znbiz`_"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:92
+#: ../../../CHANGELOG.rst:102
 msgid "Created plugin `PostgreSqlJSONB`_ for flask-rest-jsonapi #- `@Znbiz`_"
 msgstr ""
 
-#: ../../../CHANGELOG.rst:93
+#: ../../../CHANGELOG.rst:103
 msgid "Created plugin `RestfulPlugin`_ for ApiSpec #- `@Znbiz`_"
 msgstr ""
+

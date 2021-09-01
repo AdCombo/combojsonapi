@@ -2,6 +2,16 @@ Changelog
 *********
 
 
+**1.1.2**
+=========
+
+Bug Fixes
+=========
+
+* fix freeze apispec<5 #- `@mahenzon`_
+* fix permission plugin Meta.required_fields properly loads relationship fields #- `@mahenzon`_
+
+
 **1.1.1**
 =========
 
