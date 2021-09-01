@@ -379,11 +379,14 @@ class PermissionPlugin(BasePlugin):
         user_requested_columns = qs.fields.get(self_json_api.resource.schema.Meta.type_)
         if user_requested_columns:
             name_columns = list(set(name_columns) & set(user_requested_columns))
-        # Убираем relationship поля
-        name_columns = list(set(name_columns) & set(get_columns_for_query(self_json_api.model)))
+
+        # required fields (from Meta.required_fields)
         required_columns_names = []
         for i_name in name_columns:
             required_columns_names.extend(get_required_fields(i_name, self_json_api.model))
+
+        # remove relationship fields
+        name_columns = list(set(name_columns) & set(get_columns_for_query(self_json_api.model)))
         name_columns = list(set(name_columns) | set(required_columns_names))
 
         query = query.options(load_only(*name_columns))
