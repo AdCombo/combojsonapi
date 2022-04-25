@@ -18,7 +18,7 @@ jobs:
       # don't cancel tests if any of the pipelines fails
       fail-fast: false
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
 
     steps:
     - uses: actions/checkout@v2
@@ -27,7 +27,10 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install the package and dependencies
-      run: python setup.py install
+      run: |
+        pip install -U setuptools
+        pip install -r requirements.txt
+        python setup.py install
     - name: Lint with flake8
       run: |
         pip install flake8
@@ -36,9 +39,10 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Install testing dependencies
-      run: pip install pytest --upgrade
+      run: |
+        pip install pytest --upgrade
     - name: Test with pytest and run coverage
-      run: pytest -s -vv --color=yes
+      run: pytest -s -vv --color=yes tests
 
   coverage:
 
@@ -51,7 +55,9 @@ jobs:
       with:
         python-version: '3.8'
     - name: Install the package and dependencies
-      run: python setup.py install
+      run: |
+        pip install -r requirements-dev.txt
+        python setup.py install
     - name: Lint with flake8
       run: |
         pip install flake8
@@ -62,10 +68,8 @@ jobs:
     - name: Install testing and coverage dependencies
       run: |
         pip install coveralls coverage
-        pip install -U setuptools
-        pip install pytest --upgrade
     - name: Test with pytest with coverage
-      run: coverage run --source combojsonapi -m pytest
+      run: coverage run --source combojsonapi -m pytest tests
     - name: Trigger Coveralls
       run: coveralls --service=github
       env:
