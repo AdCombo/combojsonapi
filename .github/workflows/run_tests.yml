@@ -56,7 +56,8 @@ jobs:
         python-version: '3.8'
     - name: Install the package and dependencies
       run: |
-        pip install -r requirements-dev.txt
+        pip install -U setuptools
+        pip install -r requirements.txt
         python setup.py install
     - name: Lint with flake8
       run: |
@@ -67,6 +68,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Install testing and coverage dependencies
       run: |
+        pip install pytest --upgrade
         pip install coveralls coverage
     - name: Test with pytest with coverage
       run: coverage run --source combojsonapi -m pytest tests
