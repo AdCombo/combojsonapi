@@ -1,14 +1,6 @@
-import os
-
 from setuptools import setup, find_packages
 
-__version__ = "1.1.2"
-
-
-requirements_filepath = os.path.join(os.path.dirname(__name__), "requirements.txt")
-with open(requirements_filepath) as fp:
-    install_requires = fp.read()
-
+__version__ = "2.0"
 
 def get_description():
     """
@@ -16,7 +8,6 @@ def get_description():
     """
     with open('README.rst', 'r', encoding='utf-8') as f:
         return f.read()
-
 
 setup(
     name="ComboJSONAPI",
@@ -36,6 +27,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "License :: OSI Approved :: MIT License",
         "Topic :: Internet",
     ],
@@ -45,7 +37,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     platforms="any",
-    install_requires=install_requires,
+    install_requires=[],
     setup_requires=["pytest-runner"],
     tests_require=["pytest"],
     extras_require={"tests": "pytest", "docs": "sphinx"},

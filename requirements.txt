@@ -1,6 +1,6 @@
-sqlalchemy<1.4
-marshmallow==3.2.1
-marshmallow_jsonapi==0.24.0
-Flask>=1.0.1,<2
+Flask>=2.0,<2.1
+marshmallow>=3.14,<3.15
+marshmallow_jsonapi>=0.24,<0.25
+sqlalchemy>=1.4,<2
 apispec[yaml]>=4.3.0,<5
-flask-combo-jsonapi
+-e git+https://github.com/AdCombo/flask-combo-jsonapi.git@d088f48a598057e7d369066891644ee56abe3b8c#egg=flask-combo-jsonapi
